@@ -23,6 +23,10 @@
         "Source": "https://raw.githubusercontent.com/UnseenGit/ContextHub/main/Modules/UtilFunctions.lua",
         "Type": "web/lua"
     },
+    "Lists": {
+        "Source": "Lists.lua",
+        "Type": "file/lua"
+    },
     "RobloxClasses": {
         "Source": "https://github.com/UnseenGit/ContextHub/raw/main/Modules/RobloxClasses.json",
         "Type": "web/json"

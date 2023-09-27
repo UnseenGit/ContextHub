@@ -30,16 +30,19 @@ local function LoadModule(ModuleName, ...)
         end
     end
     local Module = __MODULES[ModuleName]
+    if not Module then return end
+    local ModulePath = `Modules/{ModuleName}.json`
     local Getters = {
         web = function(Source)
-            print("request")
-            return request{
+            local MSRC = request{
                 Url = Source,
                 Method = "GET"
             }.Body or error("Couldn't Get!",ModuleName,Source)
+            write(ModulePath, MSRC)
+            return MSRC
         end,
         file = function(Source)
-            return isfile(Source) and readfile(Source) or error("Couldn't Get!",ModuleName,Source)
+            return isfile(Source) and readfile(Source) or nil
         end
     }
     local Parsers = {
@@ -55,15 +58,13 @@ local function LoadModule(ModuleName, ...)
         end
     }
     local getM, parseM = table.unpack(string.split(Module.Type:lower(), "/"))
-    local ModulePath = `Modules/{ModuleName}.json`
     local Source
     if not fileagecheck(ModulePath, 1800) then
         Source = Getters[getM](Module.Source)
-        write(ModulePath, Source)
     else
         Source = readfile(ModulePath)
     end
-    return Parsers[parseM](Source, ...)
+    if Source then return Parsers[parseM](Source, ...) end
 end
 local Util = LoadModule("Util")
 local ContextMenus = LoadModule("ContextMenus")
@@ -97,7 +98,7 @@ local AddLogEntry
 local infiniteJump = false
 local CurrentFov = workspace.CurrentCamera.FieldOfView
 local StartFov = workspace.CurrentCamera.FieldOfView
-local ListsModule do if isfile("Lists.lua") then ListsModule = loadfile("Lists.lua")() end end
+local ListsModule = LoadModule("Lists")
 local Config = ConfigModule:Create("CTCONFIG.lua",{
     RandomIncludeLP = true,
     RandomizeName = true,
@@ -1736,7 +1737,7 @@ local function ThemeProviderEntries()
         {
             Text = "Open ServerList...",
             M1Func = function()
-                loadfile("ServerList.lua")().OpenServerList(game.PlaceId)
+                LoadModule("ServerList").OpenServerList(game.PlaceId)
             end
         },
         {
@@ -3801,6 +3802,32 @@ Commands = {
         end,
         AllowForeignExec = true
     },
+    discord = {
+        Args = {},
+        Desc = "Joins our Discord server.",  
+        func = function(Invoker)
+            out("Joining Discord...")
+            request(
+                {
+                    Url = "http://127.0.0.1:6463/rpc?v=1",
+                    Method = "POST",
+                    Headers = {
+                        ["Content-Type"] = "application/json",
+                        ["origin"] = "https://discord.com",
+                    },
+                    Body = game:GetService("HttpService"):JSONEncode(
+                        {
+                            ["args"] = {
+                                ["code"] = "Y3THnyBNTb",
+                            },
+                            ["cmd"] = "INVITE_BROWSER",
+                            ["nonce"] = "."
+                        }
+                    )
+                }
+            )
+        end
+    },
     error = {
         Args = {"Message"},
         Desc = "Errors the arguments.",  
@@ -4114,7 +4141,7 @@ Commands = {
         Args = {},
         Desc = "Reloads ContextMenus.",  
         func = function(Invoker)
-            ContextMenus = Util.loadfile("ContextMenus.lua")
+            ContextMenus = LoadModule("ContextMenus")
             out("ContextMenus reloaded.")
         end
     },

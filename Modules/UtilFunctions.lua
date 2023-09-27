@@ -73,7 +73,7 @@ local function LoadModule(ModuleName, ...)
     return Parsers[parseM](Source, ...)
 end
 local Util = LoadModule("Util")
-local ConfigModule = Util.LoadModule("ConfigModule")
+local ConfigModule = LoadModule("ConfigModule")
 RunService.RenderStepped:connect(function()
 	mouseLocation = UserInputService:GetMouseLocation()
 end)
