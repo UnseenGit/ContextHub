@@ -4151,6 +4151,19 @@ Commands = {
             out("ContextMenus reloaded.")
         end
     },
+    wipecache = {
+        Args = {},
+        Desc = "Removes all the cached files.",  
+        func = function(Invoker)
+            for _, Folder in pairs({
+                "Assets",
+                "Modules"
+            }) do
+                if isfolder(Folder) then removefolder(Folder) end
+            end
+            out("Cache cleared.")
+        end
+    },
     loadpos = {
         Args = {"Position Name"},
         Desc = "Teleport to a previously saved position.",  
