@@ -4159,7 +4159,9 @@ Commands = {
                 "Assets",
                 "Modules"
             }) do
-                if isfolder(Folder) then delfolder(Folder) end
+                if isfolder(Folder) then 
+                    delfolder(Folder) 
+                end
             end
             out("Cache cleared.")
         end
