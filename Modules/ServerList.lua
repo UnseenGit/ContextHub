@@ -2,8 +2,8 @@ local Square = "■"
 local ContextMenus = loadfile("ContextMenus.lua")()
 local Util = loadfile("Util.lua")()
 local module = {}
-local cmdp = game:GetService("Players")
-local cmdlp = cmdp.LocalPlayer
+local Players = game:GetService("Players")
+local LP = Players.LocalPlayer
 if not isfile("UUIDCOLORS.json") then writefile("UUIDCOLORS.json",'{"CreationTime": '..os.time()..'}') end
 local function UUIDToColor3(UUID)
     local UUIDCOLORS = Util.readJSON("UUIDCOLORS.json")
@@ -82,7 +82,7 @@ function module.OpenServerList(_PlaceId)
                                                     {
                                                         Text = "Join",
                                                         M1Func = function()
-                                                            game:GetService("TeleportService"):TeleportToPlaceInstance(_PlaceId, v.id, cmdlp)
+                                                            game:GetService("TeleportService"):TeleportToPlaceInstance(_PlaceId, v.id, LP)
                                                         end
                                                     },
                                                     (function()
@@ -93,15 +93,15 @@ function module.OpenServerList(_PlaceId)
                                                                     local OCSaver = loadfile("OCSaver.lua")()
                                                                     local queue_on_teleport = queue_on_teleport or syn.queue_on_teleport
                                                                     local queue = 'print(pcall(function()\ngame:GetService("ReplicatedFirst"):RemoveDefaultLoadingScreen()'
-                                                                    local RejoinOC = OCSaver.OCToTable(cmdlp)
-                                                                    RejoinOC.Info.LastPos = cmdlp.Character.HumanoidRootPart.CFrame
+                                                                    local RejoinOC = OCSaver.OCToTable(LP)
+                                                                    RejoinOC.Info.LastPos = LP.Character.HumanoidRootPart.CFrame
                                                                     queue = queue.."\nif not game:IsLoaded() then game.Loaded:Wait() end\nlocal LP = game:GetService(\"Players\").LocalPlayer\nrepeat wait() until LP.PlayerGui:FindFirstChild\"Loader\"\nlocal Morph = "..Util.DatatypeToConstructor(RejoinOC).."\nwait(.3)\nLP.PlayerGui.Loader.PassedCharacterCreation.Value = true\nLP.PlayerGui.Loader.PassedLoading.Value = true\nLP.PlayerGui.Loader.PassedRules.Value = true\nLP.PlayerGui.Loader.MainScreen.Visible = false\nLP.PlayerGui.GameMENU.Enabled = true\nloadfile(\"OCSaver.lua\")().MorphFromTable(Morph)\nloadfile(\"functions.lua\")().TeleportTo(Morph.Info.LastPos, {TeleportOffset = CFrame.new(0,0,0)})\nend))"
                                                                     if queue_on_teleport then
                                                                         print(pcall(function()
                                                                             queue_on_teleport(queue)
                                                                         end))
                                                                     end
-                                                                    game:GetService("TeleportService"):TeleportToPlaceInstance(_PlaceId, v.id, cmdlp)
+                                                                    game:GetService("TeleportService"):TeleportToPlaceInstance(_PlaceId, v.id, LP)
                                                                 end
                                                             }
                                                         end
