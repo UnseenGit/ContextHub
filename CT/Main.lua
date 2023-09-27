@@ -51,7 +51,12 @@ local function LoadModule(ModuleName, ...)
             if err then
                 error("Couldn't Parse!",ModuleName)
             end
-            return Block(...)
+            local Succ, Ret = pcall(Block, ...)
+            if Succ then
+                return Ret
+            else
+                error(ModuleName, Ret)
+            end
         end,
         json = function(Source)
             return Http:JSONDecode(Source)

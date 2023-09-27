@@ -37,16 +37,19 @@ local function LoadModule(ModuleName, ...)
         end
     end
     local Module = __MODULES[ModuleName]
+    if not Module then return end
+    local ModulePath = `Modules/{ModuleName}.json`
     local Getters = {
         web = function(Source)
-            print("request")
-            return request{
+            local MSRC = request{
                 Url = Source,
                 Method = "GET"
             }.Body or error("Couldn't Get!",ModuleName,Source)
+            write(ModulePath, MSRC)
+            return MSRC
         end,
         file = function(Source)
-            return isfile(Source) and readfile(Source) or error("Couldn't Get!",ModuleName,Source)
+            return isfile(Source) and readfile(Source) or nil
         end
     }
     local Parsers = {
@@ -55,22 +58,25 @@ local function LoadModule(ModuleName, ...)
             if err then
                 error("Couldn't Parse!",ModuleName)
             end
-            return Block(...)
+            local Succ, Ret = pcall(Block, ...)
+            if Succ then
+                return Ret
+            else
+                error(ModuleName, Ret)
+            end
         end,
         json = function(Source)
             return Http:JSONDecode(Source)
         end
     }
     local getM, parseM = table.unpack(string.split(Module.Type:lower(), "/"))
-    local ModulePath = `Modules/{ModuleName}.json`
     local Source
     if not fileagecheck(ModulePath, 1800) then
         Source = Getters[getM](Module.Source)
-        write(ModulePath, Source)
     else
         Source = readfile(ModulePath)
     end
-    return Parsers[parseM](Source, ...)
+    if Source then return Parsers[parseM](Source, ...) end
 end
 local Util = LoadModule("Util")
 local ConfigModule = LoadModule("ConfigModule")
