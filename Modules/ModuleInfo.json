@@ -1,0 +1,54 @@
+{
+    "Util": {
+        "Source": "https://raw.githubusercontent.com/UnseenGit/ContextHub/main/Modules/Util.lua",
+        "Type": "web/lua"
+    },
+    "ConfigModule": {
+        "Source": "https://raw.githubusercontent.com/UnseenGit/ContextHub/main/Modules/ConfigModule.lua",
+        "Type": "web/lua"
+    },
+    "ServerList": {
+        "Source": "https://raw.githubusercontent.com/UnseenGit/ContextHub/main/Modules/ServerList.lua",
+        "Type": "web/lua"
+    },
+    "ContextMenus": {
+        "Source": "https://raw.githubusercontent.com/UnseenGit/ContextHub/main/Modules/ContextMenus.lua",
+        "Type": "web/lua"
+    },
+    "ObjectSerializer": {
+        "Source": "https://raw.githubusercontent.com/UnseenGit/ContextHub/main/Modules/ObjectSerializer.lua",
+        "Type": "web/lua"
+    },
+    "UtilFunctions": {
+        "Source": "https://raw.githubusercontent.com/UnseenGit/ContextHub/main/Modules/UtilFunctions.lua",
+        "Type": "web/lua"
+    },
+    "RobloxClasses": {
+        "Source": "https://github.com/UnseenGit/ContextHub/raw/main/Modules/RobloxClasses.json",
+        "Type": "web/json"
+    },
+    "ClassImages": {
+        "Source": "https://github.com/UnseenGit/ContextHub/raw/main/Modules/ClassImages.json",
+        "Type": "web/json"
+    },
+    "DataImages": {
+        "Source": "https://github.com/UnseenGit/ContextHub/raw/main/Modules/DataImages.json",
+        "Type": "web/json"
+    },
+    "Events": {
+        "Source": "https://github.com/UnseenGit/ContextHub/raw/main/Modules/Events.json",
+        "Type": "web/json"
+    },
+    "LockedProperties": {
+        "Source": "https://github.com/UnseenGit/ContextHub/raw/main/Modules/LockedProperties.json",
+        "Type": "web/json"
+    },
+    "Methods": {
+        "Source": "https://github.com/UnseenGit/ContextHub/raw/main/Modules/Methods.json",
+        "Type": "web/json"
+    },
+    "Properties": {
+        "Source": "https://github.com/UnseenGit/ContextHub/raw/main/Modules/Properties.json",
+        "Type": "web/json"
+    }
+}

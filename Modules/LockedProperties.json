@@ -1,0 +1,981 @@
+{
+    "Vector3Value": [],
+    "BevelMesh": [],
+    "ImporterGroupSettings": [],
+    "PluginGuiService": [],
+    "CoreScriptBuilder": [],
+    "NetworkSettings": {
+        "FreeMemoryMBytes": true
+    },
+    "StarterGui": [],
+    "Accoutrement": [],
+    "SnippetService": [],
+    "Vector3Curve": [],
+    "PluginGui": [],
+    "GuiMain": [],
+    "AnimationFromVideoCreatorService": [],
+    "TextChatConfigurations": [],
+    "HumanoidController": [],
+    "MeshContentProvider": [],
+    "Handles": [],
+    "ReflectionMetadataClasses": [],
+    "ValueBase": [],
+    "Hole": [],
+    "CSGDictionaryService": [],
+    "UIScale": [],
+    "CFrameValue": [],
+    "ImageLabel": {
+        "IsLoaded": true
+    },
+    "StarterPlayer": [],
+    "DebuggerConnectionManager": [],
+    "PluginManagerInterface": [],
+    "UIListLayout": [],
+    "SessionService": [],
+    "ShorelineUpgraderService": [],
+    "CoreGui": {
+        "Version": true
+    },
+    "ReflectionMetadataEvents": [],
+    "BindableEvent": [],
+    "SelectionPartLasso": [],
+    "DataModel": {
+        "PrivateServerId": true,
+        "PlaceId": true,
+        "Genre": true,
+        "PlaceVersion": true,
+        "Workspace": true,
+        "GameId": true,
+        "JobId": true,
+        "PrivateServerOwnerId": true,
+        "CreatorId": true,
+        "CreatorType": true
+    },
+    "TouchInputService": [],
+    "PhysicsSettings": [],
+    "PlaneConstraint": [],
+    "OrderedDataStore": [],
+    "SocialService": [],
+    "RenderingTest": [],
+    "PVAdornment": [],
+    "TemporaryCageMeshProvider": [],
+    "HumanoidDescription": [],
+    "DynamicTextureLayerAlpha": [],
+    "MessageBusService": [],
+    "ServerScriptService": [],
+    "BillboardGui": {
+        "CurrentDistance": true
+    },
+    "Feature": [],
+    "PermissionsService": [],
+    "MarketplaceService": [],
+    "Team": [],
+    "AppStorageService": [],
+    "FlangeSoundEffect": [],
+    "ControllerManager": {
+        "ActiveController": true
+    },
+    "GuiButton": [],
+    "CloudLocalizationTable": [],
+    "MemoryStoreSortedMap": [],
+    "NetworkPeer": [],
+    "AdvancedDragger": [],
+    "Teams": [],
+    "PointsService": [],
+    "GuiBase": [],
+    "BodyGyro": [],
+    "WrapLayer": [],
+    "Path": {
+        "Status": true
+    },
+    "GuiLabel": [],
+    "ReflectionMetadataFunctions": [],
+    "WeldConstraint": {
+        "Active": true
+    },
+    "Folder": [],
+    "TriangleMeshPart": {
+        "MeshSize": true
+    },
+    "LuaSettings": [],
+    "Animator": [],
+    "PartOperationAsset": [],
+    "Explosion": [],
+    "AssetImportSession": [],
+    "SkateboardController": {
+        "Throttle": true,
+        "Steer": true
+    },
+    "Beam": [],
+    "Constraint": {
+        "Active": true
+    },
+    "BindableFunction": [],
+    "ReflectionMetadataCallbacks": [],
+    "ImageHandleAdornment": [],
+    "Lighting": [],
+    "RenderSettings": [],
+    "HSRDataContentProvider": [],
+    "DataModelSession": [],
+    "ObjectValue": [],
+    "AssetCounterService": [],
+    "VRService": {
+        "VREnabled": true
+    },
+    "TotalCountTimeIntervalItem": [],
+    "ReflectionMetadataEnum": [],
+    "LegacyStudioBridge": [],
+    "FaceInstance": [],
+    "Plane": [],
+    "MetaBreakpointManager": [],
+    "ColorCorrectionEffect": [],
+    "Atmosphere": [],
+    "CookiesService": [],
+    "RopeConstraint": {
+        "CurrentDistance": true
+    },
+    "SelectionBox": [],
+    "FaceControls": [],
+    "LocalDebuggerConnection": [],
+    "IncrementalPatchBuilder": [],
+    "MultipleDocumentInterfaceInstance": [],
+    "StarterGear": [],
+    "Controller": [],
+    "AssetSoundEffect": [],
+    "PathfindingService": [],
+    "DeviceIdService": [],
+    "LayerCollector": [],
+    "Geometry": [],
+    "ManualWeld": [],
+    "PackageUIService": [],
+    "TremoloSoundEffect": [],
+    "PoseBase": [],
+    "Status": [],
+    "Pose": [],
+    "CrossDMScriptChangeListener": [],
+    "Hat": [],
+    "KeyboardService": [],
+    "WrapTarget": [],
+    "HingeConstraint": {
+        "CurrentAngle": true
+    },
+    "ReflectionMetadataEnumItem": [],
+    "ContentProvider": {
+        "RequestQueueSize": true,
+        "BaseUrl": true
+    },
+    "PathfindingLink": [],
+    "BadgeService": [],
+    "Humanoid": {
+        "FloorMaterial": true,
+        "MoveDirection": true,
+        "RootPart": true,
+        "SeatPart": true
+    },
+    "MemStorageConnection": [],
+    "CylinderHandleAdornment": [],
+    "RunningAverageItemDouble": [],
+    "BloomEffect": [],
+    "Attachment": [],
+    "MetaBreakpoint": [],
+    "BodyMover": [],
+    "AssetService": [],
+    "LocalStorageService": [],
+    "PitchShiftSoundEffect": [],
+    "ImageButton": {
+        "IsLoaded": true
+    },
+    "GuiBase2d": {
+        "AbsoluteRotation": true,
+        "AbsolutePosition": true,
+        "AbsoluteSize": true
+    },
+    "NumberValue": [],
+    "CylindricalConstraint": {
+        "CurrentAngle": true,
+        "WorldRotationAxis": true
+    },
+    "WireframeHandleAdornment": [],
+    "PluginMenu": [],
+    "CollectionService": [],
+    "Configuration": [],
+    "Accessory": [],
+    "LineForce": [],
+    "KeyframeMarker": [],
+    "ReflectionMetadataMember": [],
+    "HopperBin": [],
+    "ExperienceAuthService": [],
+    "FlyweightService": [],
+    "MotorFeature": [],
+    "DataStoreSetOptions": [],
+    "ReflectionMetadataYieldFunctions": [],
+    "ReplicatedStorage": [],
+    "PostEffect": [],
+    "FriendPages": [],
+    "StarterPack": [],
+    "AirController": [],
+    "ImporterMeshSettings": {
+        "MeshNoHoleDetected": true,
+        "CageManifold": true,
+        "PolygonCount": true,
+        "NoOuterCageFarExtendedFromMesh": true,
+        "CageUVMatched": true,
+        "CageMeshNotIntersected": true,
+        "NoIrrelevantCageModified": true,
+        "CageNoOverlappingVertices": true,
+        "Dimensions": true
+    },
+    "DynamicRotate": [],
+    "ArcHandles": [],
+    "Players": {
+        "LocalPlayer": true,
+        "PreferredPlayers": true,
+        "MaxPlayers": true
+    },
+    "DataStore": [],
+    "BaseScript": [],
+    "ClusterPacketCache": [],
+    "VehicleController": [],
+    "AssetImportService": [],
+    "RunningAverageTimeIntervalItem": [],
+    "PlayerEmulatorService": [],
+    "BasePart": {
+        "ResizeableFaces": true,
+        "ExtentsSize": true,
+        "CenterOfMass": true,
+        "ReceiveAge": true,
+        "Mass": true,
+        "AssemblyRootPart": true,
+        "ResizeIncrement": true,
+        "ExtentsCFrame": true,
+        "CurrentPhysicalProperties": true,
+        "AssemblyCenterOfMass": true,
+        "AssemblyMass": true
+    },
+    "ToastNotificationService": [],
+    "DataStoreKeyInfo": {
+        "CreatedTime": true,
+        "UpdatedTime": true,
+        "Version": true
+    },
+    "PartAdornment": [],
+    "TextButton": {
+        "LocalizedText": true,
+        "TextBounds": true,
+        "TextFits": true,
+        "ContentText": true
+    },
+    "PluginToolbar": [],
+    "ViewportFrame": [],
+    "ScriptContext": [],
+    "GenericSettings": [],
+    "StarterCharacterScripts": [],
+    "MaterialService": [],
+    "Dialog": [],
+    "ThirdPartyUserService": [],
+    "BrowserService": [],
+    "SurfaceGuiBase": [],
+    "ThreadState": [],
+    "Dragger": [],
+    "ScriptCloneWatcher": [],
+    "HeightmapImporterService": [],
+    "CommandInstance": {
+        "DefaultShortcut": true,
+        "Permission": true,
+        "Name": true,
+        "AllowGUIAccessPoints": true
+    },
+    "Clouds": [],
+    "ManualGlue": [],
+    "Seat": {
+        "Occupant": true
+    },
+    "ImporterMaterialSettings": {
+        "IsPbr": true
+    },
+    "AnimationRigData": [],
+    "VoiceChatInternal": [],
+    "Debris": [],
+    "AvatarImportService": [],
+    "DebuggerUIService": [],
+    "LodDataService": [],
+    "ParticleEmitter": [],
+    "Flag": [],
+    "UserSettings": [],
+    "MessagingService": [],
+    "Backpack": [],
+    "Actor": [],
+    "NetworkMarker": [],
+    "LuaWebService": [],
+    "Sky": [],
+    "ClimbController": [],
+    "DataStoreKey": {
+        "KeyName": true
+    },
+    "Translator": {
+        "LocaleId": true
+    },
+    "UILayout": [],
+    "GroupService": [],
+    "Chat": [],
+    "Workspace": {
+        "Terrain": true
+    },
+    "SelectionSphere": [],
+    "TrussPart": [],
+    "DataStoreVersionPages": [],
+    "AssetDeliveryProxy": [],
+    "RemoteDebuggerServer": [],
+    "PrismaticConstraint": [],
+    "ScriptChangeService": [],
+    "TouchTransmitter": [],
+    "InventoryPages": [],
+    "InstanceAdornment": [],
+    "Fire": [],
+    "RotationCurve": {
+        "Length": true
+    },
+    "ProximityPromptService": [],
+    "CoreScript": [],
+    "CylinderMesh": [],
+    "Weld": [],
+    "QWidgetPluginGui": [],
+    "BoolValue": [],
+    "Pages": {
+        "IsFinished": true
+    },
+    "ChangeHistoryService": [],
+    "ClickDetector": [],
+    "Instance": {
+        "ClassName": true
+    },
+    "Hopper": [],
+    "BackpackItem": [],
+    "SurfaceLight": [],
+    "Rotate": [],
+    "Keyframe": [],
+    "ShirtGraphic": [],
+    "LocalizationTable": [],
+    "PublishService": [],
+    "PluginMouse": [],
+    "BrickColorValue": [],
+    "AdService": [],
+    "WorldModel": [],
+    "PluginDebugService": [],
+    "CharacterAppearance": [],
+    "SelectionLasso": [],
+    "Stats": {
+        "PrimitivesCount": true,
+        "ContactsCount": true,
+        "InstanceCount": true,
+        "DataReceiveKbps": true,
+        "PhysicsReceiveKbps": true,
+        "DataSendKbps": true,
+        "HeartbeatTimeMs": true,
+        "PhysicsStepTimeMs": true,
+        "PhysicsSendKbps": true,
+        "MovingPrimitivesCount": true
+    },
+    "MessageBusConnection": [],
+    "Smoke": [],
+    "KeyframeSequenceProvider": [],
+    "TextBoxService": [],
+    "InputObject": [],
+    "ImporterAnimationSettings": [],
+    "NotificationService": {
+        "IsLuaGameDetailsEnabled": true
+    },
+    "Torque": [],
+    "BulkImportService": [],
+    "UniversalConstraint": [],
+    "PointLight": [],
+    "TweenBase": {
+        "PlaybackState": true
+    },
+    "DoubleConstrainedValue": [],
+    "RocketPropulsion": [],
+    "CoreScriptSyncService": [],
+    "CanvasGroup": [],
+    "ReplicatedFirst": [],
+    "PluginToolbarButton": [],
+    "NegateOperation": [],
+    "CommandService": [],
+    "ChorusSoundEffect": [],
+    "TerrainRegion": {
+        "SizeInCells": true
+    },
+    "Texture": [],
+    "Breakpoint": [],
+    "ScriptBuilder": [],
+    "Script": [],
+    "BubbleChatConfiguration": [],
+    "DataStoreInfo": {
+        "CreatedTime": true,
+        "UpdatedTime": true,
+        "DataStoreName": true
+    },
+    "ReflectionMetadataProperties": [],
+    "TextBox": {
+        "ContentText": true,
+        "TextBounds": true,
+        "TextFits": true
+    },
+    "TrackerStreamAnimation": [],
+    "DebuggerLuaResponse": [],
+    "FunctionalTest": [],
+    "DataModelPatchService": [],
+    "MouseService": [],
+    "LodDataEntity": [],
+    "UITextSizeConstraint": [],
+    "HttpRequest": [],
+    "DataStoreKeyPages": {
+        "Cursor": true
+    },
+    "NoCollisionConstraint": [],
+    "UIAspectRatioConstraint": [],
+    "RodConstraint": {
+        "CurrentDistance": true
+    },
+    "FileMesh": [],
+    "Shirt": [],
+    "SlidingBallConstraint": {
+        "CurrentPosition": true,
+        "Attachment": true
+    },
+    "VirtualInputManager": [],
+    "GlobalDataStore": [],
+    "ImporterFacsSettings": [],
+    "SolidModelContentProvider": [],
+    "SkateboardPlatform": {
+        "Controller": true,
+        "ControllingHumanoid": true
+    },
+    "FacialAnimationRecordingService": [],
+    "DataModelMesh": [],
+    "UGCValidationService": [],
+    "StudioScriptDebugEventListener": [],
+    "BaseWrap": {
+        "ImportOriginWorld": true,
+        "CageOriginWorld": true
+    },
+    "GetTextBoundsParams": [],
+    "Mouse": {
+        "Origin": true,
+        "ViewSizeX": true,
+        "X": true,
+        "Y": true,
+        "Hit": true,
+        "Target": true,
+        "ViewSizeY": true,
+        "TargetSurface": true,
+        "UnitRay": true
+    },
+    "NonReplicatedCSGDictionaryService": [],
+    "Decal": [],
+    "MemoryStoreQueue": [],
+    "CharacterMesh": [],
+    "GuidRegistryService": [],
+    "ControllerBase": [],
+    "GameSettings": [],
+    "AdPortal": {
+        "PortalStatus": true,
+        "PortalInvalidReason": true
+    },
+    "MetaBreakpointContext": [],
+    "HandlesBase": [],
+    "PluginManager": [],
+    "AssetManagerService": [],
+    "PlayerScripts": [],
+    "FriendService": [],
+    "Speaker": {
+        "ChannelCount": true,
+        "PlaybackLoudness": true
+    },
+    "UISizeConstraint": [],
+    "PVInstance": [],
+    "ILegacyStudioBridge": [],
+    "SurfaceAppearance": [],
+    "SpawnerService": [],
+    "DebugSettings": {
+        "RobloxVersion": true,
+        "DataModel": true,
+        "PlayerCount": true,
+        "JobCount": true,
+        "InstanceCount": true
+    },
+    "ServerStorage": [],
+    "IntValue": [],
+    "FloorWire": [],
+    "ScriptEditorService": [],
+    "LuauScriptAnalyzerService": [],
+    "LanguageService": [],
+    "CornerWedgePart": [],
+    "ChatWindowConfiguration": {
+        "AbsoluteSize": true,
+        "AbsolutePosition": true
+    },
+    "UIGridLayout": {
+        "AbsoluteCellSize": true,
+        "AbsoluteCellCount": true
+    },
+    "GlobalSettings": [],
+    "TestService": {
+        "WarnCount": true,
+        "ErrorCount": true,
+        "TestCount": true
+    },
+    "SoundGroup": [],
+    "GuiObject": [],
+    "SunRaysEffect": [],
+    "CorePackages": [],
+    "DraftsService": [],
+    "RunningAverageItemInt": [],
+    "PlayerMouse": [],
+    "AnalyticsService": [],
+    "PluginAction": {
+        "StatusTip": true,
+        "Text": true,
+        "ActionId": true,
+        "AllowBinding": true
+    },
+    "AlignPosition": [],
+    "InsertService": [],
+    "Message": [],
+    "Player": {
+        "LocaleId": true,
+        "MembershipType": true,
+        "FollowUserId": true,
+        "AccountAge": true
+    },
+    "AnimationStreamTrack": {
+        "IsPlaying": true,
+        "WeightTarget": true,
+        "WeightCurrent": true,
+        "Animation": true
+    },
+    "ImporterJointSettings": [],
+    "File": {
+        "Size": true
+    },
+    "OutfitPages": [],
+    "ManualSurfaceJointInstance": [],
+    "Highlight": [],
+    "WorldRoot": [],
+    "WedgePart": [],
+    "MeshPart": {
+        "MeshSize": true
+    },
+    "AngularVelocity": [],
+    "DebuggerBreakpoint": {
+        "Line": true
+    },
+    "VoiceChatService": [],
+    "StandalonePluginScripts": [],
+    "VisibilityService": [],
+    "RotateP": [],
+    "VirtualUser": [],
+    "ScriptDocument": [],
+    "VisibilityCheckDispatcher": [],
+    "PluginManagementService": [],
+    "RobloxReplicatedStorage": [],
+    "VideoCaptureService": [],
+    "VersionControlService": [],
+    "Tool": [],
+    "ImporterRootSettings": {
+        "FileDimensions": true,
+        "PolygonCount": true
+    },
+    "VehicleSeat": {
+        "AreHingesDetected": true,
+        "Occupant": true
+    },
+    "ScriptService": [],
+    "VectorForce": [],
+    "UserStorageService": [],
+    "HapticService": [],
+    "UserService": [],
+    "TeleportAsyncResult": {
+        "ReservedServerAccessCode": true,
+        "PrivateServerId": true
+    },
+    "DialogChoice": [],
+    "PackageService": [],
+    "UserInputService": {
+        "AccelerometerEnabled": true,
+        "GamepadEnabled": true,
+        "GyroscopeEnabled": true,
+        "KeyboardEnabled": true,
+        "MouseEnabled": true,
+        "OnScreenKeyboardPosition": true,
+        "OnScreenKeyboardSize": true,
+        "OnScreenKeyboardVisible": true,
+        "TouchEnabled": true,
+        "VREnabled": true
+    },
+    "JointInstance": {
+        "Active": true
+    },
+    "CustomSoundEffect": [],
+    "UserGameSettings": [],
+    "TerrainDetail": [],
+    "UnvalidatedAssetService": [],
+    "ScreenshotHud": [],
+    "LocalScript": [],
+    "UIStroke": [],
+    "BallSocketConstraint": [],
+    "AvatarEditorService": [],
+    "DebuggerManager": {
+        "DebuggingEnabled": true
+    },
+    "TextChatMessageProperties": [],
+    "Skin": [],
+    "Pants": [],
+    "UIGridStyleLayout": {
+        "AbsoluteContentSize": true
+    },
+    "GuiBase3d": [],
+    "FacialAnimationStreamingService": [],
+    "ModuleScript": [],
+    "UIConstraint": [],
+    "UIComponent": [],
+    "Animation": [],
+    "IntConstrainedValue": [],
+    "HttpService": [],
+    "UIBase": [],
+    "TweenService": [],
+    "EulerRotationCurve": [],
+    "DynamicTextureAlpha": [],
+    "Studio": {
+        "LuaDebuggerEnabledAtStartup": true
+    },
+    "Model": [],
+    "TracerService": [],
+    "TorsionSpringConstraint": {
+        "CurrentAngle": true
+    },
+    "Snap": [],
+    "BodyAngularVelocity": [],
+    "VelocityMotor": [],
+    "TimerService": [],
+    "TextSource": {
+        "UserId": true
+    },
+    "FloatCurve": {
+        "Length": true
+    },
+    "Part": [],
+    "TextLabel": {
+        "LocalizedText": true,
+        "TextBounds": true,
+        "TextFits": true,
+        "ContentText": true
+    },
+    "TextFilterResult": [],
+    "RbxAnalyticsService": [],
+    "TextChatService": [],
+    "DebuggerWatch": [],
+    "PolicyService": [],
+    "TextChannel": [],
+    "Terrain": {
+        "MaxExtents": true
+    },
+    "TeleportOptions": [],
+    "TeleportService": [],
+    "Hint": [],
+    "TemporaryScriptService": [],
+    "TeamCreateService": [],
+    "TaskScheduler": {
+        "ThreadPoolSize": true,
+        "SchedulerDutyCycle": true,
+        "SchedulerRate": true
+    },
+    "StudioTheme": [],
+    "SurfaceSelection": [],
+    "DataStoreObjectVersionInfo": {
+        "CreatedTime": true,
+        "IsDeleted": true,
+        "Version": true
+    },
+    "DebuggablePluginWatcher": [],
+    "RayValue": [],
+    "GroundController": [],
+    "Camera": {
+        "NearPlaneZ": true,
+        "ViewportSize": true
+    },
+    "BodyForce": [],
+    "SurfaceGui": [],
+    "AdGui": [],
+    "UIPageLayout": {
+        "CurrentPage": true
+    },
+    "MarkerCurve": {
+        "Length": true
+    },
+    "ReflectionMetadataClass": [],
+    "Motor6D": {
+        "ParentName": true,
+        "ChildName": true
+    },
+    "SwimController": [],
+    "UIPadding": [],
+    "StudioService": {
+        "ShowConstraintDetails": true,
+        "DrawConstraintsOnTop": true,
+        "StudioLocaleId": true,
+        "GridSize": true,
+        "RotateIncrement": true,
+        "ActiveScript": true,
+        "DraggerSolveConstraints": true
+    },
+    "LSPFileSyncService": [],
+    "ScriptCloneWatcherHelper": [],
+    "NetworkReplicator": [],
+    "EventIngestService": [],
+    "StudioHighDpiService": [],
+    "DataStoreService": [],
+    "StackFrame": [],
+    "ClientReplicator": [],
+    "FlagStandService": [],
+    "StudioPublishService": [],
+    "Sound": {
+        "IsPaused": true,
+        "PlaybackLoudness": true,
+        "IsPlaying": true,
+        "IsLoaded": true,
+        "ChannelCount": true,
+        "TimeLength": true
+    },
+    "StudioDeviceEmulatorService": [],
+    "StudioData": [],
+    "RemoteEvent": [],
+    "Sparkles": [],
+    "TrackerLodController": [],
+    "StringValue": [],
+    "ReflectionMetadata": [],
+    "DataStoreIncrementOptions": [],
+    "BlurEffect": [],
+    "StatsItem": {
+        "DisplayName": true
+    },
+    "ScrollingFrame": {
+        "AbsoluteWindowSize": true,
+        "AbsoluteCanvasSize": true
+    },
+    "ScreenGui": [],
+    "DataStoreListingPages": {
+        "Cursor": true
+    },
+    "PathfindingModifier": [],
+    "HandleAdornment": [],
+    "RobloxPluginGuiService": [],
+    "StandardPages": [],
+    "Visit": [],
+    "SpotLight": [],
+    "ForceField": [],
+    "RtMessagingService": [],
+    "NumberPose": [],
+    "ControllerService": [],
+    "DebuggerVariable": [],
+    "KeyframeSequence": [],
+    "Bone": {
+        "TransformedWorldCFrame": true,
+        "TransformedCFrame": true
+    },
+    "BodyVelocity": [],
+    "CurveAnimation": [],
+    "SpecialMesh": [],
+    "CatalogPages": [],
+    "SpawnLocation": [],
+    "Color3Value": [],
+    "SoundService": [],
+    "PausedStateException": [],
+    "Platform": [],
+    "LineHandleAdornment": [],
+    "ScriptRegistrationService": [],
+    "DepthOfFieldEffect": [],
+    "ReflectionMetadataItem": [],
+    "SoundEffect": [],
+    "FacialAnimationStreamingServiceV2": [],
+    "LuaSourceContainer": [],
+    "PlayerGui": {
+        "CurrentScreenOrientation": true
+    },
+    "ChannelSelectorSoundEffect": [],
+    "AssetPatchSettings": [],
+    "IXPService": [],
+    "Frame": [],
+    "ConfigureServerService": [],
+    "MaterialVariant": [],
+    "GoogleAnalyticsConfiguration": [],
+    "BlockMesh": [],
+    "BodyThrust": [],
+    "Plugin": {
+        "GridSize": true,
+        "CollisionEnabled": true
+    },
+    "RigidConstraint": {
+        "Broken": true
+    },
+    "AlignOrientation": [],
+    "EchoSoundEffect": [],
+    "JointsService": [],
+    "HttpRbxApiService": [],
+    "SphereHandleAdornment": [],
+    "ServiceProvider": [],
+    "RotateV": [],
+    "PluginDragEvent": {
+        "Data": true,
+        "Sender": true,
+        "MimeType": true,
+        "Position": true
+    },
+    "SelectionPointLasso": [],
+    "NetworkServer": [],
+    "FlagStand": [],
+    "LoginService": [],
+    "StarterPlayerScripts": [],
+    "ScriptDebugger": {
+        "IsPaused": true,
+        "CurrentLine": true,
+        "IsDebugging": true,
+        "Script": true
+    },
+    "CustomEventReceiver": [],
+    "TextChatMessage": [],
+    "BasePlayerGui": [],
+    "ParabolaAdornment": [],
+    "Clothing": [],
+    "AnalysticsSettings": [],
+    "Trail": [],
+    "PausedStateBreakpoint": [],
+    "UnionOperation": [],
+    "DockWidgetPluginGui": {
+        "HostWidgetWasRestored": true
+    },
+    "AnimationClip": [],
+    "RuntimeScriptService": [],
+    "BodyColors": [],
+    "TextChatCommand": [],
+    "ExperienceInviteOptions": [],
+    "AnimationClipProvider": [],
+    "DebuggerConnection": [],
+    "MemoryStoreService": [],
+    "RunService": {
+        "ClientGitHash": true
+    },
+    "CustomEvent": [],
+    "VideoFrame": {
+        "IsLoaded": true,
+        "TimeLength": true,
+        "Resolution": true
+    },
+    "ReverbSoundEffect": [],
+    "Selection": {
+        "SelectionLineThickness": true,
+        "SelectionThickness": true
+    },
+    "RemoteFunction": [],
+    "AnimationConstraint": [],
+    "FormFactorPart": [],
+    "GamepadService": [],
+    "BinaryStringValue": [],
+    "Glue": [],
+    "CompressorSoundEffect": [],
+    "ReflectionMetadataEnums": [],
+    "VoiceSource": {
+        "UserId": true
+    },
+    "AnimationTrack": {
+        "WeightTarget": true,
+        "AnimationTrack": true,
+        "WeightCurrent": true,
+        "Animation": true,
+        "IsPlaying": true,
+        "Length": true,
+        "Speed": true
+    },
+    "LogService": [],
+    "DraggerService": {
+        "DraggerCoordinateSpace": true,
+        "AnimateHover": true,
+        "AlignDraggedObjects": true,
+        "GeometrySnapColor": true,
+        "ShowHover": true,
+        "AngleSnapEnabled": true,
+        "DraggerMovementMode": true,
+        "LinearSnapEnabled": true,
+        "LinearSnapIncrement": true,
+        "PivotSnapToGeometry": true,
+        "AngleSnapIncrement": true,
+        "HoverAnimateFrequency": true,
+        "CollisionsEnabled": true,
+        "JointsEnabled": true,
+        "HoverThickness": true
+    },
+    "IKControl": [],
+    "PluginPolicyService": [],
+    "AppUpdateService": [],
+    "ProximityPrompt": [],
+    "GuiService": {
+        "MenuIsOpen": true
+    },
+    "ProcessInstancePhysicsService": [],
+    "SpringConstraint": {
+        "CurrentLength": true
+    },
+    "PausedState": [],
+    "MemStorageService": [],
+    "HiddenSurfaceRemovalAsset": [],
+    "Tween": {
+        "Instance": true,
+        "TweenInfo": true
+    },
+    "ChatInputBarConfiguration": {
+        "AbsoluteSize": true,
+        "AbsolutePosition": true
+    },
+    "Light": [],
+    "StudioAssetService": [],
+    "Motor": [],
+    "EmotesPages": [],
+    "ServerReplicator": [],
+    "ConeHandleAdornment": [],
+    "GamePassService": [],
+    "EqualizerSoundEffect": [],
+    "PhysicsService": [],
+    "PartOperation": {
+        "TriangleCount": true
+    },
+    "DataStorePages": [],
+    "TextService": [],
+    "DistortionSoundEffect": [],
+    "DataStoreOptions": [],
+    "FaceAnimatorService": [],
+    "LocalizationService": {
+        "SystemLocaleId": true,
+        "RobloxLocaleId": true
+    },
+    "NetworkClient": [],
+    "LinearVelocity": [],
+    "UICorner": [],
+    "BodyPosition": [],
+    "CacheableContentProvider": [],
+    "CalloutService": [],
+    "UITableLayout": [],
+    "ImporterBaseSettings": {
+        "Id": true
+    },
+    "UIGradient": [],
+    "ContextActionService": [],
+    "BoxHandleAdornment": [],
+    "AnimationFromVideoCreatorStudioService": [],
+    "AnimationController": [],
+    "PackageLink": {
+        "PackageId": true,
+        "Creator": true,
+        "Status": true,
+        "PackageAssetName": true,
+        "PermissionLevel": true
+    }
+}

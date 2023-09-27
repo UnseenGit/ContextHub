@@ -1,0 +1,2955 @@
+{
+    "Vector3Value": [
+        "Value"
+    ],
+    "BevelMesh": [],
+    "ImporterGroupSettings": [
+        "Anchored",
+        "ImportAsModelAsset",
+        "InsertInWorkspace"
+    ],
+    "PluginGuiService": [],
+    "CoreScriptBuilder": [],
+    "NetworkSettings": [
+        "EmulatedTotalMemoryInMB",
+        "FreeMemoryMBytes",
+        "HttpProxyEnabled",
+        "HttpProxyURL",
+        "Humanoid",
+        "IncomingReplicationLag",
+        "Player",
+        "PrintJoinSizeBreakdown",
+        "PrintPhysicsErrors",
+        "PrintStreamInstanceQuota",
+        "RandomizeJoinInstanceOrder",
+        "RenderStreamedRegions",
+        "ShowActiveAnimationAsset",
+        "TrackDataTypes",
+        "TrackPhysicsDetails"
+    ],
+    "StarterGui": [
+        "CoreGui",
+        "PlayerGui",
+        "ProcessUserInput",
+        "ScreenOrientation",
+        "ShowDevelopmentGui",
+        "StarterGui",
+        "VirtualCursorMode"
+    ],
+    "Accoutrement": [
+        "AttachmentForward",
+        "AttachmentPoint",
+        "AttachmentPos",
+        "AttachmentRight",
+        "AttachmentUp"
+    ],
+    "SnippetService": [],
+    "Vector3Curve": [],
+    "PluginGui": [
+        "PluginGui",
+        "Title"
+    ],
+    "GuiMain": [],
+    "AnimationFromVideoCreatorService": [],
+    "TextChatConfigurations": [],
+    "HumanoidController": [],
+    "MeshContentProvider": [],
+    "Handles": [
+        "Faces",
+        "Style"
+    ],
+    "ReflectionMetadataClasses": [],
+    "ValueBase": [],
+    "Hole": [],
+    "CSGDictionaryService": [],
+    "UIScale": [
+        "Scale"
+    ],
+    "CFrameValue": [
+        "Value"
+    ],
+    "ImageLabel": [
+        "Image",
+        "ImageColor3",
+        "ImageRectOffset",
+        "ImageRectSize",
+        "ImageTransparency",
+        "IsLoaded",
+        "ResampleMode",
+        "ScaleType",
+        "SliceCenter",
+        "SliceScale",
+        "TileSize"
+    ],
+    "StarterPlayer": [
+        "AllowCustomAnimations",
+        "AutoJumpEnabled",
+        "CameraMaxZoomDistance",
+        "CameraMinZoomDistance",
+        "CameraMode",
+        "CharacterJumpHeight",
+        "CharacterJumpPower",
+        "CharacterMaxSlopeAngle",
+        "CharacterUseJumpPower",
+        "CharacterWalkSpeed",
+        "DevCameraOcclusionMode",
+        "DevComputerCameraMovementMode",
+        "DevComputerMovementMode",
+        "DevTouchCameraMovementMode",
+        "DevTouchMovementMode",
+        "EnableDynamicHeads",
+        "EnableMouseLockOption",
+        "HealthDisplayDistance",
+        "HumanoidStateMachineMode",
+        "LoadCharacterAppearance",
+        "NameDisplayDistance",
+        "UserEmotesEnabled"
+    ],
+    "DebuggerConnectionManager": [],
+    "PluginManagerInterface": [],
+    "UIListLayout": [
+        "Padding"
+    ],
+    "SessionService": [],
+    "ShorelineUpgraderService": [],
+    "CoreGui": [
+        "SelectionImageObject",
+        "Version"
+    ],
+    "ReflectionMetadataEvents": [],
+    "BindableEvent": [],
+    "SelectionPartLasso": [
+        "Part"
+    ],
+    "DataModel": [
+        "CreatorId",
+        "CreatorType",
+        "GameId",
+        "Genre",
+        "JobId",
+        "PlaceId",
+        "PlaceVersion",
+        "Player",
+        "PrivateServerId",
+        "PrivateServerOwnerId",
+        "UserId",
+        "Workspace"
+    ],
+    "TouchInputService": [],
+    "PhysicsSettings": [
+        "AllowSleep",
+        "AreAnchorsShown",
+        "AreAssembliesShown",
+        "AreAwakePartsHighlighted",
+        "AreBodyTypesShown",
+        "AreContactIslandsShown",
+        "AreContactPointsShown",
+        "AreJointCoordinatesShown",
+        "AreMechanismsShown",
+        "AreModelCoordsShown",
+        "AreOwnersShown",
+        "ArePartCoordsShown",
+        "AreRegionsShown",
+        "AreTerrainReplicationRegionsShown",
+        "AreTimestepsShown",
+        "AreUnalignedPartsShown",
+        "AreWorldCoordsShown",
+        "BasePart",
+        "DisableCSGv2",
+        "ForceCSGv2",
+        "IsInterpolationThrottleShown",
+        "IsReceiveAgeShown",
+        "IsTreeShown",
+        "JointInstance",
+        "MeshPart",
+        "Model",
+        "Part",
+        "PartOperation",
+        "PhysicsEnvironmentalThrottle",
+        "Player",
+        "SelectionBox",
+        "ShowDecompositionGeometry",
+        "ThrottleAdjustTime",
+        "UseCSGv2"
+    ],
+    "PlaneConstraint": [],
+    "OrderedDataStore": [],
+    "SocialService": [],
+    "RenderingTest": [
+        "CFrame",
+        "ComparisonDiffThreshold",
+        "ComparisonMethod",
+        "ComparisonPsnrThreshold",
+        "Description",
+        "FieldOfView",
+        "Orientation",
+        "Position",
+        "QualityLevel",
+        "ShouldSkip",
+        "Ticket"
+    ],
+    "PVAdornment": [
+        "Adornee",
+        "PVInstance"
+    ],
+    "TemporaryCageMeshProvider": [],
+    "HumanoidDescription": [
+        "Accessories",
+        "AccessoryBlob",
+        "BackAccessory",
+        "BodyTypeScale",
+        "ClimbAnimation",
+        "DepthScale",
+        "Face",
+        "FaceAccessory",
+        "FallAnimation",
+        "FrontAccessory",
+        "Graphic",
+        "GraphicTShirt",
+        "HairAccessory",
+        "HatAccessory",
+        "Head",
+        "HeadColor",
+        "HeadScale",
+        "HeightScale",
+        "Humanoid",
+        "IdleAnimation",
+        "JumpAnimation",
+        "LeftArm",
+        "LeftArmColor",
+        "LeftLeg",
+        "LeftLegColor",
+        "MoodAnimation",
+        "NeckAccessory",
+        "NumberValue",
+        "Pants",
+        "PantsTemplate",
+        "ProportionScale",
+        "RightArm",
+        "RightArmColor",
+        "RightLeg",
+        "RightLegColor",
+        "RunAnimation",
+        "Shirt",
+        "ShirtGraphic",
+        "ShirtTemplate",
+        "ShouldersAccessory",
+        "SwimAnimation",
+        "Torso",
+        "TorsoColor",
+        "WaistAccessory",
+        "WalkAnimation",
+        "WidthScale",
+        "applied",
+        "state"
+    ],
+    "DynamicTextureLayerAlpha": [
+        "ZIndex"
+    ],
+    "MessageBusService": [],
+    "ServerScriptService": [
+        "LoadStringEnabled"
+    ],
+    "BillboardGui": [
+        "Active",
+        "Adornee",
+        "AlwaysOnTop",
+        "BillboardGui",
+        "Brightness",
+        "Camera",
+        "ClipsDescendants",
+        "CurrentDistance",
+        "DistanceLowerLimit",
+        "DistanceStep",
+        "DistanceUpperLimit",
+        "ExtentsOffset",
+        "ExtentsOffsetWorldSpace",
+        "LightInfluence",
+        "MaxDistance",
+        "PlayerToHideFrom",
+        "Size",
+        "SizeOffset",
+        "StudsOffset",
+        "StudsOffsetWorldSpace"
+    ],
+    "Feature": [
+        "FaceId",
+        "InOut",
+        "LeftRight",
+        "TopBottom"
+    ],
+    "PermissionsService": [],
+    "MarketplaceService": [],
+    "Team": [
+        "AutoAssignable",
+        "Player",
+        "Team",
+        "TeamColor"
+    ],
+    "AppStorageService": [],
+    "FlangeSoundEffect": [
+        "Depth",
+        "Mix",
+        "Rate"
+    ],
+    "ControllerManager": [
+        "ActiveController",
+        "BaseMoveSpeed",
+        "BaseTurnSpeed",
+        "ControllerBase",
+        "FacingDirection",
+        "HipHeight",
+        "MovingDirection"
+    ],
+    "GuiButton": [
+        "AutoButtonColor",
+        "Modal",
+        "Selected",
+        "Style"
+    ],
+    "CloudLocalizationTable": [],
+    "MemoryStoreSortedMap": [],
+    "NetworkPeer": [],
+    "AdvancedDragger": [],
+    "Teams": [],
+    "PointsService": [],
+    "GuiBase": [],
+    "BodyGyro": [
+        "CFrame",
+        "D",
+        "MaxTorque",
+        "P"
+    ],
+    "WrapLayer": [
+        "AutoSkin",
+        "BindOffset",
+        "Color",
+        "DebugMode",
+        "Enabled",
+        "Order",
+        "Puffiness",
+        "ReferenceMeshId",
+        "ReferenceOrigin",
+        "ReferenceOriginWorld",
+        "ShrinkFactor",
+        "WrapLayer"
+    ],
+    "Path": [
+        "Path",
+        "Status"
+    ],
+    "GuiLabel": [],
+    "ReflectionMetadataFunctions": [],
+    "WeldConstraint": [
+        "Active",
+        "Enabled",
+        "Part0",
+        "Part1"
+    ],
+    "Folder": [],
+    "TriangleMeshPart": [
+        "CollisionFidelity",
+        "MeshSize"
+    ],
+    "LuaSettings": [],
+    "Animator": [
+        "PreferLodEnabled"
+    ],
+    "PartOperationAsset": [],
+    "Explosion": [
+        "BasePart",
+        "BlastPressure",
+        "BlastRadius",
+        "DestroyJointRadiusPercent",
+        "Explosion",
+        "ExplosionType",
+        "Position",
+        "Terrain",
+        "TimeScale",
+        "Visible"
+    ],
+    "AssetImportSession": [],
+    "SkateboardController": [
+        "Steer",
+        "Throttle"
+    ],
+    "Beam": [
+        "Attachment",
+        "Attachment0",
+        "Attachment1",
+        "Beam",
+        "Brightness",
+        "Color",
+        "CurveSize0",
+        "CurveSize1",
+        "Enabled",
+        "FaceCamera",
+        "LightEmission",
+        "LightInfluence",
+        "Segments",
+        "Texture",
+        "TextureLength",
+        "TextureMode",
+        "TextureSpeed",
+        "Transparency",
+        "Width0",
+        "Width1",
+        "ZOffset"
+    ],
+    "Constraint": [
+        "Active",
+        "Attachment",
+        "Attachment0",
+        "Attachment1",
+        "Color",
+        "Enabled",
+        "Visible"
+    ],
+    "BindableFunction": [],
+    "ReflectionMetadataCallbacks": [],
+    "ImageHandleAdornment": [
+        "Image",
+        "Size"
+    ],
+    "Lighting": [
+        "Ambient",
+        "Brightness",
+        "ClockTime",
+        "EnvironmentDiffuseScale",
+        "EnvironmentSpecularScale",
+        "ExposureCompensation",
+        "FogColor",
+        "FogEnd",
+        "FogStart",
+        "GeographicLatitude",
+        "GlobalShadows",
+        "Lighting",
+        "OutdoorAmbient",
+        "ShadowSoftness",
+        "Technology",
+        "TimeOfDay"
+    ],
+    "RenderSettings": [
+        "AutoFRMLevel",
+        "EagerBulkExecution",
+        "EditQualityLevel",
+        "EnableFRM",
+        "ExportMergeByMaterial",
+        "FrameRateManager",
+        "GraphicsMode",
+        "MeshCacheSize",
+        "MeshPartDetailLevel",
+        "PartOperation",
+        "QualityLevel",
+        "ReloadAssets",
+        "RenderCSGTrianglesDebug",
+        "ShowBoundingBoxes"
+    ],
+    "HSRDataContentProvider": [],
+    "DataModelSession": [],
+    "ObjectValue": [
+        "Value"
+    ],
+    "AssetCounterService": [],
+    "VRService": [
+        "GuiInputUserCFrame",
+        "VREnabled"
+    ],
+    "TotalCountTimeIntervalItem": [],
+    "ReflectionMetadataEnum": [],
+    "LegacyStudioBridge": [],
+    "FaceInstance": [
+        "Face"
+    ],
+    "Plane": [],
+    "MetaBreakpointManager": [],
+    "ColorCorrectionEffect": [
+        "Brightness",
+        "Contrast",
+        "Saturation",
+        "TintColor"
+    ],
+    "Atmosphere": [
+        "Atmosphere",
+        "Color",
+        "Decay",
+        "Density",
+        "Glare",
+        "Haze",
+        "Offset"
+    ],
+    "CookiesService": [],
+    "RopeConstraint": [
+        "Attachment",
+        "CurrentDistance",
+        "Length",
+        "Restitution",
+        "RopeConstraint",
+        "Thickness",
+        "WinchEnabled",
+        "WinchForce",
+        "WinchResponsiveness",
+        "WinchSpeed",
+        "WinchTarget"
+    ],
+    "SelectionBox": [
+        "LineThickness",
+        "SurfaceColor3",
+        "SurfaceTransparency"
+    ],
+    "FaceControls": [
+        "ChinRaiser",
+        "ChinRaiserUpperLip",
+        "Corrugator",
+        "EyesLookDown",
+        "EyesLookLeft",
+        "EyesLookRight",
+        "EyesLookUp",
+        "FlatPucker",
+        "Funneler",
+        "JawDrop",
+        "JawLeft",
+        "JawRight",
+        "LeftBrowLowerer",
+        "LeftCheekPuff",
+        "LeftCheekRaiser",
+        "LeftDimpler",
+        "LeftEyeClosed",
+        "LeftEyeUpperLidRaiser",
+        "LeftInnerBrowRaiser",
+        "LeftLipCornerDown",
+        "LeftLipCornerPuller",
+        "LeftLipStretcher",
+        "LeftLowerLipDepressor",
+        "LeftNoseWrinkler",
+        "LeftOuterBrowRaiser",
+        "LeftUpperLipRaiser",
+        "LipPresser",
+        "LipsTogether",
+        "LowerLipSuck",
+        "MouthLeft",
+        "MouthRight",
+        "Pucker",
+        "RightBrowLowerer",
+        "RightCheekPuff",
+        "RightCheekRaiser",
+        "RightDimpler",
+        "RightEyeClosed",
+        "RightEyeUpperLidRaiser",
+        "RightInnerBrowRaiser",
+        "RightLipCornerDown",
+        "RightLipCornerPuller",
+        "RightLipStretcher",
+        "RightLowerLipDepressor",
+        "RightNoseWrinkler",
+        "RightOuterBrowRaiser",
+        "RightUpperLipRaiser",
+        "TongueDown",
+        "TongueOut",
+        "TongueUp",
+        "UpperLipSuck"
+    ],
+    "LocalDebuggerConnection": [],
+    "IncrementalPatchBuilder": [
+        "AddPathsToBundle",
+        "HighCompression",
+        "ZstdCompression"
+    ],
+    "MultipleDocumentInterfaceInstance": [],
+    "StarterGear": [],
+    "Controller": [],
+    "AssetSoundEffect": [],
+    "PathfindingService": [],
+    "DeviceIdService": [],
+    "LayerCollector": [
+        "Enabled",
+        "Player",
+        "ResetOnSpawn",
+        "ZIndexBehavior"
+    ],
+    "Geometry": [],
+    "ManualWeld": [],
+    "PackageUIService": [],
+    "TremoloSoundEffect": [
+        "Depth",
+        "Duty",
+        "Frequency"
+    ],
+    "PoseBase": [
+        "EasingDirection",
+        "EasingStyle"
+    ],
+    "Status": [],
+    "Pose": [
+        "CFrame",
+        "Motor6D",
+        "Pose"
+    ],
+    "CrossDMScriptChangeListener": [],
+    "Hat": [],
+    "KeyboardService": [],
+    "WrapTarget": [
+        "Color",
+        "DebugMode",
+        "Stiffness"
+    ],
+    "HingeConstraint": [
+        "ActuatorType",
+        "AngularResponsiveness",
+        "AngularSpeed",
+        "AngularVelocity",
+        "Attachment",
+        "CurrentAngle",
+        "HingeConstraint",
+        "LimitsEnabled",
+        "LowerAngle",
+        "MotorMaxAcceleration",
+        "MotorMaxTorque",
+        "Radius",
+        "Restitution",
+        "ServoMaxTorque",
+        "TargetAngle",
+        "UpperAngle"
+    ],
+    "ReflectionMetadataEnumItem": [],
+    "ContentProvider": [
+        "BaseUrl",
+        "ContentProvider",
+        "RequestQueueSize"
+    ],
+    "PathfindingLink": [
+        "Attachment0",
+        "Attachment1",
+        "IsBidirectional",
+        "Label"
+    ],
+    "BadgeService": [],
+    "Humanoid": [
+        "AutoJumpEnabled",
+        "AutoRotate",
+        "AutomaticScalingEnabled",
+        "BreakJointsOnDeath",
+        "CameraOffset",
+        "DisplayDistanceType",
+        "DisplayName",
+        "EvaluateStateMachine",
+        "FloorMaterial",
+        "Health",
+        "HealthDisplayDistance",
+        "HealthDisplayType",
+        "HipHeight",
+        "Humanoid",
+        "Jump",
+        "JumpHeight",
+        "JumpPower",
+        "MaxHealth",
+        "MaxSlopeAngle",
+        "Motor6D",
+        "MoveDirection",
+        "NameDisplayDistance",
+        "NameOcclusion",
+        "PlatformStand",
+        "Player",
+        "RequiresNeck",
+        "RigType",
+        "RootPart",
+        "SeatPart",
+        "Sit",
+        "TargetPoint",
+        "Tool",
+        "UseJumpPower",
+        "WalkSpeed",
+        "WalkToPart",
+        "WalkToPoint"
+    ],
+    "MemStorageConnection": [],
+    "CylinderHandleAdornment": [
+        "Angle",
+        "Height",
+        "InnerRadius",
+        "Radius"
+    ],
+    "RunningAverageItemDouble": [],
+    "BloomEffect": [
+        "Intensity",
+        "Size",
+        "Threshold"
+    ],
+    "Attachment": [
+        "Axis",
+        "CFrame",
+        "Orientation",
+        "Position",
+        "SecondaryAxis",
+        "Visible",
+        "WorldAxis",
+        "WorldCFrame",
+        "WorldOrientation",
+        "WorldPosition",
+        "WorldSecondaryAxis"
+    ],
+    "MetaBreakpoint": [],
+    "BodyMover": [],
+    "AssetService": [],
+    "LocalStorageService": [],
+    "PitchShiftSoundEffect": [
+        "Octave"
+    ],
+    "ImageButton": [
+        "HoverImage",
+        "Image",
+        "ImageButton",
+        "ImageColor3",
+        "ImageRectOffset",
+        "ImageRectSize",
+        "ImageTransparency",
+        "IsLoaded",
+        "PressedImage",
+        "ResampleMode",
+        "ScaleType",
+        "SliceCenter",
+        "SliceScale",
+        "TileSize"
+    ],
+    "GuiBase2d": [
+        "AbsolutePosition",
+        "AbsoluteRotation",
+        "AbsoluteSize",
+        "AutoLocalize",
+        "LocalizationTable",
+        "RootLocalizationTable",
+        "SelectionBehaviorDown",
+        "SelectionBehaviorLeft",
+        "SelectionBehaviorRight",
+        "SelectionBehaviorUp",
+        "SelectionGroup"
+    ],
+    "NumberValue": [
+        "Value"
+    ],
+    "CylindricalConstraint": [
+        "AngularActuatorType",
+        "AngularLimitsEnabled",
+        "AngularResponsiveness",
+        "AngularRestitution",
+        "AngularSpeed",
+        "AngularVelocity",
+        "CurrentAngle",
+        "InclinationAngle",
+        "LowerAngle",
+        "MotorMaxAngularAcceleration",
+        "MotorMaxTorque",
+        "RotationAxisVisible",
+        "ServoMaxTorque",
+        "TargetAngle",
+        "UpperAngle",
+        "WorldRotationAxis"
+    ],
+    "WireframeHandleAdornment": [],
+    "PluginMenu": [
+        "Icon",
+        "Title"
+    ],
+    "CollectionService": [],
+    "Configuration": [],
+    "Accessory": [
+        "AccessoryType"
+    ],
+    "LineForce": [
+        "ApplyAtCenterOfMass",
+        "InverseSquareLaw",
+        "Magnitude",
+        "MaxForce",
+        "ReactionForceEnabled"
+    ],
+    "KeyframeMarker": [
+        "KeyframeMarker",
+        "Value"
+    ],
+    "ReflectionMetadataMember": [],
+    "HopperBin": [
+        "Active",
+        "BinType"
+    ],
+    "ExperienceAuthService": [],
+    "FlyweightService": [],
+    "MotorFeature": [],
+    "DataStoreSetOptions": [],
+    "ReflectionMetadataYieldFunctions": [],
+    "ReplicatedStorage": [],
+    "PostEffect": [
+        "Enabled"
+    ],
+    "FriendPages": [],
+    "StarterPack": [],
+    "AirController": [
+        "CancelAirMomentum",
+        "MaintainAngularMomentum",
+        "MaintainLinearMomentum",
+        "MoveMaxForce",
+        "OrientationMaxTorque",
+        "OrientationSpeedFactor",
+        "VectorForce"
+    ],
+    "ImporterMeshSettings": [
+        "Anchored",
+        "CageManifold",
+        "CageMeshIntersectedPreview",
+        "CageMeshNotIntersected",
+        "CageNoOverlappingVertices",
+        "CageNonManifoldPreview",
+        "CageOverlappingVerticesPreview",
+        "CageUVMatched",
+        "CageUVMisMatchedPreview",
+        "Dimensions",
+        "DoubleSided",
+        "IgnoreVertexColors",
+        "IrrelevantCageModifiedPreview",
+        "MeshHoleDetectedPreview",
+        "MeshNoHoleDetected",
+        "NoIrrelevantCageModified",
+        "NoOuterCageFarExtendedFromMesh",
+        "OuterCageFarExtendedFromMeshPreview",
+        "PolygonCount",
+        "UseImportedPivot"
+    ],
+    "DynamicRotate": [
+        "BaseAngle"
+    ],
+    "ArcHandles": [
+        "Axes"
+    ],
+    "Players": [
+        "BubbleChat",
+        "CharacterAutoLoads",
+        "ClassicChat",
+        "LocalPlayer",
+        "LocalScript",
+        "MaxPlayers",
+        "MaxPlayersInternal",
+        "Player",
+        "PreferredPlayers",
+        "PreferredPlayersInternal",
+        "RespawnTime",
+        "UseStrafingAnimations"
+    ],
+    "DataStore": [],
+    "BaseScript": [
+        "BaseScript",
+        "Disabled",
+        "Enabled",
+        "LinkedSource",
+        "RunContext"
+    ],
+    "ClusterPacketCache": [],
+    "VehicleController": [],
+    "AssetImportService": [],
+    "RunningAverageTimeIntervalItem": [],
+    "PlayerEmulatorService": [],
+    "BasePart": [
+        "Anchored",
+        "AssemblyAngularVelocity",
+        "AssemblyCenterOfMass",
+        "AssemblyLinearVelocity",
+        "AssemblyMass",
+        "AssemblyRootPart",
+        "BackSurface",
+        "BasePart",
+        "BottomSurface",
+        "BrickColor",
+        "CFrame",
+        "CanCollide",
+        "CanQuery",
+        "CanTouch",
+        "CastShadow",
+        "CenterOfMass",
+        "CollisionGroup",
+        "CollisionGroupId",
+        "Color",
+        "CurrentPhysicalProperties",
+        "CustomPhysicalProperties",
+        "ExtentsCFrame",
+        "ExtentsSize",
+        "FrontSurface",
+        "LeftSurface",
+        "LocalTransparencyModifier",
+        "Locked",
+        "Mass",
+        "Massless",
+        "Material",
+        "MaterialVariant",
+        "Orientation",
+        "PivotOffset",
+        "Position",
+        "ReceiveAge",
+        "Reflectance",
+        "ResizeIncrement",
+        "ResizeableFaces",
+        "RightSurface",
+        "RootPriority",
+        "Rotation",
+        "Size",
+        "TopSurface",
+        "Transparency"
+    ],
+    "ToastNotificationService": [],
+    "DataStoreKeyInfo": [
+        "CreatedTime",
+        "UpdatedTime",
+        "Version"
+    ],
+    "PartAdornment": [
+        "Adornee"
+    ],
+    "TextButton": [
+        "ContentText",
+        "Font",
+        "FontFace",
+        "GUI",
+        "LineHeight",
+        "LocalizedText",
+        "MaxVisibleGraphemes",
+        "RichText",
+        "Text",
+        "TextBounds",
+        "TextButton",
+        "TextColor3",
+        "TextFits",
+        "TextScaled",
+        "TextSize",
+        "TextStrokeColor3",
+        "TextStrokeTransparency",
+        "TextTransparency",
+        "TextTruncate",
+        "TextWrapped",
+        "TextXAlignment",
+        "TextYAlignment"
+    ],
+    "PluginToolbar": [],
+    "ViewportFrame": [
+        "Ambient",
+        "Camera",
+        "CurrentCamera",
+        "ImageColor3",
+        "ImageTransparency",
+        "LightColor",
+        "LightDirection",
+        "ViewportFrame"
+    ],
+    "ScriptContext": [
+        "BaseScript",
+        "ScriptsDisabled"
+    ],
+    "GenericSettings": [],
+    "StarterCharacterScripts": [],
+    "MaterialService": [
+        "AsphaltName",
+        "BasaltName",
+        "BrickName",
+        "CobblestoneName",
+        "ConcreteName",
+        "CorrodedMetalName",
+        "CrackedLavaName",
+        "DiamondPlateName",
+        "FabricName",
+        "FoilName",
+        "GlacierName",
+        "GraniteName",
+        "GrassName",
+        "GroundName",
+        "IceName",
+        "LeafyGrassName",
+        "LimestoneName",
+        "MarbleName",
+        "MaterialVariant",
+        "MetalName",
+        "MudName",
+        "PavementName",
+        "PebbleName",
+        "PlasticName",
+        "RockName",
+        "SaltName",
+        "SandName",
+        "SandstoneName",
+        "SlateName",
+        "SmoothPlasticName",
+        "SnowName",
+        "Use2022Materials",
+        "WoodName",
+        "WoodPlanksName"
+    ],
+    "Dialog": [
+        "BehaviorType",
+        "ConversationDistance",
+        "GoodbyeChoiceActive",
+        "GoodbyeDialog",
+        "InUse",
+        "InitialPrompt",
+        "Purpose",
+        "Tone",
+        "TriggerDistance",
+        "TriggerOffset"
+    ],
+    "ThirdPartyUserService": [],
+    "BrowserService": [],
+    "SurfaceGuiBase": [
+        "Active",
+        "Adornee",
+        "Face"
+    ],
+    "ThreadState": [],
+    "Dragger": [],
+    "ScriptCloneWatcher": [],
+    "HeightmapImporterService": [],
+    "CommandInstance": [
+        "AllowGUIAccessPoints",
+        "Checked",
+        "DefaultShortcut",
+        "DisplayName",
+        "Enabled",
+        "Icon",
+        "Name",
+        "Permission",
+        "StatusTip"
+    ],
+    "Clouds": [
+        "Clouds",
+        "Color",
+        "Cover",
+        "Density",
+        "Enabled"
+    ],
+    "ManualGlue": [],
+    "Seat": [
+        "Disabled",
+        "Occupant"
+    ],
+    "ImporterMaterialSettings": [
+        "DiffuseFilePath",
+        "IsPbr",
+        "MetalnessFilePath",
+        "NormalFilePath",
+        "RoughnessFilePath"
+    ],
+    "AnimationRigData": [],
+    "VoiceChatInternal": [],
+    "Debris": [],
+    "AvatarImportService": [],
+    "DebuggerUIService": [],
+    "LodDataService": [],
+    "ParticleEmitter": [
+        "Acceleration",
+        "Brightness",
+        "Color",
+        "Drag",
+        "EmissionDirection",
+        "Enabled",
+        "FlipbookFramerate",
+        "FlipbookIncompatible",
+        "FlipbookLayout",
+        "FlipbookMode",
+        "FlipbookStartRandom",
+        "Lifetime",
+        "LightEmission",
+        "LightInfluence",
+        "LockedToPart",
+        "Orientation",
+        "Rate",
+        "RotSpeed",
+        "Rotation",
+        "Shape",
+        "ShapeInOut",
+        "ShapePartial",
+        "ShapeStyle",
+        "Size",
+        "Speed",
+        "SpreadAngle",
+        "Squash",
+        "Texture",
+        "TimeScale",
+        "Transparency",
+        "VelocityInheritance",
+        "ZOffset"
+    ],
+    "Flag": [
+        "Team",
+        "TeamColor",
+        "Teams"
+    ],
+    "UserSettings": [],
+    "MessagingService": [],
+    "Backpack": [],
+    "Actor": [],
+    "NetworkMarker": [],
+    "LuaWebService": [],
+    "Sky": [
+        "CelestialBodiesShown",
+        "MoonAngularSize",
+        "MoonTextureId",
+        "SkyboxBk",
+        "SkyboxDn",
+        "SkyboxFt",
+        "SkyboxLf",
+        "SkyboxRt",
+        "SkyboxUp",
+        "StarCount",
+        "SunAngularSize",
+        "SunTextureId"
+    ],
+    "ClimbController": [
+        "AccelerationTime",
+        "MoveMaxForce",
+        "OrientationMaxTorque",
+        "OrientationSpeedFactor"
+    ],
+    "DataStoreKey": [
+        "KeyName"
+    ],
+    "Translator": [
+        "LocaleId"
+    ],
+    "UILayout": [],
+    "GroupService": [],
+    "Chat": [
+        "BubbleChatEnabled",
+        "LoadDefaultChat"
+    ],
+    "Workspace": [
+        "AllowThirdPartySales",
+        "AnimationWeightedBlendFix",
+        "BasePart",
+        "BaseParts",
+        "ClientAnimatorThrottling",
+        "CurrentCamera",
+        "DistributedGameTime",
+        "FallenPartsDestroyHeight",
+        "GlobalWind",
+        "Gravity",
+        "HumanoidOnlySetCollisionsOnStateChange",
+        "InterpolationThrottling",
+        "MeshPartHeadsAndAccessories",
+        "PhysicsSteppingMethod",
+        "RejectCharacterDeletions",
+        "ReplicateInstanceDestroySetting",
+        "Retargeting",
+        "SignalBehavior",
+        "StreamOutBehavior",
+        "StreamingEnabled",
+        "StreamingIntegrityMode",
+        "StreamingMinRadius",
+        "StreamingTargetRadius",
+        "Terrain",
+        "TouchesUseCollisionGroups",
+        "UnionsScaleNonuniformly"
+    ],
+    "SelectionSphere": [
+        "SurfaceColor3",
+        "SurfaceTransparency"
+    ],
+    "TrussPart": [
+        "Style"
+    ],
+    "DataStoreVersionPages": [],
+    "AssetDeliveryProxy": [
+        "Interface",
+        "Port",
+        "StartServer"
+    ],
+    "RemoteDebuggerServer": [],
+    "PrismaticConstraint": [],
+    "ScriptChangeService": [],
+    "TouchTransmitter": [],
+    "InventoryPages": [],
+    "InstanceAdornment": [
+        "Adornee",
+        "Instance"
+    ],
+    "Fire": [
+        "Color",
+        "Enabled",
+        "Heat",
+        "SecondaryColor",
+        "Size",
+        "TimeScale"
+    ],
+    "RotationCurve": [
+        "Length"
+    ],
+    "ProximityPromptService": [
+        "Enabled",
+        "MaxPromptsVisible",
+        "ProximityPrompts"
+    ],
+    "CoreScript": [],
+    "CylinderMesh": [],
+    "Weld": [],
+    "QWidgetPluginGui": [],
+    "BoolValue": [
+        "Value"
+    ],
+    "Pages": [
+        "IsFinished"
+    ],
+    "ChangeHistoryService": [],
+    "ClickDetector": [
+        "CursorIcon",
+        "MaxActivationDistance"
+    ],
+    "Instance": [
+        "Archivable",
+        "ClassName",
+        "CoreGui",
+        "Instance",
+        "Name",
+        "Parent",
+        "RobloxLocked"
+    ],
+    "Hopper": [],
+    "BackpackItem": [
+        "Player",
+        "TextureId"
+    ],
+    "SurfaceLight": [
+        "Angle",
+        "Face",
+        "Range"
+    ],
+    "Rotate": [],
+    "Keyframe": [
+        "Keyframe",
+        "Pose",
+        "Time"
+    ],
+    "ShirtGraphic": [
+        "Color3",
+        "Graphic",
+        "ShirtGraphic"
+    ],
+    "LocalizationTable": [
+        "SourceLocaleId"
+    ],
+    "PublishService": [],
+    "PluginMouse": [],
+    "BrickColorValue": [
+        "Value"
+    ],
+    "AdService": [],
+    "WorldModel": [],
+    "PluginDebugService": [],
+    "CharacterAppearance": [],
+    "SelectionLasso": [
+        "Humanoid"
+    ],
+    "Stats": [
+        "ContactsCount",
+        "DataReceiveKbps",
+        "DataSendKbps",
+        "HeartbeatTimeMs",
+        "Instance",
+        "InstanceCount",
+        "MovingPrimitivesCount",
+        "PhysicsReceiveKbps",
+        "PhysicsSendKbps",
+        "PhysicsStepTimeMs",
+        "PrimitivesCount"
+    ],
+    "MessageBusConnection": [],
+    "Smoke": [
+        "Color",
+        "Enabled",
+        "Opacity",
+        "RiseVelocity",
+        "Size",
+        "TimeScale"
+    ],
+    "KeyframeSequenceProvider": [],
+    "TextBoxService": [],
+    "InputObject": [
+        "Delta",
+        "KeyCode",
+        "Position",
+        "UserInputState",
+        "UserInputType"
+    ],
+    "ImporterAnimationSettings": [],
+    "NotificationService": [
+        "IsLuaGameDetailsEnabled",
+        "SelectedTheme"
+    ],
+    "Torque": [
+        "RelativeTo",
+        "Torque"
+    ],
+    "BulkImportService": [],
+    "UniversalConstraint": [
+        "LimitsEnabled",
+        "MaxAngle",
+        "Radius",
+        "Restitution"
+    ],
+    "PointLight": [
+        "Range"
+    ],
+    "TweenBase": [
+        "Play",
+        "PlaybackState",
+        "Tween"
+    ],
+    "DoubleConstrainedValue": [
+        "ConstrainedValue",
+        "MaxValue",
+        "MinValue",
+        "Value"
+    ],
+    "RocketPropulsion": [
+        "CartoonFactor",
+        "MaxSpeed",
+        "MaxThrust",
+        "MaxTorque",
+        "ReachedTarget",
+        "Target",
+        "TargetOffset",
+        "TargetRadius",
+        "ThrustD",
+        "ThrustP",
+        "TurnD",
+        "TurnP"
+    ],
+    "CoreScriptSyncService": [],
+    "CanvasGroup": [
+        "GroupColor3",
+        "GroupTransparency"
+    ],
+    "ReplicatedFirst": [],
+    "PluginToolbarButton": [
+        "ClickableWhenViewportHidden",
+        "Enabled",
+        "Icon"
+    ],
+    "NegateOperation": [],
+    "CommandService": [],
+    "ChorusSoundEffect": [
+        "Depth",
+        "Mix",
+        "Rate"
+    ],
+    "TerrainRegion": [
+        "SizeInCells"
+    ],
+    "Texture": [
+        "OffsetStudsU",
+        "OffsetStudsV",
+        "StudsPerTileU",
+        "StudsPerTileV",
+        "Texture"
+    ],
+    "Breakpoint": [],
+    "ScriptBuilder": [],
+    "Script": [
+        "Source"
+    ],
+    "BubbleChatConfiguration": [
+        "AdorneeName",
+        "Attachment",
+        "BackgroundColor3",
+        "BackgroundTransparency",
+        "BubbleDuration",
+        "BubblesSpacing",
+        "Enabled",
+        "Font",
+        "FontFace",
+        "LocalPlayerStudsOffset",
+        "MaxDistance",
+        "MinimizeDistance",
+        "TextColor3",
+        "TextSize",
+        "VerticalStudsOffset"
+    ],
+    "DataStoreInfo": [
+        "CreatedTime",
+        "DataStoreName",
+        "UpdatedTime"
+    ],
+    "ReflectionMetadataProperties": [],
+    "TextBox": [
+        "ClearTextOnFocus",
+        "ContentText",
+        "CursorPosition",
+        "Font",
+        "FontFace",
+        "GUI",
+        "LineHeight",
+        "MaxVisibleGraphemes",
+        "MultiLine",
+        "PlaceholderColor3",
+        "PlaceholderText",
+        "RichText",
+        "SelectionStart",
+        "ShowNativeInput",
+        "Text",
+        "TextBounds",
+        "TextBox",
+        "TextColor3",
+        "TextEditable",
+        "TextFits",
+        "TextScaled",
+        "TextSize",
+        "TextStrokeColor3",
+        "TextStrokeTransparency",
+        "TextTransparency",
+        "TextTruncate",
+        "TextWrapped",
+        "TextXAlignment",
+        "TextYAlignment"
+    ],
+    "TrackerStreamAnimation": [],
+    "DebuggerLuaResponse": [],
+    "FunctionalTest": [
+        "Description"
+    ],
+    "DataModelPatchService": [],
+    "MouseService": [],
+    "LodDataEntity": [
+        "EntityLodEnabled"
+    ],
+    "UITextSizeConstraint": [
+        "MaxTextSize",
+        "MinTextSize"
+    ],
+    "HttpRequest": [],
+    "DataStoreKeyPages": [
+        "Cursor"
+    ],
+    "NoCollisionConstraint": [
+        "Enabled",
+        "Part",
+        "Part0",
+        "Part1"
+    ],
+    "UIAspectRatioConstraint": [
+        "AspectRatio",
+        "AspectType",
+        "DominantAxis"
+    ],
+    "RodConstraint": [
+        "Attachment",
+        "Attachment0",
+        "Attachment1",
+        "CurrentDistance",
+        "Length",
+        "LimitAngle0",
+        "LimitAngle1",
+        "LimitsEnabled",
+        "Thickness"
+    ],
+    "FileMesh": [
+        "MeshId",
+        "TextureId"
+    ],
+    "Shirt": [
+        "Shirt",
+        "ShirtTemplate"
+    ],
+    "SlidingBallConstraint": [
+        "ActuatorType",
+        "Attachment",
+        "CurrentPosition",
+        "LimitsEnabled",
+        "LinearResponsiveness",
+        "LowerLimit",
+        "MotorMaxAcceleration",
+        "MotorMaxForce",
+        "Restitution",
+        "ServoMaxForce",
+        "Size",
+        "Speed",
+        "TargetPosition",
+        "UpperLimit",
+        "Velocity"
+    ],
+    "VirtualInputManager": [],
+    "GlobalDataStore": [],
+    "ImporterFacsSettings": [],
+    "SolidModelContentProvider": [],
+    "SkateboardPlatform": [
+        "Controller",
+        "ControllingHumanoid",
+        "Humanoid",
+        "Steer",
+        "StickyWheels",
+        "Throttle"
+    ],
+    "FacialAnimationRecordingService": [],
+    "DataModelMesh": [
+        "BasePart",
+        "Offset",
+        "Scale",
+        "VertexColor"
+    ],
+    "UGCValidationService": [],
+    "StudioScriptDebugEventListener": [],
+    "BaseWrap": [
+        "CageMeshId",
+        "CageOrigin",
+        "CageOriginWorld",
+        "HSRAssetId",
+        "ImportOrigin",
+        "ImportOriginWorld",
+        "MeshPart"
+    ],
+    "GetTextBoundsParams": [
+        "Font",
+        "Size",
+        "Text",
+        "Width"
+    ],
+    "Mouse": [
+        "BasePart",
+        "Camera",
+        "Hit",
+        "Icon",
+        "Mouse",
+        "Origin",
+        "Target",
+        "TargetFilter",
+        "TargetSurface",
+        "UnitRay",
+        "ViewSizeX",
+        "ViewSizeY",
+        "X",
+        "Y",
+        "mouse"
+    ],
+    "NonReplicatedCSGDictionaryService": [],
+    "Decal": [
+        "Color3",
+        "Decal",
+        "LocalTransparencyModifier",
+        "Texture",
+        "Transparency",
+        "ZIndex"
+    ],
+    "MemoryStoreQueue": [],
+    "CharacterMesh": [
+        "BaseTextureId",
+        "BodyPart",
+        "MeshId",
+        "OverlayTextureId"
+    ],
+    "GuidRegistryService": [],
+    "ControllerBase": [
+        "MoveSpeedFactor",
+        "RigidityEnabled"
+    ],
+    "GameSettings": [
+        "AdditionalCoreIncludeDirs",
+        "OverrideStarterScript",
+        "VideoCaptureEnabled",
+        "VideoRecording"
+    ],
+    "AdPortal": [
+        "PortalInvalidReason",
+        "PortalStatus",
+        "PortalType"
+    ],
+    "MetaBreakpointContext": [],
+    "HandlesBase": [],
+    "PluginManager": [],
+    "AssetManagerService": [],
+    "PlayerScripts": [],
+    "FriendService": [],
+    "Speaker": [
+        "ChannelCount",
+        "PlaybackLoudness",
+        "RollOffMaxDistance",
+        "RollOffMinDistance",
+        "RollOffMode",
+        "SoundGroup",
+        "Source",
+        "Volume"
+    ],
+    "UISizeConstraint": [
+        "MaxSize",
+        "MinSize"
+    ],
+    "PVInstance": [
+        "Origin"
+    ],
+    "ILegacyStudioBridge": [],
+    "SurfaceAppearance": [
+        "AlphaMode",
+        "ColorMap",
+        "MetalnessMap",
+        "NormalMap",
+        "RoughnessMap",
+        "SurfaceAppearance"
+    ],
+    "SpawnerService": [],
+    "DebugSettings": [
+        "DataModel",
+        "InstanceCount",
+        "IsScriptStackTracingEnabled",
+        "JobCount",
+        "PlayerCount",
+        "ReportSoundWarnings",
+        "RobloxVersion",
+        "TickCountPreciseOverride"
+    ],
+    "ServerStorage": [],
+    "IntValue": [
+        "Value"
+    ],
+    "FloorWire": [
+        "CycleOffset",
+        "From",
+        "StudsBetweenTextures",
+        "Texture",
+        "TextureSize",
+        "To",
+        "Velocity",
+        "WireRadius"
+    ],
+    "ScriptEditorService": [],
+    "LuauScriptAnalyzerService": [],
+    "LanguageService": [],
+    "CornerWedgePart": [],
+    "ChatWindowConfiguration": [
+        "AbsolutePosition",
+        "AbsoluteSize",
+        "BackgroundColor3",
+        "BackgroundTransparency",
+        "Enabled",
+        "FontFace",
+        "HeightScale",
+        "HorizontalAlignment",
+        "TextColor3",
+        "TextSize",
+        "TextStrokeColor3",
+        "TextStrokeTransparency",
+        "VerticalAlignment",
+        "WidthScale"
+    ],
+    "UIGridLayout": [
+        "AbsoluteCellCount",
+        "AbsoluteCellSize",
+        "CellPadding",
+        "CellSize",
+        "FillDirectionMaxCells",
+        "StartCorner"
+    ],
+    "GlobalSettings": [],
+    "TestService": [
+        "AutoRuns",
+        "Description",
+        "ErrorCount",
+        "ExecuteWithStudioRun",
+        "Is30FpsThrottleEnabled",
+        "IsPhysicsEnvironmentalThrottled",
+        "IsSleepAllowed",
+        "NumberOfPlayers",
+        "SimulateSecondsLag",
+        "TestCount",
+        "Timeout",
+        "WarnCount"
+    ],
+    "SoundGroup": [
+        "Sound",
+        "SoundGroup",
+        "Volume"
+    ],
+    "GuiObject": [
+        "Active",
+        "AnchorPoint",
+        "AutomaticSize",
+        "BackgroundColor3",
+        "BackgroundTransparency",
+        "BorderColor3",
+        "BorderMode",
+        "BorderSizePixel",
+        "ClipsDescendants",
+        "GUI",
+        "GUIs",
+        "GuiObject",
+        "LayoutOrder",
+        "NextSelectionDown",
+        "NextSelectionLeft",
+        "NextSelectionRight",
+        "NextSelectionUp",
+        "Position",
+        "Rotation",
+        "Selectable",
+        "SelectionImageObject",
+        "SelectionOrder",
+        "Size",
+        "SizeConstraint",
+        "Transparency",
+        "UIGridStyleLayout",
+        "Visible",
+        "ZIndex"
+    ],
+    "SunRaysEffect": [
+        "Intensity",
+        "Spread"
+    ],
+    "CorePackages": [],
+    "DraftsService": [],
+    "RunningAverageItemInt": [],
+    "PlayerMouse": [],
+    "AnalyticsService": [],
+    "PluginAction": [
+        "ActionId",
+        "AllowBinding",
+        "PluginAction",
+        "StatusTip",
+        "Text"
+    ],
+    "AlignPosition": [
+        "ApplyAtCenterOfMass",
+        "Attachment0",
+        "MaxForce",
+        "MaxVelocity",
+        "Mode",
+        "Position",
+        "ReactionForceEnabled",
+        "Responsiveness",
+        "RigidityEnabled"
+    ],
+    "InsertService": [
+        "AllowClientInsertModels"
+    ],
+    "Message": [
+        "Hint",
+        "Message",
+        "Text"
+    ],
+    "Player": [
+        "AccountAge",
+        "AutoJumpEnabled",
+        "CameraMaxZoomDistance",
+        "CameraMinZoomDistance",
+        "CameraMode",
+        "CanLoadCharacterAppearance",
+        "Character",
+        "CharacterAppearanceId",
+        "DevCameraOcclusionMode",
+        "DevComputerCameraMode",
+        "DevComputerMovementMode",
+        "DevEnableMouseLock",
+        "DevTouchCameraMode",
+        "DevTouchMovementMode",
+        "DisplayName",
+        "FollowUserId",
+        "GameplayPaused",
+        "HasVerifiedBadge",
+        "HealthDisplayDistance",
+        "Humanoid",
+        "LocaleId",
+        "MaximumSimulationRadius",
+        "MembershipType",
+        "Model",
+        "NameDisplayDistance",
+        "Neutral",
+        "ReplicationFocus",
+        "RespawnLocation",
+        "SimulationRadius",
+        "SpawnLocation",
+        "Team",
+        "TeamColor",
+        "UserId"
+    ],
+    "AnimationStreamTrack": [
+        "Animation",
+        "IsPlaying",
+        "Priority",
+        "WeightCurrent",
+        "WeightTarget"
+    ],
+    "ImporterJointSettings": [],
+    "File": [
+        "Size"
+    ],
+    "OutfitPages": [],
+    "ManualSurfaceJointInstance": [],
+    "Highlight": [
+        "Adornee",
+        "DepthMode",
+        "Enabled",
+        "FillColor",
+        "FillTransparency",
+        "Instance",
+        "OutlineColor",
+        "OutlineTransparency"
+    ],
+    "WorldRoot": [],
+    "WedgePart": [],
+    "MeshPart": [
+        "DoubleSided",
+        "HasJointOffset",
+        "HasSkinnedMesh",
+        "JointOffset",
+        "MeshId",
+        "MeshPart",
+        "MeshSize",
+        "RenderFidelity",
+        "TextureID"
+    ],
+    "AngularVelocity": [
+        "AngularVelocity",
+        "MaxTorque",
+        "ReactionTorqueEnabled",
+        "RelativeTo"
+    ],
+    "DebuggerBreakpoint": [
+        "Condition",
+        "ContinueExecution",
+        "IsEnabled",
+        "Line",
+        "LogExpression",
+        "isContextDependentBreakpoint"
+    ],
+    "VoiceChatService": [
+        "EnableDefaultVoice"
+    ],
+    "StandalonePluginScripts": [],
+    "VisibilityService": [],
+    "RotateP": [],
+    "VirtualUser": [],
+    "ScriptDocument": [],
+    "VisibilityCheckDispatcher": [],
+    "PluginManagementService": [],
+    "RobloxReplicatedStorage": [],
+    "VideoCaptureService": [],
+    "VersionControlService": [],
+    "Tool": [
+        "CanBeDropped",
+        "Enabled",
+        "Grip",
+        "GripForward",
+        "GripPos",
+        "GripRight",
+        "GripUp",
+        "ManualActivationOnly",
+        "RequiresHandle",
+        "Tool",
+        "ToolTip"
+    ],
+    "ImporterRootSettings": [
+        "AddModelToInventory",
+        "Anchored",
+        "FileDimensions",
+        "ImportAsModelAsset",
+        "InsertInWorkspace",
+        "InsertWithScenePosition",
+        "InvertNegativeFaces",
+        "MergeMeshes",
+        "PolygonCount",
+        "RigType",
+        "ScaleUnit",
+        "UseSceneOriginAsPivot",
+        "UsesCages",
+        "WorldForward",
+        "WorldUp"
+    ],
+    "VehicleSeat": [
+        "AreHingesDetected",
+        "Disabled",
+        "HeadsUpDisplay",
+        "MaxSpeed",
+        "Occupant",
+        "Steer",
+        "SteerFloat",
+        "Throttle",
+        "ThrottleFloat",
+        "Torque",
+        "TurnSpeed",
+        "VehicleSeat"
+    ],
+    "ScriptService": [],
+    "VectorForce": [
+        "ApplyAtCenterOfMass",
+        "Force",
+        "Part",
+        "RelativeTo"
+    ],
+    "UserStorageService": [],
+    "HapticService": [],
+    "UserService": [],
+    "TeleportAsyncResult": [
+        "PrivateServerId",
+        "ReservedServerAccessCode"
+    ],
+    "DialogChoice": [
+        "GoodbyeChoiceActive",
+        "GoodbyeDialog",
+        "ResponseDialog",
+        "UserDialog"
+    ],
+    "PackageService": [],
+    "UserInputService": [
+        "AccelerometerEnabled",
+        "GamepadEnabled",
+        "GyroscopeEnabled",
+        "KeyboardEnabled",
+        "Mouse",
+        "MouseBehavior",
+        "MouseDeltaSensitivity",
+        "MouseEnabled",
+        "MouseIconEnabled",
+        "OnScreenKeyboardPosition",
+        "OnScreenKeyboardSize",
+        "OnScreenKeyboardVisible",
+        "TouchEnabled",
+        "VREnabled"
+    ],
+    "JointInstance": [
+        "Active",
+        "BasePart",
+        "C0",
+        "C1",
+        "Enabled",
+        "Part0",
+        "Part1"
+    ],
+    "CustomSoundEffect": [],
+    "UserGameSettings": [
+        "AllTutorialsDisabled",
+        "CameraMode",
+        "ChatVisible",
+        "ComputerCameraMovementMode",
+        "ComputerMovementMode",
+        "ControlMode",
+        "Fullscreen",
+        "GamepadCameraSensitivity",
+        "GraphicsQualityLevel",
+        "HasEverUsedVR",
+        "MasterVolume",
+        "MouseSensitivity",
+        "OnboardingsCompleted",
+        "RCCProfilerRecordFrameRate",
+        "RCCProfilerRecordTimeFrame",
+        "RotationType",
+        "SavedQualityLevel",
+        "StartMaximized",
+        "StartScreenPosition",
+        "StartScreenSize",
+        "TouchCameraMovementMode",
+        "TouchMovementMode",
+        "UsedCoreGuiIsVisibleToggle",
+        "UsedCustomGuiIsVisibleToggle",
+        "UsedHideHudShortcut",
+        "VREnabled",
+        "VRRotationIntensity",
+        "VRSmoothRotationEnabled",
+        "VignetteEnabled"
+    ],
+    "TerrainDetail": [
+        "ColorMap",
+        "Face",
+        "MaterialPattern",
+        "MetalnessMap",
+        "NormalMap",
+        "RoughnessMap",
+        "StudsPerTile"
+    ],
+    "UnvalidatedAssetService": [],
+    "ScreenshotHud": [
+        "CameraButtonIcon",
+        "CameraButtonPosition",
+        "CloseButtonPosition",
+        "CloseWhenScreenshotTaken",
+        "ExperienceNameOverlayEnabled",
+        "OverlayFont",
+        "ScreenshotHud",
+        "UsernameOverlayEnabled",
+        "Visible"
+    ],
+    "LocalScript": [],
+    "UIStroke": [
+        "ApplyStrokeMode",
+        "BackgroundTransparency",
+        "Color",
+        "Enabled",
+        "LineJoinMode",
+        "TextTransparency",
+        "Thickness",
+        "Transparency"
+    ],
+    "BallSocketConstraint": [
+        "Attachments",
+        "BallSocketConstraint",
+        "LimitsEnabled",
+        "MaxFrictionTorque",
+        "Radius",
+        "Restitution",
+        "TwistLimitsEnabled",
+        "TwistLowerAngle",
+        "TwistUpperAngle",
+        "UpperAngle"
+    ],
+    "AvatarEditorService": [],
+    "DebuggerManager": [
+        "DebuggingEnabled"
+    ],
+    "TextChatMessageProperties": [
+        "PrefixText",
+        "Text"
+    ],
+    "Skin": [
+        "SkinColor"
+    ],
+    "Pants": [
+        "Pants",
+        "PantsTemplate"
+    ],
+    "UIGridStyleLayout": [
+        "AbsoluteContentSize",
+        "FillDirection",
+        "HorizontalAlignment",
+        "SortOrder",
+        "VerticalAlignment"
+    ],
+    "GuiBase3d": [
+        "Color3",
+        "Transparency",
+        "Visible"
+    ],
+    "FacialAnimationStreamingService": [],
+    "ModuleScript": [
+        "LinkedSource",
+        "Source"
+    ],
+    "UIConstraint": [],
+    "UIComponent": [],
+    "Animation": [
+        "Animation",
+        "AnimationId"
+    ],
+    "IntConstrainedValue": [
+        "ConstrainedValue",
+        "MaxValue",
+        "MinValue",
+        "Value"
+    ],
+    "HttpService": [
+        "HttpEnabled"
+    ],
+    "UIBase": [],
+    "TweenService": [],
+    "EulerRotationCurve": [
+        "RotationOrder"
+    ],
+    "DynamicTextureAlpha": [],
+    "Studio": [
+        "CommandBarLocalState",
+        "CoreGui",
+        "DefaultScriptFileDir",
+        "DeprecatedObjectsShown",
+        "DisplayLanguage",
+        "Font",
+        "IconOverrideDir",
+        "LocalAssetsFolder",
+        "LuaDebuggerEnabled",
+        "LuaDebuggerEnabledAtStartup",
+        "PathfindingService",
+        "PermissionLevelShown",
+        "PluginDebuggingEnabled",
+        "PluginGuiService",
+        "PluginsDir",
+        "Rulers",
+        "RuntimeUndoBehavior",
+        "ScriptTimeoutLength",
+        "ShowCorePackagesInExplorer",
+        "Theme",
+        "Workspace",
+        "theme"
+    ],
+    "Model": [
+        "LevelOfDetail",
+        "ModelStreamingMode",
+        "PrimaryPart",
+        "WorldPivot"
+    ],
+    "TracerService": [],
+    "TorsionSpringConstraint": [
+        "Coils",
+        "CurrentAngle",
+        "Damping",
+        "LimitsEnabled",
+        "MaxAngle",
+        "MaxTorque",
+        "Radius",
+        "Restitution",
+        "Stiffness"
+    ],
+    "Snap": [],
+    "BodyAngularVelocity": [
+        "AngularVelocity",
+        "MaxTorque",
+        "P"
+    ],
+    "VelocityMotor": [
+        "CurrentAngle",
+        "DesiredAngle",
+        "Hole",
+        "MaxVelocity"
+    ],
+    "TimerService": [],
+    "TextSource": [
+        "CanSend",
+        "TextChannel",
+        "TextSource",
+        "UserId"
+    ],
+    "FloatCurve": [
+        "Length"
+    ],
+    "Part": [
+        "Shape"
+    ],
+    "TextLabel": [
+        "ContentText",
+        "Font",
+        "FontFace",
+        "GUI",
+        "LineHeight",
+        "LocalizedText",
+        "MaxVisibleGraphemes",
+        "RichText",
+        "Text",
+        "TextBounds",
+        "TextColor3",
+        "TextFits",
+        "TextLabel",
+        "TextScaled",
+        "TextSize",
+        "TextStrokeColor3",
+        "TextStrokeTransparency",
+        "TextTransparency",
+        "TextTruncate",
+        "TextWrapped",
+        "TextXAlignment",
+        "TextYAlignment"
+    ],
+    "TextFilterResult": [],
+    "RbxAnalyticsService": [],
+    "TextChatService": [
+        "ChatVersion",
+        "CreateDefaultCommands",
+        "CreateDefaultTextChannels",
+        "TextChannel",
+        "TextChatCommand",
+        "TextChatService"
+    ],
+    "DebuggerWatch": [
+        "Expression"
+    ],
+    "PolicyService": [],
+    "TextChannel": [],
+    "Terrain": [
+        "Decoration",
+        "MaterialColors",
+        "MaxExtents",
+        "WaterColor",
+        "WaterReflectance",
+        "WaterTransparency",
+        "WaterWaveSize",
+        "WaterWaveSpeed"
+    ],
+    "TeleportOptions": [
+        "ReservedServerAccessCode",
+        "ServerInstanceId",
+        "ShouldReserveServer"
+    ],
+    "TeleportService": [],
+    "Hint": [],
+    "TemporaryScriptService": [],
+    "TeamCreateService": [],
+    "TaskScheduler": [
+        "SchedulerDutyCycle",
+        "SchedulerRate",
+        "ThreadPoolConfig",
+        "ThreadPoolSize"
+    ],
+    "StudioTheme": [],
+    "SurfaceSelection": [
+        "BasePart",
+        "TargetSurface"
+    ],
+    "DataStoreObjectVersionInfo": [
+        "CreatedTime",
+        "IsDeleted",
+        "Version"
+    ],
+    "DebuggablePluginWatcher": [],
+    "RayValue": [
+        "Value"
+    ],
+    "GroundController": [
+        "AccelerationLean",
+        "AccelerationTime",
+        "AlignSpeed",
+        "AlignTorque",
+        "DecelerationTime",
+        "Friction",
+        "FrictionWeight",
+        "GroundOffset",
+        "MaxSlopeAngle",
+        "StandForce",
+        "StandSpeed",
+        "TurningFactor"
+    ],
+    "Camera": [
+        "BasePart",
+        "CFrame",
+        "Camera",
+        "CameraSubject",
+        "CameraType",
+        "DiagonalFieldOfView",
+        "FieldOfView",
+        "FieldOfViewMode",
+        "Focus",
+        "HeadLocked",
+        "HeadScale",
+        "Humanoid",
+        "MaxAxisFieldOfView",
+        "NearPlaneZ",
+        "ViewportSize"
+    ],
+    "BodyForce": [
+        "Force"
+    ],
+    "SurfaceGui": [
+        "AlwaysOnTop",
+        "Brightness",
+        "CanvasSize",
+        "ClipsDescendants",
+        "LightInfluence",
+        "PixelsPerStud",
+        "SizingMode",
+        "ToolPunchThroughDistance",
+        "ZOffset"
+    ],
+    "AdGui": [
+        "AdShape"
+    ],
+    "UIPageLayout": [
+        "Animated",
+        "Circular",
+        "CurrentPage",
+        "EasingDirection",
+        "EasingStyle",
+        "GamepadInputEnabled",
+        "Padding",
+        "ScrollWheelInputEnabled",
+        "TouchInputEnabled",
+        "TweenTime"
+    ],
+    "MarkerCurve": [
+        "Length"
+    ],
+    "ReflectionMetadataClass": [
+        "ExplorerImageIndex",
+        "ExplorerOrder",
+        "Insertable",
+        "PreferredParent"
+    ],
+    "Motor6D": [
+        "ChildName",
+        "Motor6D",
+        "ParentName",
+        "Transform"
+    ],
+    "SwimController": [
+        "AccelerationTime",
+        "PitchMaxTorque",
+        "PitchSpeedFactor",
+        "RollMaxTorque",
+        "RollSpeedFactor"
+    ],
+    "UIPadding": [
+        "PaddingBottom",
+        "PaddingLeft",
+        "PaddingRight",
+        "PaddingTop"
+    ],
+    "StudioService": [
+        "ActiveScript",
+        "DraggerSolveConstraints",
+        "DrawConstraintsOnTop",
+        "GridSize",
+        "LuaSourceContainer",
+        "RotateIncrement",
+        "ShowConstraintDetails",
+        "StudioLocaleId",
+        "UseLocalSpace"
+    ],
+    "LSPFileSyncService": [],
+    "ScriptCloneWatcherHelper": [],
+    "NetworkReplicator": [],
+    "EventIngestService": [],
+    "StudioHighDpiService": [],
+    "DataStoreService": [
+        "AutomaticRetry"
+    ],
+    "StackFrame": [],
+    "ClientReplicator": [],
+    "FlagStandService": [],
+    "StudioPublishService": [],
+    "Sound": [
+        "Attachment",
+        "BasePart",
+        "ChannelCount",
+        "IsLoaded",
+        "IsPaused",
+        "IsPlaying",
+        "LoopRegion",
+        "Looped",
+        "Part",
+        "PlayOnRemove",
+        "PlaybackLoudness",
+        "PlaybackRegion",
+        "PlaybackRegionsEnabled",
+        "PlaybackSpeed",
+        "Playing",
+        "RollOffMaxDistance",
+        "RollOffMinDistance",
+        "RollOffMode",
+        "Sound",
+        "SoundGroup",
+        "SoundId",
+        "TimeLength",
+        "TimePosition",
+        "Volume"
+    ],
+    "StudioDeviceEmulatorService": [],
+    "StudioData": [],
+    "RemoteEvent": [],
+    "Sparkles": [
+        "Color",
+        "Enabled",
+        "SparkleColor",
+        "TimeScale"
+    ],
+    "TrackerLodController": [
+        "AudioMode",
+        "VideoExtrapolationMode",
+        "VideoLodMode",
+        "VideoMode"
+    ],
+    "StringValue": [
+        "Value"
+    ],
+    "ReflectionMetadata": [],
+    "DataStoreIncrementOptions": [],
+    "BlurEffect": [
+        "Size"
+    ],
+    "StatsItem": [
+        "DisplayName"
+    ],
+    "ScrollingFrame": [
+        "AbsoluteCanvasSize",
+        "AbsoluteWindowSize",
+        "AutomaticCanvasSize",
+        "BottomImage",
+        "CanvasPosition",
+        "CanvasSize",
+        "ElasticBehavior",
+        "HorizontalScrollBarInset",
+        "MidImage",
+        "ScrollBarImageColor3",
+        "ScrollBarImageTransparency",
+        "ScrollBarThickness",
+        "ScrollingDirection",
+        "ScrollingEnabled",
+        "TopImage",
+        "VerticalScrollBarInset",
+        "VerticalScrollBarPosition"
+    ],
+    "ScreenGui": [
+        "ClipToDeviceSafeArea",
+        "DisplayOrder",
+        "IgnoreGuiInset",
+        "SafeAreaCompatibility",
+        "ScreenInsets"
+    ],
+    "DataStoreListingPages": [
+        "Cursor"
+    ],
+    "PathfindingModifier": [
+        "Label",
+        "PassThrough"
+    ],
+    "HandleAdornment": [
+        "AdornCullingMode",
+        "AlwaysOnTop",
+        "CFrame",
+        "SizeRelativeOffset",
+        "ZIndex"
+    ],
+    "RobloxPluginGuiService": [],
+    "StandardPages": [],
+    "Visit": [],
+    "SpotLight": [
+        "Angle",
+        "Face",
+        "Range"
+    ],
+    "ForceField": [
+        "ForceField",
+        "Visible"
+    ],
+    "RtMessagingService": [],
+    "NumberPose": [
+        "NumberPose",
+        "Value"
+    ],
+    "ControllerService": [],
+    "DebuggerVariable": [],
+    "KeyframeSequence": [
+        "AuthoredHipHeight",
+        "Humanoid",
+        "KeyframeSequence"
+    ],
+    "Bone": [
+        "CFrame",
+        "Transform",
+        "TransformedCFrame",
+        "TransformedWorldCFrame"
+    ],
+    "BodyVelocity": [
+        "MaxForce",
+        "P",
+        "Velocity"
+    ],
+    "CurveAnimation": [],
+    "SpecialMesh": [
+        "BasePart",
+        "MeshType",
+        "SpecialMesh"
+    ],
+    "CatalogPages": [],
+    "SpawnLocation": [
+        "AllowTeamChangeOnTouch",
+        "Duration",
+        "Enabled",
+        "ForceField",
+        "Neutral",
+        "Player",
+        "SpawnLocation",
+        "Team",
+        "TeamColor"
+    ],
+    "Color3Value": [
+        "Value"
+    ],
+    "SoundService": [
+        "AmbientReverb",
+        "DistanceFactor",
+        "DopplerScale",
+        "RespectFilteringEnabled",
+        "RolloffScale",
+        "Sound",
+        "SoundService",
+        "VolumetricAudio"
+    ],
+    "PausedStateException": [],
+    "Platform": [],
+    "LineHandleAdornment": [
+        "Length",
+        "Thickness"
+    ],
+    "ScriptRegistrationService": [],
+    "DepthOfFieldEffect": [
+        "FarIntensity",
+        "FocusDistance",
+        "InFocusRadius",
+        "NearIntensity"
+    ],
+    "ReflectionMetadataItem": [
+        "Browsable",
+        "ClassCategory",
+        "ClientOnly",
+        "Constraint",
+        "Deprecated",
+        "EditingDisabled",
+        "EditorType",
+        "FFlag",
+        "IsBackend",
+        "LocalScript",
+        "PropertyOrder",
+        "Script",
+        "ScriptContext",
+        "ServerOnly",
+        "SliderScaling",
+        "UIMaximum",
+        "UIMinimum",
+        "UINumTicks"
+    ],
+    "SoundEffect": [
+        "Enabled",
+        "Priority"
+    ],
+    "FacialAnimationStreamingServiceV2": [],
+    "LuaSourceContainer": [
+        "CurrentEditor",
+        "Player"
+    ],
+    "PlayerGui": [
+        "CurrentScreenOrientation",
+        "ScreenOrientation",
+        "SelectionImageObject"
+    ],
+    "ChannelSelectorSoundEffect": [
+        "Channel"
+    ],
+    "AssetPatchSettings": [
+        "ContentId",
+        "OutputPath",
+        "PatchId"
+    ],
+    "IXPService": [],
+    "Frame": [
+        "Style"
+    ],
+    "ConfigureServerService": [],
+    "MaterialVariant": [
+        "BaseMaterial",
+        "ColorMap",
+        "CustomPhysicalProperties",
+        "MaterialPattern",
+        "MetalnessMap",
+        "NormalMap",
+        "RoughnessMap",
+        "StudsPerTile"
+    ],
+    "GoogleAnalyticsConfiguration": [],
+    "BlockMesh": [],
+    "BodyThrust": [
+        "Force",
+        "Location"
+    ],
+    "Plugin": [
+        "CollisionEnabled",
+        "GridSize"
+    ],
+    "RigidConstraint": [
+        "Broken",
+        "DestructionEnabled",
+        "DestructionForce",
+        "DestructionTorque"
+    ],
+    "AlignOrientation": [
+        "AlignOrientation",
+        "AlignType",
+        "Attachment0",
+        "CFrame",
+        "MaxAngularVelocity",
+        "MaxTorque",
+        "Mode",
+        "PrimaryAxis",
+        "PrimaryAxisOnly",
+        "ReactionTorqueEnabled",
+        "Responsiveness",
+        "RigidityEnabled",
+        "SecondaryAxis"
+    ],
+    "EchoSoundEffect": [
+        "Delay",
+        "DryLevel",
+        "Feedback",
+        "WetLevel"
+    ],
+    "JointsService": [],
+    "HttpRbxApiService": [],
+    "SphereHandleAdornment": [
+        "Radius"
+    ],
+    "ServiceProvider": [],
+    "RotateV": [],
+    "PluginDragEvent": [
+        "Data",
+        "MimeType",
+        "Position",
+        "Sender"
+    ],
+    "SelectionPointLasso": [
+        "Point"
+    ],
+    "NetworkServer": [],
+    "FlagStand": [
+        "FlagStand",
+        "TeamColor",
+        "Teams"
+    ],
+    "LoginService": [],
+    "StarterPlayerScripts": [],
+    "ScriptDebugger": [
+        "CurrentLine",
+        "IsDebugging",
+        "IsPaused",
+        "Script"
+    ],
+    "CustomEventReceiver": [
+        "CustomEvent",
+        "CustomEventReceiver",
+        "Source"
+    ],
+    "TextChatMessage": [
+        "MessageId",
+        "Metadata",
+        "PrefixText",
+        "Status",
+        "Text",
+        "TextChannel",
+        "TextChatMessage",
+        "TextSource",
+        "Timestamp"
+    ],
+    "BasePlayerGui": [],
+    "ParabolaAdornment": [],
+    "Clothing": [
+        "Clothing",
+        "Color3"
+    ],
+    "AnalysticsSettings": [],
+    "Trail": [
+        "Attachment0",
+        "Attachment1",
+        "Brightness",
+        "Color",
+        "Enabled",
+        "FaceCamera",
+        "Lifetime",
+        "LightEmission",
+        "LightInfluence",
+        "MaxLength",
+        "MinLength",
+        "Texture",
+        "TextureLength",
+        "TextureMode",
+        "Trail",
+        "Transparency",
+        "WidthScale"
+    ],
+    "PausedStateBreakpoint": [],
+    "UnionOperation": [],
+    "DockWidgetPluginGui": [
+        "HostWidgetWasRestored"
+    ],
+    "AnimationClip": [
+        "Loop",
+        "Priority"
+    ],
+    "RuntimeScriptService": [],
+    "BodyColors": [
+        "HeadColor",
+        "HeadColor3",
+        "LeftArmColor",
+        "LeftArmColor3",
+        "LeftLegColor",
+        "LeftLegColor3",
+        "RightArmColor",
+        "RightArmColor3",
+        "RightLegColor",
+        "RightLegColor3",
+        "TorsoColor",
+        "TorsoColor3"
+    ],
+    "TextChatCommand": [
+        "Enabled",
+        "PrimaryAlias",
+        "SecondaryAlias",
+        "TextChatCommand"
+    ],
+    "ExperienceInviteOptions": [
+        "InviteMessageId",
+        "InviteUser",
+        "LaunchData",
+        "PromptMessage"
+    ],
+    "AnimationClipProvider": [],
+    "DebuggerConnection": [],
+    "MemoryStoreService": [],
+    "RunService": [
+        "ClientGitHash"
+    ],
+    "CustomEvent": [],
+    "VideoFrame": [
+        "IsLoaded",
+        "Looped",
+        "Playing",
+        "Resolution",
+        "TimeLength",
+        "TimePosition",
+        "Video",
+        "VideoFrame",
+        "Volume"
+    ],
+    "ReverbSoundEffect": [
+        "DecayTime",
+        "Density",
+        "Diffusion",
+        "DryLevel",
+        "WetLevel"
+    ],
+    "Selection": [
+        "SelectionLineThickness",
+        "SelectionThickness"
+    ],
+    "RemoteFunction": [],
+    "AnimationConstraint": [
+        "MaxForce",
+        "MaxTorque",
+        "Transform"
+    ],
+    "FormFactorPart": [],
+    "GamepadService": [
+        "GamepadCursorEnabled"
+    ],
+    "BinaryStringValue": [],
+    "Glue": [
+        "F0",
+        "F1",
+        "F2",
+        "F3",
+        "Glue"
+    ],
+    "CompressorSoundEffect": [
+        "Attack",
+        "GainMakeup",
+        "Ratio",
+        "Release",
+        "SideChain",
+        "Sound",
+        "SoundGroup",
+        "Threshold"
+    ],
+    "ReflectionMetadataEnums": [],
+    "VoiceSource": [
+        "UserId"
+    ],
+    "AnimationTrack": [
+        "Animation",
+        "AnimationTrack",
+        "IsPlaying",
+        "Keyframe",
+        "Length",
+        "Looped",
+        "Pose",
+        "Priority",
+        "Speed",
+        "TimePosition",
+        "WeightCurrent",
+        "WeightTarget"
+    ],
+    "LogService": [],
+    "DraggerService": [
+        "AlignDraggedObjects",
+        "AngleSnapEnabled",
+        "AngleSnapIncrement",
+        "AnimateHover",
+        "CollisionsEnabled",
+        "DraggerCoordinateSpace",
+        "DraggerMovementMode",
+        "GeometrySnapColor",
+        "HoverAnimateFrequency",
+        "HoverThickness",
+        "JointsEnabled",
+        "LinearSnapEnabled",
+        "LinearSnapIncrement",
+        "PivotSnapToGeometry",
+        "ShowHover",
+        "ShowPivotIndicator"
+    ],
+    "IKControl": [
+        "Attachment",
+        "BasePart",
+        "Bone",
+        "ChainRoot",
+        "Enabled",
+        "EndEffector",
+        "EndEffectorOffset",
+        "Motor6D",
+        "Offset",
+        "Pole",
+        "Priority",
+        "Target",
+        "Type",
+        "Weight"
+    ],
+    "PluginPolicyService": [],
+    "AppUpdateService": [],
+    "ProximityPrompt": [
+        "ActionText",
+        "AutoLocalize",
+        "Camera",
+        "ClickablePrompt",
+        "Enabled",
+        "Exclusivity",
+        "GamepadKeyCode",
+        "HoldDuration",
+        "KeyboardKeyCode",
+        "LocalizationTable",
+        "MaxActivationDistance",
+        "ObjectText",
+        "ProximityPrompt",
+        "RequiresLineOfSight",
+        "RootLocalizationTable",
+        "Style",
+        "UIOffset"
+    ],
+    "GuiService": [
+        "AutoSelectGuiEnabled",
+        "CoreGui",
+        "CoreGuiNavigationEnabled",
+        "GuiNavigationEnabled",
+        "MenuIsOpen",
+        "SelectedObject",
+        "TouchControlsEnabled"
+    ],
+    "ProcessInstancePhysicsService": [],
+    "SpringConstraint": [
+        "Attachment",
+        "Coils",
+        "CurrentLength",
+        "Damping",
+        "FreeLength",
+        "LimitsEnabled",
+        "MaxForce",
+        "MaxLength",
+        "MinLength",
+        "Radius",
+        "Stiffness",
+        "Thickness"
+    ],
+    "PausedState": [],
+    "MemStorageService": [],
+    "HiddenSurfaceRemovalAsset": [],
+    "Tween": [
+        "Instance",
+        "Tween",
+        "TweenInfo"
+    ],
+    "ChatInputBarConfiguration": [
+        "AbsolutePosition",
+        "AbsoluteSize",
+        "BackgroundColor3",
+        "BackgroundTransparency",
+        "Enabled",
+        "FontFace",
+        "PlaceholderColor3",
+        "TargetTextChannel",
+        "TextChannel",
+        "TextColor3",
+        "TextSize",
+        "TextStrokeColor3",
+        "TextStrokeTransparency"
+    ],
+    "Light": [
+        "Brightness",
+        "Color",
+        "Enabled",
+        "Shadows"
+    ],
+    "StudioAssetService": [],
+    "Motor": [
+        "CurrentAngle",
+        "DesiredAngle",
+        "MaxVelocity"
+    ],
+    "EmotesPages": [],
+    "ServerReplicator": [],
+    "ConeHandleAdornment": [
+        "Height",
+        "Radius"
+    ],
+    "GamePassService": [],
+    "EqualizerSoundEffect": [
+        "HighGain",
+        "LowGain",
+        "MidGain"
+    ],
+    "PhysicsService": [],
+    "PartOperation": [
+        "RenderFidelity",
+        "SmoothingAngle",
+        "TriangleCount",
+        "UsePartColor"
+    ],
+    "DataStorePages": [],
+    "TextService": [],
+    "DistortionSoundEffect": [
+        "Level"
+    ],
+    "DataStoreOptions": [
+        "AllScopes",
+        "GlobalDataStore"
+    ],
+    "FaceAnimatorService": [],
+    "LocalizationService": [
+        "ForcePlayModeGameLocaleId",
+        "ForcePlayModeRobloxLocaleId",
+        "RobloxLocaleId",
+        "SystemLocaleId"
+    ],
+    "NetworkClient": [],
+    "LinearVelocity": [
+        "LineDirection",
+        "LineVelocity",
+        "LinearVelocity",
+        "MaxForce",
+        "PlaneVelocity",
+        "PrimaryTangentAxis",
+        "RelativeTo",
+        "SecondaryTangentAxis",
+        "VectorVelocity",
+        "VelocityConstraintMode"
+    ],
+    "UICorner": [
+        "CornerRadius",
+        "UICorner"
+    ],
+    "BodyPosition": [
+        "D",
+        "MaxForce",
+        "P",
+        "Position"
+    ],
+    "CacheableContentProvider": [],
+    "CalloutService": [],
+    "UITableLayout": [
+        "FillEmptySpaceColumns",
+        "FillEmptySpaceRows",
+        "MajorAxis",
+        "Padding"
+    ],
+    "ImporterBaseSettings": [
+        "Id",
+        "ImportName",
+        "ShouldImport"
+    ],
+    "UIGradient": [
+        "Color",
+        "Enabled",
+        "Offset",
+        "Rotation",
+        "Transparency"
+    ],
+    "ContextActionService": [],
+    "BoxHandleAdornment": [
+        "Size"
+    ],
+    "AnimationFromVideoCreatorStudioService": [],
+    "AnimationController": [],
+    "PackageLink": [
+        "AutoUpdate",
+        "Creator",
+        "PackageAssetName",
+        "PackageId",
+        "PackageLink",
+        "PermissionLevel",
+        "Status",
+        "VersionNumber"
+    ]
+}
