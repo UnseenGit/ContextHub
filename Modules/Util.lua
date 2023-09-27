@@ -106,7 +106,7 @@ function module.writeJSON(path, arg)
     writefile(path, game:GetService("HttpService"):JSONEncode(arg))
 end
 function module.readJSON(arg)
-    return game:GetService("HttpService"):JSONDecode(isfile(arg) and readfile(arg) or "[]")
+    return game:GetService("HttpService"):JSONDecode(readfile(arg))
 end
 function module.JSONRequest(URL)
     return game:GetService("HttpService"):JSONDecode(request{

@@ -92,6 +92,7 @@ local RunService = game:GetService("RunService")
 local MaterialService = game:GetService("MaterialService")
 local Mouse = game:GetService("Players").LocalPlayer:GetMouse()
 local ESP = false
+if not isfile("StaffGroups.json") then writefile("StaffGroups.json", "[]") end
 local StaffGroups = Util.readJSON("StaffGroups.json")[tostring(game.PlaceId)]
 local ZoomMax, ZoomMin = LP.CameraMaxZoomDistance, LP.CameraMinZoomDistance
 local getcustomasset = getcustomasset or getsynasset
