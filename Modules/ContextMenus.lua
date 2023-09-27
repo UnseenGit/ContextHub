@@ -1,7 +1,75 @@
 local module = {}
 module.__index = module
-local Util = loadfile("Util.lua")()
-local ConfigModule = Util.loadfile("ConfigModule.lua")
+
+local function LoadModule(ModuleName, ...)
+    local request = request or syn.request
+    local Http = game:GetService("HttpService")
+    local function fileagecheck(path, age)
+        age = age or 1
+        if not isfile(path) then return false end
+        local Files = isfile("fileages.json") and Http:JSONDecode(readfile("fileages.json")) or {}
+        return ((Files[path] or 0) + age) > os.time()
+    end
+    local function write(path, content)
+        local Files = isfile("fileages.json") and Http:JSONDecode(readfile("fileages.json")) or {}
+        Files[path] = os.time()
+        writefile("fileages.json",Http:JSONEncode(Files))
+        writefile(path, content)
+    end
+    if not isfolder("Modules") then makefolder("Modules") end
+    local __MODULES do 
+        if ModuleTable then __MODULES = ModuleTable end 
+        if fileagecheck("Modules/ModuleInfo.json", 900) then 
+            __MODULES = Http:JSONDecode(readfile("Modules/ModuleInfo.json"))
+        else
+            print("request")
+            local tmp = request{
+                Url = "https://github.com/UnseenGit/ContextHub/raw/main/Modules/ModuleInfo.json",
+                Method = "GET"
+            }.Body or ""
+            write("Modules/ModuleInfo.json", tmp)
+            __MODULES = Http:JSONDecode(tmp)
+        end
+    end
+    local Module = __MODULES[ModuleName]
+    local Getters = {
+        web = function(Source)
+            print("request")
+            return request{
+                Url = Source,
+                Method = "GET"
+            }.Body or error("Couldn't Get!",ModuleName,Source)
+        end,
+        file = function(Source)
+            return isfile(Source) and readfile(Source) or error("Couldn't Get!",ModuleName,Source)
+        end
+    }
+    local Parsers = {
+        lua = function(Source, ...)
+            local Block, err = loadstring(Source)
+            if err then
+                error("Couldn't Parse!",ModuleName)
+            end
+            return Block(...)
+        end,
+        json = function(Source)
+            return Http:JSONDecode(Source)
+        end
+    }
+    local getM, parseM = table.unpack(string.split(Module.Type:lower(), "/"))
+    local ModulePath = `Modules/{ModuleName}.json`
+    local Source
+    if not fileagecheck(ModulePath, 1800) then
+        Source = Getters[getM](Module.Source)
+        write(ModulePath, Source)
+    else
+        Source = readfile(ModulePath)
+    end
+    return Parsers[parseM](Source, ...)
+end
+
+local Util = LoadModule("Util")
+local ConfigModule = LoadModule("ConfigModule")
 local ContextGui = game:GetService("CoreGui")
 local LP = game:GetService("Players").LocalPlayer
 local TextService = game:GetService("TextService")
