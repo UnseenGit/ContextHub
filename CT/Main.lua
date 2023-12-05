@@ -2,7 +2,7 @@ if not game:IsLoaded() then game.Loaded:Wait() end
 
 -----INFERIOR EXECUTOR FIXES
 
-getcustomasset = getcustomasset or function() return "" end
+getcustomasset = getcustomasset or function() return "rbxassetid://15550979444" end
 queue_on_teleport = queue_on_teleport or function() end
 
 
@@ -104,7 +104,6 @@ local ESP = false
 if not isfile("StaffGroups.json") then writefile("StaffGroups.json", "[]") end
 local StaffGroups = Util.readJSON("StaffGroups.json")[tostring(game.PlaceId)]
 local ZoomMax, ZoomMin = LP.CameraMaxZoomDistance, LP.CameraMinZoomDistance
-local getcustomasset = getcustomasset or getsynasset
 local request = request or syn.request
 local MouseLocation = UserInputService:GetMouseLocation()
 local Autocomplete
@@ -2800,7 +2799,7 @@ RunService.RenderStepped:connect(function()
     MouseLocation = UserInputService:GetMouseLocation()
 end)
 if not isfolder("Assets") then makefolder("Assets") end
-if not isfile("Assets/ContextTerminal.png") then
+if getcustomasset and not isfile("Assets/ContextTerminal.png") then
     local Url = "https://media.discordapp.net/attachments/1093853021894606991/1101969632807637102/ContextTerminal.png"
     local PNG = request({
         Url = Url,
