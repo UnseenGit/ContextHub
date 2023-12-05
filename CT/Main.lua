@@ -1,4 +1,12 @@
 if not game:IsLoaded() then game.Loaded:Wait() end
+
+-----INFERIOR EXECUTOR FIXES
+
+getcustomasset = getcustomasset or function() return "" end
+
+
+
+
 local function LoadModule(ModuleName, ...)
     local request = request or syn.request
     local Http = game:GetService("HttpService")
