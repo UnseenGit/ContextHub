@@ -3,6 +3,7 @@ if not game:IsLoaded() then game.Loaded:Wait() end
 -----INFERIOR EXECUTOR FIXES
 
 getcustomasset = getcustomasset or function() return "" end
+queue_on_teleport = queue_on_teleport or function() end
 
 
 
