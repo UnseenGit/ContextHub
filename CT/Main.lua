@@ -135,7 +135,7 @@ local Config = ConfigModule:Create("CTCONFIG.lua",{
             ShowName = true,
             ShowDisplayName = true,
             ShowHealth = true,
-            ShowTeam = true,
+            TeamType = "all", -- "enemy" "friendly" "select"
             ShowDistance = true,
             UseDetailsDistance = true,
             ShowHealthType = "Scale",
@@ -212,6 +212,9 @@ local function GetESPText(Player)
         if set.ShowDistance and Player ~= LP then
             str = `{str} ↔{Util.round(Distance, set.DistanceDecimalPoints)}`
         end
+    end
+    if EspTextModify then
+        str = EspTextModify(str)
     end
     return str
 end
@@ -615,6 +618,10 @@ if BubbleChat then
     end)
 end
 
+local function CheckESPTeam()
+    if Config[tostring(game.PlaceId)].ESP.ShowTeam or v.Team ~= LP.Team then
+    end
+end
 
 RunService.Stepped:connect(function(deltaTime)
     xpcall(function()
@@ -626,7 +633,7 @@ RunService.Stepped:connect(function(deltaTime)
         if ESP then
             for i, v in pairs(Players:GetPlayers()) do
                 xpcall(function()
-                    if v.Character and v.Character:FindFirstChild("HumanoidRootPart") and not (v.Character:FindFirstChild("ESPHighlight") or v.Character.HumanoidRootPart:FindFirstChild("ESPHighlight")) and CheckIfVisible(v.Character:FindFirstChild("HumanoidRootPart")) and GetESPDistance(v) < Config[tostring(game.PlaceId)].ESP.Distance and ((Config[tostring(game.PlaceId)].ESP.ShowTeam) or v.Team ~= LP.Team) then
+                    if v.Character and v.Character:FindFirstChild("HumanoidRootPart") and not (v.Character:FindFirstChild("ESPHighlight") or v.Character.HumanoidRootPart:FindFirstChild("ESPHighlight")) and CheckIfVisible(v.Character:FindFirstChild("HumanoidRootPart")) and GetESPDistance(v) < Config[tostring(game.PlaceId)].ESP.Distance and CheckESPTeam(v) then
                         local Color do 
                             if Config[tostring(game.PlaceId)].ESP.ShowHealth and Config[tostring(game.PlaceId)].ESP.ShowHealthType == "Color" then Color = Color3.new(1-v.Character.Humanoid.Health/v.Character.Humanoid.MaxHealth,v.Character.Humanoid.Health/v.Character.Humanoid.MaxHealth)
                             elseif Config[tostring(game.PlaceId)].ESP.ListColors and CheckStaff(tostring(v.UserId)) then Color = ListColors.Staff
@@ -1966,13 +1973,52 @@ local function ThemeProviderEntries()
                                     end
                                 },
                                 {
-                                    Type = "CheckBox",
-                                    Text = "Show Team",
-                                    Name = "ShowTeam",
-                                    Value = Config[tostring(game.PlaceId)].ESP.ShowTeam,
-                                    M1Func = function(Value)
-                                        Config[tostring(game.PlaceId)].ESP.ShowTeam = Value
-                                        Config:Write()
+                                    Text = "Show Team...",
+                                    Submenu = function()
+                                        return {
+                                            {
+                                                Type = "CheckBox",
+                                                Text = "All",
+                                                Name = "All",
+                                                IsAChoice = true,
+                                                Value = Config[tostring(game.PlaceId)].ESP.TeamType == "all",
+                                                OnChecked = function(Value)
+                                                    Config[tostring(game.PlaceId)].ESP.TeamType = "all"
+                                                    Config:Write()
+                                                end
+                                            },
+                                            {
+                                                Type = "CheckBox",
+                                                Text = "Enemies",
+                                                Name = "Enemies",
+                                                IsAChoice = true,
+                                                Value = Config[tostring(game.PlaceId)].ESP.TeamType == "enemy",
+                                                OnChecked = function(Value)
+                                                    Config[tostring(game.PlaceId)].ESP.TeamType = "enemy"
+                                                    Config:Write()
+                                                end
+                                            },{
+                                                Type = "CheckBox",
+                                                Text = "Allies",
+                                                Name = "Allies",
+                                                IsAChoice = true,
+                                                Value = Config[tostring(game.PlaceId)].ESP.TeamType == "friendly",
+                                                OnChecked = function(Value)
+                                                    Config[tostring(game.PlaceId)].ESP.TeamType = "friendly"
+                                                    Config:Write()
+                                                end
+                                            },{
+                                                Type = "CheckBox",
+                                                Text = "Selected...",
+                                                Name = "Selected",
+                                                IsAChoice = true,
+                                                Value = Config[tostring(game.PlaceId)].ESP.TeamType == "select",
+                                                OnChecked = function(Value)
+                                                    Config[tostring(game.PlaceId)].ESP.TeamType = "select"
+                                                    Config:Write()
+                                                end
+                                            },
+                                        }
                                     end
                                 },
                                 {

@@ -3352,7 +3352,7 @@ function module.Create(argSettings, ...)
 				if Scrollable then return ScrollableSizeY end
 				return out
 			end
-			if v.Submenu and v.Submenu ~= {} and (v.Type == "TextButton" or v.Type == "TextLabel") then
+			if v.Submenu and v.Submenu ~= {} and (v.Type == "TextButton" or v.Type == "TextLabel" or v.Type == "CheckBox") then
 				Submenu = Instance.new("TextButton", _Entry)
 				Submenu.Size = UDim2.fromOffset(TextBounds.Y + Settings.Padding, TextBounds.Y + Settings.Padding)
 				Submenu.Text = ">"
