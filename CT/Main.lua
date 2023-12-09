@@ -169,6 +169,7 @@ local ESPHealthDisplayTypes = {
 local WPs = ConfigModule:Create("SAVEDPOSITIONS.lua",{
     [tostring(game.PlaceId)] = {}
 })
+local ESPTeams = {}
 local function GetESPDistance(Player)
     if not Player.Character or not Player.Character:FindFirstChild("HumanoidRootPart") then return math.huge, false end
     local DistancePart do 
@@ -618,9 +619,17 @@ if BubbleChat then
     end)
 end
 
-local function CheckESPTeam()
-    if Config[tostring(game.PlaceId)].ESP.ShowTeam or v.Team ~= LP.Team then
+local function CheckESPTeam(v)
+    if Config[tostring(game.PlaceId)].ESP.TeamType == "all" then
+        return true
+    elseif Config[tostring(game.PlaceId)].ESP.TeamType == "enemy" and v.Team ~= LP.Team then
+        return true
+    elseif Config[tostring(game.PlaceId)].ESP.TeamType == "friendly" and v.Team == LP.Team then
+        return true
+    elseif Config[tostring(game.PlaceId)].ESP.TeamType == "select" and ESPTeams[v.Team] then
+        return true
     end
+    return false
 end
 
 RunService.Stepped:connect(function(deltaTime)
@@ -2016,6 +2025,20 @@ local function ThemeProviderEntries()
                                                 OnChecked = function(Value)
                                                     Config[tostring(game.PlaceId)].ESP.TeamType = "select"
                                                     Config:Write()
+                                                end,
+                                                Submenu = function()
+                                                    local out = {}
+                                                    for _, Team in pairs(game:GetService("Teams"):GetTeams()) do
+                                                        table.insert(out, {
+                                                            Text = `<font color="#{Team.TeamColor.Color:ToHex()}">{Team.Name}</font>`,
+                                                            Type = "CheckBox",
+                                                            Value = ESPTeams[Team.Name],
+                                                            M1Func = function(Value)
+                                                                ESPTeams[Team.Name] = Value
+                                                            end
+                                                        })
+                                                    end
+                                                    return out
                                                 end
                                             },
                                         }
