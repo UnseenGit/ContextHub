@@ -188,14 +188,12 @@ local function GetESPText(Player)
     local Distance = GetESPDistance(Player)
     local DetailsVisible = (not set.UseDetailsDistance) or Distance < set.DetailDistance
     if (Config[tostring(game.PlaceId)].ESP.Details.Name and DetailsVisible) or not Config[tostring(game.PlaceId)].ESP.Details.Name then
-        if set.ShowName or set.ShowDisplayName and not Player.Name == Player.DisplayName then
-            if set.ShowName and set.ShowDisplayName then
+        if set.ShowName or set.ShowDisplayName then
+            if set.ShowName and set.ShowDisplayName and Player.Name ~= Player.DisplayName then
                 str = `{Player.DisplayName} (@{Player.Name})`
             elseif set.ShowName or set.ShowDisplayName then
                 str = set.ShowDisplayName and Player.DisplayName or Player.Name
             end
-        elseif set.ShowName or set.ShowDisplayName and Player.Name == Player.DisplayName then
-            str = Player.Name
         end
         if set.ShowHealth or set.ShowDistance then
             str = str.."\n"
@@ -626,7 +624,7 @@ local function CheckESPTeam(v)
         return true
     elseif Config[tostring(game.PlaceId)].ESP.TeamType == "friendly" and v.Team == LP.Team then
         return true
-    elseif Config[tostring(game.PlaceId)].ESP.TeamType == "select" and ESPTeams[v.Team] then
+    elseif Config[tostring(game.PlaceId)].ESP.TeamType == "select" and ESPTeams[v.Team.Name] then
         return true
     end
     return false
@@ -2028,9 +2026,10 @@ local function ThemeProviderEntries()
                                                 end,
                                                 Submenu = function()
                                                     local out = {}
-                                                    for _, Team in pairs(game:GetService("Teams"):GetTeams()) do
+                                                    for _, Team in pairs(game:GetService("Teams"):GetChildren()) do
                                                         table.insert(out, {
                                                             Text = `<font color="#{Team.TeamColor.Color:ToHex()}">{Team.Name}</font>`,
+                                                            Name = Team.Name,
                                                             Type = "CheckBox",
                                                             Value = ESPTeams[Team.Name],
                                                             M1Func = function(Value)
@@ -2040,7 +2039,7 @@ local function ThemeProviderEntries()
                                                     end
                                                     return out
                                                 end
-                                            },
+                                            }
                                         }
                                     end
                                 },
@@ -4400,8 +4399,8 @@ Commands = {
                 if not Part then
                     return "HumanoidRootPart/BasePart not found!"
                 end
-                Functions.TeleportTo(Part.CFrame)
-                out("Now spectating "..Plr.Name.."...")
+                Functions.TeleportTo(Part)
+                out("Teleported to "..Plr.Name.."!")
             else
                 return "Player not found!"
             end

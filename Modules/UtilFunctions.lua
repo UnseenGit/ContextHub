@@ -393,7 +393,7 @@ function module.OpenChatLogs(ContextMenus, FilterTable)
 end
 function module.Teleport(Object, Destination, SettingsOverride)
     local Settings = {}
-    module.SetSettings(Settings, Config)
+    module.SetSettings(Settings, Config[tostring(game.PlaceId)])
     local tpObject = Object
     if Object:IsA("Player") then tpObject = Object.Character.HumanoidRootPart end
     if SettingsOverride then
