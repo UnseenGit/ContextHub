@@ -187,10 +187,12 @@ local Config = ConfigModule:Create("CTCONFIG.lua",{
             Mouse2Aim = true,
             Mouse1Aim = false,
             TeamType = "all", -- "enemy" "friendly" "select"
-            Drop = true,
-            DropAmount = 10,
+            Drop = false,
+            DropAmount = 2,
             DropIncrease = 2,
-            DropType = "Linear"
+            DropType = "Quad",
+            Pred = false,
+            PredAmount = 1
         },
         LocalChatLogDist = 20,
         TeleportOffset = CFrame.new(0,0,-5)*CFrame.Angles(math.rad(0),math.rad(180),math.rad(0)),
@@ -760,16 +762,21 @@ end
 local function CalculateDropAndPred(AimPart)
     local Set = Config[tostring(game.PlaceId)].Aimbot
     local Pos = AimPart.Position
-    if Set.Drop and LP.Character and LP.Character:FindFirstChild("HumanoidRootPart") then
+    if LP.Character and LP.Character:FindFirstChild("HumanoidRootPart") then
         local Distance = (LP.Character.HumanoidRootPart.Position - AimPart.Position).Magnitude
-        if Set.DropType == "Linear" then
-            Pos = AimPart.Position+Vector3.new(0,(Distance/1000)*Set.DropAmount,0)
-        elseif Set.DropType == "LinearInc" then
-            local Distance = (LP.Character.HumanoidRootPart.Position - AimPart.Position).Magnitude
-            Pos = AimPart.Position+Vector3.new(0,((Distance/1000)*Set.DropAmount)+((Distance/1000)^Set.DropIncrease),0)
-        elseif Set.DropType == "Quad" then
-            local Distance = (LP.Character.HumanoidRootPart.Position - AimPart.Position).Magnitude
-            Pos = AimPart.Position+Vector3.new(0,(Distance^2)/(100000/Set.DropAmount),0)
+        if Set.Drop then
+            if Set.DropType == "Linear" then
+                Pos = AimPart.Position+Vector3.new(0,(Distance/1000)*Set.DropAmount,0)
+            elseif Set.DropType == "LinearInc" then
+                local Distance = (LP.Character.HumanoidRootPart.Position - AimPart.Position).Magnitude
+                Pos = AimPart.Position+Vector3.new(0,((Distance/1000)*Set.DropAmount)+((Distance/1000)^Set.DropIncrease),0)
+            elseif Set.DropType == "Quad" then
+                local Distance = (LP.Character.HumanoidRootPart.Position - AimPart.Position).Magnitude
+                Pos = AimPart.Position+Vector3.new(0,(Distance^2)/(100000/Set.DropAmount),0)
+            end
+        end
+        if Set.Pred then
+            Pos = Pos+(((AimPart.Velocity*Distance)/1000)*Set.PredAmount)
         end
     end
     return Pos
@@ -2489,7 +2496,7 @@ local function ThemeProviderEntries()
                                 },
                                 {
                                     Type = "CheckBox",
-                                    Text = "Drop Compensation",
+                                    Text = "Drop Compensation...",
                                     Name = "Drop",
                                     Value = Config[tostring(game.PlaceId)].Aimbot.Drop,
                                     OnChecked = function(Value)
@@ -2499,90 +2506,109 @@ local function ThemeProviderEntries()
                                     Submenu = function()
                                         return {
                                             {
-                                                Text = "Type",
-                                                Submenu = function()
-                                                    return {
-                                                        {
-                                                            Type = "CheckBox",
-                                                            Text = "Linear",
-                                                            Name = "Linear",
-                                                            IsAChoice = true,
-                                                            Value = Config[tostring(game.PlaceId)].Aimbot.DropType == "Linear",
-                                                            OnChecked = function(Value)
-                                                                Config[tostring(game.PlaceId)].Aimbot.DropType = "Linear"
-                                                                Config:Write()
-                                                            end
-                                                        },
-                                                        {
-                                                            Type = "CheckBox",
-                                                            Text = "Linear with Increase",
-                                                            Name = "LinearInc",
-                                                            IsAChoice = true,
-                                                            Value = Config[tostring(game.PlaceId)].Aimbot.DropType == "LinearInc",
-                                                            OnChecked = function(Value)
-                                                                Config[tostring(game.PlaceId)].Aimbot.DropType = "LinearInc"
-                                                                Config:Write()
-                                                            end
-                                                        },
-                                                        {
-                                                            Type = "CheckBox",
-                                                            Text = "Quad",
-                                                            Name = "Quad",
-                                                            IsAChoice = true,
-                                                            Value = Config[tostring(game.PlaceId)].Aimbot.DropType == "Quad",
-                                                            OnChecked = function(Value)
-                                                                Config[tostring(game.PlaceId)].Aimbot.DropType = "Quad"
-                                                                Config:Write()
-                                                            end
-                                                        }
-                                                    }
-                                                end
-                                            },
-                                            {
-                                                Type = "Slider",
-                                                Text = "Drop Amount",
-                                                Name = "DropAmount",
-                                                ValueDisplay = true,
-                                                MaxValue = 25,
-                                                MinValue = 0,
-                                                MinSliderSize = 200,
-                                                Tooltip = (
-                                                    Config[tostring(game.PlaceId)].Aimbot.DropType == "Linear" and "(Distance/1000)*Amount" or
-                                                    Config[tostring(game.PlaceId)].Aimbot.DropType == "LinearInc" and "((Distance/1000)*Amount)+(Distance/1000)^Increase" or
-                                                    Config[tostring(game.PlaceId)].Aimbot.DropType == "Quad" and "(Distance^2)/(100000/Amount)"
-                                                ),
-                                                StartingValue = Config[tostring(game.PlaceId)].Aimbot.DropAmount,
-                                                Rounding = 1,
-                                                OnRelease = function(Value) 
-                                                    Config[tostring(game.PlaceId)].Aimbot.DropAmount = Value
+                                                Type = "CheckBox",
+                                                Text = "Linear",
+                                                Name = "Linear",
+                                                IsAChoice = true,
+                                                Value = Config[tostring(game.PlaceId)].Aimbot.DropType == "Linear",
+                                                OnChecked = function(Value)
+                                                    Config[tostring(game.PlaceId)].Aimbot.DropType = "Linear"
                                                     Config:Write()
                                                 end
                                             },
-                                            (function()
-                                                if Config[tostring(game.PlaceId)].Aimbot.DropType == "LinearInc" then
-                                                    return {
-                                                        Type = "Slider",
-                                                        Text = "Drop Increase",
-                                                        Name = "DropIncrease",
-                                                        ValueDisplay = true,
-                                                        MaxValue = 10,
-                                                        MinValue = -10,
-                                                        MinSliderSize = 200,
-                                                        Tooltip = (
-                                                            Config[tostring(game.PlaceId)].Aimbot.DropType == "Linear" and "(Distance/1000)*Amount" or
-                                                            Config[tostring(game.PlaceId)].Aimbot.DropType == "LinearInc" and "((Distance/1000)*Amount)+(Distance/1000)^Increase" or
-                                                            Config[tostring(game.PlaceId)].Aimbot.DropType == "Quad" and "(Distance^2)/(100000/Amount)"
-                                                        ),
-                                                        StartingValue = Config[tostring(game.PlaceId)].Aimbot.DropIncrease,
-                                                        Rounding = 1,
-                                                        OnRelease = function(Value) 
-                                                            Config[tostring(game.PlaceId)].Aimbot.DropIncrease = Value
-                                                            Config:Write()
-                                                        end
-                                                    }
+                                            {
+                                                Type = "CheckBox",
+                                                Text = "Linear with Increase",
+                                                Name = "LinearInc",
+                                                IsAChoice = true,
+                                                Value = Config[tostring(game.PlaceId)].Aimbot.DropType == "LinearInc",
+                                                OnChecked = function(Value)
+                                                    Config[tostring(game.PlaceId)].Aimbot.DropType = "LinearInc"
+                                                    Config:Write()
                                                 end
-                                            end)()
+                                            },
+                                            {
+                                                Type = "CheckBox",
+                                                Text = "Quad",
+                                                Name = "Quad",
+                                                IsAChoice = true,
+                                                Value = Config[tostring(game.PlaceId)].Aimbot.DropType == "Quad",
+                                                OnChecked = function(Value)
+                                                    Config[tostring(game.PlaceId)].Aimbot.DropType = "Quad"
+                                                    Config:Write()
+                                                end
+                                            }
                                         }
+                                    end
+                                },
+                                {
+                                    Type = "Slider",
+                                    Text = "Drop Amount",
+                                    Name = "DropAmount",
+                                    ValueDisplay = true,
+                                    MaxValue = 25,
+                                    MinValue = 0,
+                                    MinSliderSize = 250,
+                                    Tooltip = (
+                                        Config[tostring(game.PlaceId)].Aimbot.DropType == "Linear" and "(Distance/1000)*Amount" or
+                                        Config[tostring(game.PlaceId)].Aimbot.DropType == "LinearInc" and "((Distance/1000)*Amount)+(Distance/1000)^Increase" or
+                                        Config[tostring(game.PlaceId)].Aimbot.DropType == "Quad" and "(Distance^2)/(100000/Amount)"
+                                    ),
+                                    StartingValue = Config[tostring(game.PlaceId)].Aimbot.DropAmount,
+                                    Rounding = 1,
+                                    OnRelease = function(Value) 
+                                        Config[tostring(game.PlaceId)].Aimbot.DropAmount = Value
+                                        Config:Write()
+                                    end
+                                },
+                                (function()
+                                    if Config[tostring(game.PlaceId)].Aimbot.DropType == "LinearInc" or true then
+                                        return {
+                                            Type = "Slider",
+                                            Text = "Drop Increase",
+                                            Name = "DropIncrease",
+                                            ValueDisplay = true,
+                                            MaxValue = 10,
+                                            MinValue = -10,
+                                            MinSliderSize = 200,
+                                            Tooltip = (
+                                                Config[tostring(game.PlaceId)].Aimbot.DropType == "Linear" and "(Distance/1000)*Amount" or
+                                                Config[tostring(game.PlaceId)].Aimbot.DropType == "LinearInc" and "((Distance/1000)*Amount)+(Distance/1000)^Increase" or
+                                                Config[tostring(game.PlaceId)].Aimbot.DropType == "Quad" and "(Distance^2)/(100000/Amount)"
+                                            ),
+                                            StartingValue = Config[tostring(game.PlaceId)].Aimbot.DropIncrease,
+                                            Rounding = 1,
+                                            OnRelease = function(Value) 
+                                                Config[tostring(game.PlaceId)].Aimbot.DropIncrease = Value
+                                                Config:Write()
+                                            end
+                                        }
+                                    end
+                                end)(),
+                                {
+                                    Type = "CheckBox",
+                                    Text = "Prediction...",
+                                    Name = "Pred",
+                                    Value = Config[tostring(game.PlaceId)].Aimbot.Pred,
+                                    OnChecked = function(Value)
+                                        Config[tostring(game.PlaceId)].Aimbot.Pred = Value
+                                        Config:Write()
+                                    end
+                                },
+                                {
+                                    Type = "Slider",
+                                    Text = "Prediction Amount",
+                                    Name = "PredAmount",
+                                    ValueDisplay = true,
+                                    MaxValue = 5,
+                                    MinValue = -5,
+                                    MinSliderSize = 200,
+                                    Tooltip = "((Velocity*Distance)/1000)*Amount",
+                                    StartingValue = Config[tostring(game.PlaceId)].Aimbot.PredAmount,
+                                    Rounding = 2,
+                                    OnRelease = function(Value) 
+                                        Config[tostring(game.PlaceId)].Aimbot.PredAmount = Value
+                                        Config:Write()
                                     end
                                 }
                             }
