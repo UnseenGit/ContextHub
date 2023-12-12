@@ -889,7 +889,7 @@ end
 function module.FindWSChild(obj)
     local iteration = 0
     local part = obj
-    while part.Parent ~= workspace do
+    while part and part.Parent and part.Parent ~= workspace do
         part = part.Parent
         iteration = iteration+1
         if iteration > 255 then

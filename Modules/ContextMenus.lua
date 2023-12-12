@@ -586,7 +586,7 @@ function module.CreateSyntaxHighlightTextbox(Locked, ...)
 		CursorLabel.BackgroundTransparency = 1
 	end)
 	if err then
-		rconsoleprint(err)
+		print(err)
 	end
 	return DisplayBox
 end
@@ -1173,7 +1173,7 @@ function module.OpenColorPicker(CurrentColor, Parent)
 				},
 			})
 		end, function(err)
-			rconsolewarn(debug.traceback(err))
+			warn(debug.traceback(err))
 		end)
 	end)
 
@@ -1461,7 +1461,7 @@ function module.OpenColorPicker(CurrentColor, Parent)
 					EyeDropper.Visible = false
 				end
 			end, function(err)
-				rconsoleprint(debug.traceback("\n[*ERROR*]Error: " .. err))
+				print(debug.traceback("\n[*ERROR*]Error: " .. err))
 				for _, v in pairs(Connections) do
 					v:Disconnect()
 				end
@@ -1469,7 +1469,7 @@ function module.OpenColorPicker(CurrentColor, Parent)
 		end)
 	end)
 	if err then
-		rconsoleprint("\n[*ERROR*]" .. "ColorPicker Error: " .. err)
+		print("\n[*ERROR*]" .. "ColorPicker Error: " .. err)
 	end
 	local ret = false
 	OkButton.MouseButton1Click:Connect(function()
@@ -2468,13 +2468,13 @@ function module.CreateTooltip(GuiObject, String, AnchorPoint)
 					end
 				end)
 				if err then
-					rconsoleprint("\n[*ERROR*]" .. "CreateTooltip Error: " .. GuiObject:GetFullName() .. ":" .. err)
+					print("\n[*ERROR*]" .. "CreateTooltip Error: " .. GuiObject:GetFullName() .. ":" .. err)
 				end
 			end)
 		end
 	end)
 	if err then
-		rconsoleprint("\n[*ERROR*]" .. "CreateTooltip Error: " .. GuiObject:GetFullName() .. ":" .. err)
+		print("\n[*ERROR*]" .. "CreateTooltip Error: " .. GuiObject:GetFullName() .. ":" .. err)
 	end
 end
 function module.Create(argSettings, ...)
@@ -3334,7 +3334,10 @@ function module.Create(argSettings, ...)
 			local function GetMenuSize(Entries, Scrollable, ScrollableSizeY)
 				if not ScrollableSizeY then ScrollableSizeY = 200 end
 				local out = 0
-				for _, Entry in pairs(Entries) do 
+				for _, Entry in pairs(Entries) do
+					if typeof(Entry) == "function" then
+						Entry = Entry()
+					end
 					if table.find({"textlabel","textbutton", "checkbox"},Entry.Type and Entry.Type:lower()) then
 						out = out + (Settings.ContextMenuEntries.TextSize + Settings.Padding)
 					end
@@ -3367,7 +3370,7 @@ function module.Create(argSettings, ...)
 						Submenuholder = nil
 					else
 						if typeof(v.Submenu) == "function" then
-							pcall(function()
+							xpcall(function()
 								local Entries = v.Submenu()
 								Submenuholder, Holders[#Holders + 1] = module.Create(
 									GetSubmenuSettings(
@@ -3377,9 +3380,9 @@ function module.Create(argSettings, ...)
 									),
 									table.unpack(Entries)
 								)
-							end)
+							end,warn)
 						else
-							pcall(function()
+							xpcall(function()
 								Submenuholder, Holders[#Holders + 1] = module.Create(
 									GetSubmenuSettings(
 										_Entry,
@@ -3388,7 +3391,7 @@ function module.Create(argSettings, ...)
 									),
 									table.unpack(v.Submenu)
 								)
-							end)
+							end,warn)
 						end
 					end
 				end)
@@ -3414,8 +3417,10 @@ function module.Create(argSettings, ...)
 					_SizeX = math.max(_SizeX, TextBounds.X + Settings.Padding + (TextBounds.Y + Settings.Padding) * 1.5)
 				end
 			end
-			_SizeY = _SizeY + _Entry.AbsoluteSize.Y
-			CMEntries[#CMEntries + 1] = _Entry
+			if _Entry then
+				_SizeY = _SizeY + _Entry.AbsoluteSize.Y
+				CMEntries[#CMEntries + 1] = _Entry
+			end
 		end
 	end
 	if Settings.IsASubmenu then

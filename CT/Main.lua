@@ -101,6 +101,8 @@ local RunService = game:GetService("RunService")
 local MaterialService = game:GetService("MaterialService")
 local Mouse = game:GetService("Players").LocalPlayer:GetMouse()
 local ESP = false
+local Aimbot = false
+local AimbotTarget
 if not isfile("StaffGroups.json") then writefile("StaffGroups.json", "[]") end
 local StaffGroups = Util.readJSON("StaffGroups.json")[tostring(game.PlaceId)]
 local ZoomMax, ZoomMin = LP.CameraMaxZoomDistance, LP.CameraMinZoomDistance
@@ -112,7 +114,26 @@ local AddLogEntry
 local infiniteJump = false
 local CurrentFov = workspace.CurrentCamera.FieldOfView
 local StartFov = workspace.CurrentCamera.FieldOfView
+local Mouse1Held = false
+local Mouse2Held = false
+UserInputService.InputBegan:Connect(function(input)
+    local inputType = input.UserInputType
+    if inputType == Enum.UserInputType.MouseButton1 then
+        Mouse1Held = true
+    elseif inputType == Enum.UserInputType.MouseButton2 then
+        Mouse2Held = true
+    end
+end)    
+UserInputService.InputEnded:Connect(function(input)
+    local inputType = input.UserInputType
+    if inputType == Enum.UserInputType.MouseButton1 then
+        Mouse1Held = false
+    elseif inputType == Enum.UserInputType.MouseButton2 then
+        Mouse2Held = false
+    end
+end)
 local ListsModule = LoadModule("Lists")
+local Lists do if ListsModule then Lists = ListsModule.CheckArray(Players:GetChildren()) end end
 local Config = ConfigModule:Create("CTCONFIG.lua",{
     RandomIncludeLP = true,
     RandomizeName = true,
@@ -152,6 +173,25 @@ local Config = ConfigModule:Create("CTCONFIG.lua",{
                 Name = false,
             }
         },
+        Aimbot = {
+            Method = "Lock",
+            FOV = 100,
+            IgnoreLists = {},
+            IgnoreDead = true,
+            IgnoreStaff = false,
+            Distance = 1250,
+            WallCheck = true,
+            AimPart = "Head",
+            Keybind = Enum.KeyCode.F4,
+            AimKey = Enum.KeyCode.LeftAlt,
+            Mouse2Aim = true,
+            Mouse1Aim = false,
+            TeamType = "all", -- "enemy" "friendly" "select"
+            Drop = true,
+            DropAmount = 10,
+            DropIncrease = 2,
+            DropType = "Linear"
+        },
         LocalChatLogDist = 20,
         TeleportOffset = CFrame.new(0,0,-5)*CFrame.Angles(math.rad(0),math.rad(180),math.rad(0)),
         BringTeleportOffset = CFrame.new(0,0,-5)*CFrame.Angles(math.rad(0),math.rad(180),math.rad(0))
@@ -169,119 +209,7 @@ local ESPHealthDisplayTypes = {
 local WPs = ConfigModule:Create("SAVEDPOSITIONS.lua",{
     [tostring(game.PlaceId)] = {}
 })
-local ESPTeams = {}
-local function GetESPDistance(Player)
-    if not Player.Character or not Player.Character:FindFirstChild("HumanoidRootPart") then return math.huge, false end
-    local DistancePart do 
-        if Config[tostring(game.PlaceId)].ESP.DistanceMode == "Character" then
-            DistancePart = LP.Character.HumanoidRootPart
-        elseif Config[tostring(game.PlaceId)].ESP.DistanceMode == "Camera" then
-            DistancePart = workspace.CurrentCamera
-        end
-    end
-    return (DistancePart.CFrame.Position - Player.Character:FindFirstChild("HumanoidRootPart").Position).Magnitude
-end
-local function GetESPText(Player)
-    local set = Config[tostring(game.PlaceId)].ESP
-    local str = ""
-    local Humanoid = Player.Character and Player.Character:FindFirstChild("Humanoid")
-    local Distance = GetESPDistance(Player)
-    local DetailsVisible = (not set.UseDetailsDistance) or Distance < set.DetailDistance
-    if (Config[tostring(game.PlaceId)].ESP.Details.Name and DetailsVisible) or not Config[tostring(game.PlaceId)].ESP.Details.Name then
-        if set.ShowName or set.ShowDisplayName then
-            if set.ShowName and set.ShowDisplayName and Player.Name ~= Player.DisplayName then
-                str = `{Player.DisplayName} (@{Player.Name})`
-            elseif set.ShowName or set.ShowDisplayName then
-                str = set.ShowDisplayName and Player.DisplayName or Player.Name
-            end
-        end
-        if set.ShowHealth or set.ShowDistance then
-            str = str.."\n"
-        end
-    end
-    if (Config[tostring(game.PlaceId)].ESP.Details.Health and DetailsVisible) or not Config[tostring(game.PlaceId)].ESP.Details.Health then
-        if Humanoid and set.ShowHealth and table.find({"Scale", "Number"}, set.ShowHealthType) then
-            str = `{str}{Humanoid.Health}`
-        end
-        if Humanoid and set.ShowHealth and set.ShowHealthType == "Scale" then
-            str = str.."/"..Humanoid.MaxHealth
-        end
-    end
-    if (Config[tostring(game.PlaceId)].ESP.Details.Distance and DetailsVisible) or not Config[tostring(game.PlaceId)].ESP.Details.Distance then
-        if set.ShowDistance and Player ~= LP then
-            str = `{str} ↔{Util.round(Distance, set.DistanceDecimalPoints)}`
-        end
-    end
-    if EspTextModify then
-        str = EspTextModify(str)
-    end
-    return str
-end
-if not _G.ChatLogs then _G.ChatLogs = {} end
-local credits = {
-    "--- <b>ContextTerminal</b> ---",
-    "Developed by The Unseen",
-    "Design: GREENERY_101",
-    "Functionality: GREENERY_101, i_mNoAstronaut",
-    "Commands: GREENERY_101, i_mNoAstronaut",
-    "Plugins: i_mNoAstronaut, GREENERY_101"
-}
 
-local function setclipboardint(str)
-    setclipboard(tostring(str))
-end
-
-local function CheckIfInvokerAllowed(Invoker)
-    if table.find(_ALLOWEDEXECS, Invoker) then return true end
-end
-
-local function CheckIfVisible(part)
-    local _, vis = workspace.CurrentCamera:WorldToViewportPoint(part.Position)
-    return vis
-end
-
-local function FakeChat(Player, Message)
-    local HRP = Player.Character:FindFirstChild("Head")
-    if HRP then ChatService:Chat(HRP, _INVIS .. Message, 2) end
-end
-
-local function UnlockCamera()
-    LP.CameraMode = 'Classic'
-    LP.CameraMaxZoomDistance = 1000000
-    LP.CameraMinZoomDistance = 0
-    UserInputService.inputBegan:Connect(function(input) 
-        xpcall(function()
-            if input.KeyCode == Enum.KeyCode.LeftAlt then
-                LP.CameraMaxZoomDistance = (workspace.CurrentCamera.CoordinateFrame.p - workspace.CurrentCamera.Focus.p).magnitude
-                LP.CameraMinZoomDistance = (workspace.CurrentCamera.CoordinateFrame.p - workspace.CurrentCamera.Focus.p).magnitude
-                repeat wait() until not UserInputService:IsKeyDown(Enum.KeyCode.LeftAlt)
-                LP.CameraMaxZoomDistance = 1000000
-                LP.CameraMinZoomDistance = 0
-            end
-            if input.UserInputType == Enum.UserInputType.MouseButton3 then
-                if UserInputService:IsKeyDown(Enum.KeyCode.LeftAlt) then
-                    TweenService:Create(workspace.CurrentCamera, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {FieldOfView = StartFov}):Play()
-                end
-            end
-        end,warn)
-    end)
-    Mouse.WheelForward:Connect(function() 
-        xpcall(function()
-            if UserInputService:IsKeyDown(Enum.KeyCode.LeftAlt) then
-                CurrentFov = math.max(math.round(CurrentFov)-5,5)
-                TweenService:Create(workspace.CurrentCamera, TweenInfo.new(0.40, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {FieldOfView = CurrentFov}):Play()
-            end
-        end,warn)
-    end)
-    Mouse.WheelBackward:Connect(function() 
-        xpcall(function()
-            if UserInputService:IsKeyDown(Enum.KeyCode.LeftAlt) then
-                CurrentFov = math.min(math.max(math.round(CurrentFov)+5,5),120)
-                TweenService:Create(workspace.CurrentCamera, TweenInfo.new(0.40, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {FieldOfView = CurrentFov}):Play()
-            end
-        end,warn)
-    end)
-end
 
 local StaffRanks
 local function GetStaffLists(groupId, rank)
@@ -394,7 +322,6 @@ local function ChangeStaffGroupPrompt()
         ) 
     end,warn)
 end
-local Lists do if ListsModule then Lists = ListsModule.CheckArray(Players:GetChildren()) end end
 
 local function CheckStaff(Player)
     if not StaffRanks then return false end
@@ -411,6 +338,201 @@ local function CheckStaff(Player)
         end
     end
 end
+
+local ESPTeams = {}
+local AimbotTeams = {}
+local function GetAimbotTargets()
+    local Set = Config[tostring(game.PlaceId)].Aimbot
+    local out = {}
+    for _, Player in pairs(Players:GetPlayers()) do
+        if Player == LP then continue end
+        if Set.TeamType == "all" or (Set.TeamType == "enemy" and Player.Team ~= LP.Team) or (Set.TeamType == "friendly" and Player.Team == LP.Team) or (Set.TeamType == "select" and AimbotTeams[v.Team.Name] ) then
+            table.insert( out, Player )
+        end
+    end
+    return out
+end
+
+local function GetAimbotPart(Player)
+    if not Player then return end
+    local Set = Config[tostring(game.PlaceId)].Aimbot
+    local Char = Player.Character
+    if Char then
+        return Char:FindFirstChild(Set.AimPart)
+    end
+end
+
+local function CheckIfPlayerBehindWall(Target)
+    if not Target then return false end
+    local Part = workspace:FindPartOnRayWithIgnoreList(Ray.new(LP.Character.Head.Position, (Target.Position - LP.Character.Head.Position).Unit*500), {LP.Character}, false, true)
+    local Child = Part
+    if Child and LP.Character then
+        repeat
+            Child = Child.Parent
+        until Child.Parent == LP.Character.Parent or (not Child.Parent)
+    end
+    warn(Child)
+    local Humanoid = Child and Child:FindFirstChild("Humanoid")
+    if Humanoid then
+        for _, v in pairs(Humanoid.Parent:GetDescendants()) do
+            if v == Target then
+                local _, Visible = workspace.CurrentCamera:WorldToScreenPoint(Target.Position)
+                return Visible
+            end
+        end
+    end
+end
+
+local function GetPlayerClosestToMouse()
+    local Set = Config[tostring(game.PlaceId)].Aimbot
+    local Target, Part
+    local ClosestTarget = Set.FOV+1
+    local TargetList = GetAimbotTargets()
+    --Util.print(TargetList)
+    local function CheckSkip(Player)
+        local Notify = false
+        local Char = Player.Character
+        local LPChar = LP.Character
+        if (not Char) or (not LPChar) then return true, Notify and warn("Skipping", Player, "No Character") 
+        elseif Player == LP then return true, Notify and warn("Skipping", Player, "is Local")
+        elseif (not Char:FindFirstChild("HumanoidRootPart")) or (not Char:FindFirstChild("Humanoid")) then return true, Notify and warn("Skipping", Player, "Humanoid/HumanoidRootPart not found")
+        elseif Set.IgnoreStaff and CheckStaff(Player) then return true, Notify and warn("Skipping", Player, "is Staff")
+        elseif ((LP.Character.HumanoidRootPart.CFrame.Position - Player.Character:FindFirstChild("HumanoidRootPart").Position).Magnitude) > Set.Distance then return true, Notify and warn("Skipping", Player, "Too far")
+        elseif ListsModule and Lists[tostring(Player.UserId)] and Set.IgnoreLists[Lists[tostring(Player.UserId)]] then return true, Notify and warn("Skipping", Player, "is Listed")
+        elseif Set.WallCheck and not CheckIfPlayerBehindWall(GetAimbotPart(Player)) then return true, Notify and warn("Skipping", Player, "is Behind Wall")
+        elseif Set.IgnoreDead and Char.Humanoid.Health <= 0 then return true
+        else return false
+        end
+    end
+    for _, Player in pairs(TargetList) do 
+        --print(Player)
+        if CheckSkip(Player) then
+            continue
+        end
+        local Pos, Vis = workspace.CurrentCamera:WorldToViewportPoint(GetAimbotPart(Player).Position)
+        local Dist = (Vector2.new(Pos.X,Pos.Y)-MouseLocation).Magnitude
+        if Vis and Dist < Set.FOV and Dist < ClosestTarget then 
+            print(Player)
+            ClosestTarget = Dist
+            Target, Part = Player, GetAimbotPart(Player)
+        end
+    end
+    return Target, Part
+end
+
+local function GetESPDistance(Player)
+    if Player.Character == nil or Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") == nil then return math.huge, false end
+    local DistancePart do 
+        if Config[tostring(game.PlaceId)].ESP.DistanceMode == "Character" then
+            DistancePart = LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
+        elseif Config[tostring(game.PlaceId)].ESP.DistanceMode == "Camera" then
+            DistancePart = workspace.CurrentCamera
+        end
+    end
+    return DistancePart and (DistancePart.CFrame.Position - Player.Character:FindFirstChild("HumanoidRootPart").Position).Magnitude or math.huge, false
+end
+local function GetESPText(Player)
+    local set = Config[tostring(game.PlaceId)].ESP
+    local str = ""
+    local Humanoid = Player.Character and Player.Character:FindFirstChild("Humanoid")
+    local Distance = GetESPDistance(Player)
+    local DetailsVisible = (not set.UseDetailsDistance) or Distance < set.DetailDistance
+    if (Config[tostring(game.PlaceId)].ESP.Details.Name and DetailsVisible) or not Config[tostring(game.PlaceId)].ESP.Details.Name then
+        if set.ShowName or set.ShowDisplayName then
+            if set.ShowName and set.ShowDisplayName and Player.Name ~= Player.DisplayName then
+                str = `{Player.DisplayName} (@{Player.Name})`
+            elseif set.ShowName or set.ShowDisplayName then
+                str = set.ShowDisplayName and Player.DisplayName or Player.Name
+            end
+        end
+        if set.ShowHealth or set.ShowDistance then
+            str = str.."\n"
+        end
+    end
+    if (Config[tostring(game.PlaceId)].ESP.Details.Health and DetailsVisible) or not Config[tostring(game.PlaceId)].ESP.Details.Health then
+        if Humanoid and set.ShowHealth and table.find({"Scale", "Number"}, set.ShowHealthType) then
+            str = `{str}{Humanoid.Health}`
+        end
+        if Humanoid and set.ShowHealth and set.ShowHealthType == "Scale" then
+            str = str.."/"..Humanoid.MaxHealth
+        end
+    end
+    if (Config[tostring(game.PlaceId)].ESP.Details.Distance and DetailsVisible) or not Config[tostring(game.PlaceId)].ESP.Details.Distance then
+        if set.ShowDistance and Player ~= LP then
+            str = `{str} ↔{Util.round(Distance, set.DistanceDecimalPoints)}`
+        end
+    end
+    if __EspTextModify then
+        str = __EspTextModify(str)
+    end
+    return str
+end
+if not _G.ChatLogs then _G.ChatLogs = {} end
+local credits = {
+    "--- <b>ContextTerminal</b> ---",
+    "Developed by The Unseen",
+    "Design: GREENERY_101",
+    "Functionality: GREENERY_101, i_mNoAstronaut",
+    "Commands: GREENERY_101, i_mNoAstronaut",
+    "Plugins: i_mNoAstronaut, GREENERY_101"
+}
+
+local function setclipboardint(str)
+    setclipboard(tostring(str))
+end
+
+local function CheckIfInvokerAllowed(Invoker)
+    if table.find(_ALLOWEDEXECS, Invoker) then return true end
+end
+
+local function CheckIfVisible(part)
+    local _, vis = workspace.CurrentCamera:WorldToViewportPoint(part.Position)
+    return vis
+end
+
+local function FakeChat(Player, Message)
+    local HRP = Player.Character:FindFirstChild("Head")
+    if HRP then ChatService:Chat(HRP, _INVIS .. Message, 2) end
+end
+
+local function UnlockCamera()
+    LP.CameraMode = 'Classic'
+    LP.CameraMaxZoomDistance = 1000000
+    LP.CameraMinZoomDistance = 0
+    UserInputService.inputBegan:Connect(function(input) 
+        xpcall(function()
+            if input.KeyCode == Enum.KeyCode.LeftAlt then
+                LP.CameraMaxZoomDistance = (workspace.CurrentCamera.CoordinateFrame.p - workspace.CurrentCamera.Focus.p).magnitude
+                LP.CameraMinZoomDistance = (workspace.CurrentCamera.CoordinateFrame.p - workspace.CurrentCamera.Focus.p).magnitude
+                repeat wait() until not UserInputService:IsKeyDown(Enum.KeyCode.LeftAlt)
+                LP.CameraMaxZoomDistance = 1000000
+                LP.CameraMinZoomDistance = 0
+            end
+            if input.UserInputType == Enum.UserInputType.MouseButton3 then
+                if UserInputService:IsKeyDown(Enum.KeyCode.LeftAlt) then
+                    TweenService:Create(workspace.CurrentCamera, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {FieldOfView = StartFov}):Play()
+                end
+            end
+        end,warn)
+    end)
+    Mouse.WheelForward:Connect(function() 
+        xpcall(function()
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftAlt) then
+                CurrentFov = math.max(math.round(CurrentFov)-5,5)
+                TweenService:Create(workspace.CurrentCamera, TweenInfo.new(0.40, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {FieldOfView = CurrentFov}):Play()
+            end
+        end,warn)
+    end)
+    Mouse.WheelBackward:Connect(function() 
+        xpcall(function()
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftAlt) then
+                CurrentFov = math.min(math.max(math.round(CurrentFov)+5,5),120)
+                TweenService:Create(workspace.CurrentCamera, TweenInfo.new(0.40, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {FieldOfView = CurrentFov}):Play()
+            end
+        end,warn)
+    end)
+end
+
 local ListColors = {
     Blacklist = Color3.new(0.8, 0.8, 0),
     Whitelist = Color3.new(0, 0.9, 0.9),
@@ -472,7 +594,7 @@ if ListsModule then
     coroutine.wrap(function()
         while wait(10) do
             xpcall(function() 
-                while wait(5) do
+                while wait(120) do
                     Lists = ListsModule.CheckArray(Players:GetChildren())
                 end
             end,warn)
@@ -630,6 +752,29 @@ local function CheckESPTeam(v)
     return false
 end
 
+local function GetAimKey()
+    local Set = Config[tostring(game.PlaceId)].Aimbot
+    return (UserInputService:IsKeyDown(Set.AimKey) or Set.Mouse1Aim and Mouse1Held or Set.Mouse2Aim and Mouse2Held)
+end
+
+local function CalculateDropAndPred(AimPart)
+    local Set = Config[tostring(game.PlaceId)].Aimbot
+    local Pos = AimPart.Position
+    if Set.Drop and LP.Character and LP.Character:FindFirstChild("HumanoidRootPart") then
+        local Distance = (LP.Character.HumanoidRootPart.Position - AimPart.Position).Magnitude
+        if Set.DropType == "Linear" then
+            Pos = AimPart.Position+Vector3.new(0,(Distance/1000)*Set.DropAmount,0)
+        elseif Set.DropType == "LinearInc" then
+            local Distance = (LP.Character.HumanoidRootPart.Position - AimPart.Position).Magnitude
+            Pos = AimPart.Position+Vector3.new(0,((Distance/1000)*Set.DropAmount)+((Distance/1000)^Set.DropIncrease),0)
+        elseif Set.DropType == "Quad" then
+            local Distance = (LP.Character.HumanoidRootPart.Position - AimPart.Position).Magnitude
+            Pos = AimPart.Position+Vector3.new(0,(Distance^2)/(100000/Set.DropAmount),0)
+        end
+    end
+    return Pos
+end
+
 RunService.Stepped:connect(function(deltaTime)
     xpcall(function()
         if UserInputService:IsKeyDown(Enum.KeyCode.V) then
@@ -637,24 +782,39 @@ RunService.Stepped:connect(function(deltaTime)
         else
             LP.DevCameraOcclusionMode = 0
         end
+        xpcall(function()
+            if Aimbot then
+                    local Set = Config[tostring(game.PlaceId)].Aimbot
+                    if Set.Method == "Lock" then
+                        local AimPart
+                        AimbotTarget, AimPart = GetPlayerClosestToMouse()
+                        if AimPart and GetAimKey() then
+                            workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, CalculateDropAndPred(AimPart))
+                        end
+                    end
+            else
+                AimbotTarget = nil
+            end
+        end,warn)
         if ESP then
             for i, v in pairs(Players:GetPlayers()) do
                 xpcall(function()
-                    if v.Character and v.Character:FindFirstChild("HumanoidRootPart") and not (v.Character:FindFirstChild("ESPHighlight") or v.Character.HumanoidRootPart:FindFirstChild("ESPHighlight")) and CheckIfVisible(v.Character:FindFirstChild("HumanoidRootPart")) and GetESPDistance(v) < Config[tostring(game.PlaceId)].ESP.Distance and CheckESPTeam(v) then
+                    local Char = v.Character
+                    if Char and Char:FindFirstChild("HumanoidRootPart") and not (Char:FindFirstChild("ESPHighlight") or Char.HumanoidRootPart:FindFirstChild("ESPHighlight")) and CheckIfVisible(Char:FindFirstChild("HumanoidRootPart")) and GetESPDistance(v) < Config[tostring(game.PlaceId)].ESP.Distance and CheckESPTeam(v) then
                         local Color do 
-                            if Config[tostring(game.PlaceId)].ESP.ShowHealth and Config[tostring(game.PlaceId)].ESP.ShowHealthType == "Color" then Color = Color3.new(1-v.Character.Humanoid.Health/v.Character.Humanoid.MaxHealth,v.Character.Humanoid.Health/v.Character.Humanoid.MaxHealth)
+                            if Config[tostring(game.PlaceId)].ESP.ShowHealth and Config[tostring(game.PlaceId)].ESP.ShowHealthType == "Color" then Color = Color3.new(1-Char.Humanoid.Health/Char.Humanoid.MaxHealth,Char.Humanoid.Health/Char.Humanoid.MaxHealth)
                             elseif Config[tostring(game.PlaceId)].ESP.ListColors and CheckStaff(tostring(v.UserId)) then Color = ListColors.Staff
                             elseif Config[tostring(game.PlaceId)].ESP.ListColors and ListsModule and Lists[tostring(v.UserId)] then Color = ListColors[Lists[tostring(v.UserId)]]
                             elseif Config[tostring(game.PlaceId)].ESP.TeamColors then Color = v.TeamColor.Color
                             else Color = Config[tostring(game.PlaceId)].ESP.DefaultColor end
                         end
-                        local Extents = v.Character:GetExtentsSize()
+                        local Extents = Char:GetExtentsSize()
                         local HL = Config[tostring(game.PlaceId)].ESP.Style == "Highlight" and CreateObject("Highlight",{
                             OutlineColor = Color,
                             FillTransparency = 1,
                             DepthMode = "AlwaysOnTop",
                             Name = "ESPHighlight",
-                            Parent = v.Character
+                            Parent = Char
                         }) or Config[tostring(game.PlaceId)].ESP.Style == "Box" and CreateObject("BillboardGui",{
                             Name = "ESPHighlight",
                             Size = UDim2.fromScale(Extents.X,Extents.Y),
@@ -663,7 +823,7 @@ RunService.Stepped:connect(function(deltaTime)
                             MaxDistance = Config[tostring(game.PlaceId)].ESP.Distance,
                             AlwaysOnTop = true,
                             ClipsDescendants = false,
-                            Parent = v.Character.HumanoidRootPart,
+                            Parent = Char.HumanoidRootPart,
                             Enabled = (not Config[tostring(game.PlaceId)].ESP.ShowLP and v ~= LP or Config[tostring(game.PlaceId)].ESP.ShowLP)
                         })
                         if Config[tostring(game.PlaceId)].ESP.Style == "Box" then
@@ -695,7 +855,7 @@ RunService.Stepped:connect(function(deltaTime)
                             MaxDistance = Config[tostring(game.PlaceId)].ESP.Distance,
                             AlwaysOnTop = true,
                             ClipsDescendants = false,
-                            Parent = v.Character.Head,
+                            Parent = Char.Head,
                             Enabled = (not Config[tostring(game.PlaceId)].ESP.ShowLP and v ~= LP or Config[tostring(game.PlaceId)].ESP.ShowLP)
                         })
                         local NameText = CreateObject("TextLabel", {
@@ -713,8 +873,8 @@ RunService.Stepped:connect(function(deltaTime)
                         })
                         if Config[tostring(game.PlaceId)].ESP.ShowHealth and Config[tostring(game.PlaceId)].ESP.ShowHealthType == "Color" then
                             local RS do 
-                                RS = v.Character.Humanoid:GetPropertyChangedSignal("Health"):Connect(function()
-                                    ChangeColor(Color3.new(2-(v.Character.Humanoid.Health/v.Character.Humanoid.MaxHealth)*2,(v.Character.Humanoid.Health/v.Character.Humanoid.MaxHealth)*2))
+                                RS = Char.Humanoid:GetPropertyChangedSignal("Health"):Connect(function()
+                                    ChangeColor(Color3.new(2-(Char.Humanoid.Health/Char.Humanoid.MaxHealth)*2,(Char.Humanoid.Health/Char.Humanoid.MaxHealth)*2))
                                 end)
                                 HL.Destroying:Once(function()
                                     RS:Disconnect()
@@ -732,24 +892,25 @@ RunService.Stepped:connect(function(deltaTime)
                             })
                             local HealthBarDelay = CreateObject("Frame", {
                                 BackgroundTransparency = 0.1,
-                                Size = UDim2.fromScale(v.Character.Humanoid.Health/v.Character.Humanoid.MaxHealth,1),
+                                Size = UDim2.fromScale(Char.Humanoid.Health/Char.Humanoid.MaxHealth,1),
                                 BorderSizePixel = 0,
                                 Parent = HealthBarFrame,
                                 BackgroundColor3 = Color3.fromHex("#ff0000")
                             })
                             local HealthBarDisplay = CreateObject("Frame", {
-                                Size = UDim2.fromScale(v.Character.Humanoid.Health/v.Character.Humanoid.MaxHealth,1),
+                                Size = UDim2.fromScale(Char.Humanoid.Health/Char.Humanoid.MaxHealth,1),
                                 BorderSizePixel = 0,
                                 Parent = HealthBarFrame,
-                                BackgroundColor3 = Color3.new(2-(v.Character.Humanoid.Health/v.Character.Humanoid.MaxHealth)*2,(v.Character.Humanoid.Health/v.Character.Humanoid.MaxHealth)*2)
+                                BackgroundColor3 = Color3.new(2-(Char.Humanoid.Health/Char.Humanoid.MaxHealth)*2,(Char.Humanoid.Health/Char.Humanoid.MaxHealth)*2)
                             })
                             local timeout = 0
                             local RS do
-                                RS = v.Character.Humanoid:GetPropertyChangedSignal("Health"):Connect(function()
-                                    HealthBarDisplay.BackgroundColor3 = Color3.new(2-(v.Character.Humanoid.Health/v.Character.Humanoid.MaxHealth)*2,(v.Character.Humanoid.Health/v.Character.Humanoid.MaxHealth)*2)
-                                    HealthBarDisplay:TweenSize(UDim2.fromScale(v.Character.Humanoid.Health/v.Character.Humanoid.MaxHealth,1),
-                                        Enum.EasingDirection.Out, Enum.EasingStyle.Quint, 0.5, true
-                                    )
+                                RS = Char.Humanoid:GetPropertyChangedSignal("Health"):Connect(function()
+                                    HealthBarDisplay.BackgroundColor3 = Color3.new(2-(Char.Humanoid.Health/Char.Humanoid.MaxHealth)*2,(Char.Humanoid.Health/Char.Humanoid.MaxHealth)*2)
+                                    if HealthBarDisplay.Parent == HealthBarFrame then
+                                        HealthBarDisplay:TweenSize(UDim2.fromScale(Char.Humanoid.Health/Char.Humanoid.MaxHealth,1),
+                                            Enum.EasingDirection.Out, Enum.EasingStyle.Quint, 0.5, true)
+                                    end
                                     if timeout == 0 then
                                         timeout = 2
                                         while timeout > 0 do
@@ -757,9 +918,10 @@ RunService.Stepped:connect(function(deltaTime)
                                             timeout = timeout-0.1
                                         end
                                         timeout = 0
-                                        HealthBarDelay:TweenSize(UDim2.fromScale(v.Character.Humanoid.Health/v.Character.Humanoid.MaxHealth,1),
-                                        Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true
-                                    )
+                                        if HealthBarDelay.Parent == HealthBarFrame then
+                                            HealthBarDelay:TweenSize(UDim2.fromScale(Char.Humanoid.Health/Char.Humanoid.MaxHealth,1),
+                                            Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
+                                        end
                                     else
                                         timeout = .7
                                     end
@@ -787,18 +949,14 @@ RunService.Stepped:connect(function(deltaTime)
             end
         else
             for i, v in pairs(Players:GetPlayers()) do
-                if v.Character and v.Character:FindFirstChild("ESPHighlight") then v.Character:FindFirstChild("ESPHighlight"):Destroy() end
-                if v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character.HumanoidRootPart:FindFirstChild("ESPHighlight") then v.Character.HumanoidRootPart:FindFirstChild("ESPHighlight"):Destroy() end
+                local Char = v.Character
+                if Char and Char:FindFirstChild("ESPHighlight") then Char:FindFirstChild("ESPHighlight"):Destroy() end
+                if Char and Char:FindFirstChild("HumanoidRootPart") and Char.HumanoidRootPart:FindFirstChild("ESPHighlight") then Char.HumanoidRootPart:FindFirstChild("ESPHighlight"):Destroy() end
             end
         end
-    end,warn)
-end)
-UserInputService.inputBegan:Connect(function(input) 
-    xpcall(function()
-        if input.KeyCode == Config[tostring(game.PlaceId)].ESP.Keybind then
-            ESP = not ESP
-        end
-    end,warn)
+    end,function(err)
+        warn(debug.traceback( err ))
+    end)
 end)
 local function refresh()
 	local oldpos = LP.Character.HumanoidRootPart.CFrame
@@ -1044,6 +1202,7 @@ local function GetPosList()
         return out
     end
 end
+
 
 local function GetGotoList()
     local out = {}
@@ -1819,7 +1978,7 @@ local function ThemeProviderEntries()
                         end
                     },
                     {
-                        Text = "ESP Settings",
+                        Text = "ESP Settings...",
                         Submenu = function()
                             return {
                                 {
@@ -2132,6 +2291,306 @@ local function ThemeProviderEntries()
                             OnlyCloseSelf = true
                         }
                     },
+                    {
+                        Text = "Aimbot Settings...",
+                        Submenu = function()
+                            return {
+                                {
+                                    Text = "Method...",
+                                    Submenu = (function()
+                                        local out = {}
+                                        for _, Type in pairs({"Lock", "Smooth", "Silent"}) do
+                                            table.insert(out,{
+                                                Text = Type,
+                                                Type = "CheckBox",
+                                                Name = Type,
+                                                Value = Config[tostring(game.PlaceId)].Aimbot.Method == Type,
+                                                IsAChoice = true,
+                                                OnChecked = function(Value)
+                                                    Config[tostring(game.PlaceId)].Aimbot.Method = Type
+                                                    Config:Write()
+                                                end,
+                                                OnUnchecked = function(Value)
+                                                    Config:Write()
+                                                end
+                                            })
+                                        end
+                                        return out
+                                    end)
+                                },
+                                {
+                                    Type = "CheckBox",
+                                    Text = "Ignore Dead",
+                                    Name = "IgnoreDead",
+                                    Value = Config[tostring(game.PlaceId)].Aimbot.IgnoreDead,
+                                    M1Func = function(Value)
+                                        Config[tostring(game.PlaceId)].Aimbot.IgnoreDead = Value
+                                        Config:Write()
+                                    end
+                                },
+                                {
+                                    Type = "CheckBox",
+                                    Text = "Ignore Staff",
+                                    Name = "IgnoreStaff",
+                                    Value = Config[tostring(game.PlaceId)].Aimbot.IgnoreStaff,
+                                    M1Func = function(Value)
+                                        Config[tostring(game.PlaceId)].Aimbot.IgnoreStaff = Value
+                                        Config:Write()
+                                    end
+                                },
+                                {
+                                    Type = "CheckBox",
+                                    Text = "Wall Check",
+                                    Name = "WallCheck",
+                                    Value = Config[tostring(game.PlaceId)].Aimbot.WallCheck,
+                                    M1Func = function(Value)
+                                        Config[tostring(game.PlaceId)].Aimbot.WallCheck = Value
+                                        Config:Write()
+                                    end
+                                },
+                                {
+                                    Type = "Slider",
+                                    Text = "Distance",
+                                    Name = "AimbotDistance",
+                                    ValueDisplay = true,
+                                    MaxValue = 10000,
+                                    MinValue = 5,
+                                    MinSliderSize = 200,
+                                    StartingValue = Config[tostring(game.PlaceId)].Aimbot.Distance,
+                                    Rounding = 0,
+                                    OnRelease = function(Value) 
+                                        Config[tostring(game.PlaceId)].Aimbot.Distance = Value
+                                        Config:Write()
+                                    end
+                                },
+                                {
+                                    Type = "Slider",
+                                    Text = "FOV",
+                                    Name = "AimbotFOV",
+                                    ValueDisplay = true,
+                                    MaxValue = 500,
+                                    MinValue = 0,
+                                    MinSliderSize = 200,
+                                    StartingValue = Config[tostring(game.PlaceId)].Aimbot.FOV,
+                                    Rounding = 0,
+                                    OnRelease = function(Value) 
+                                        Config[tostring(game.PlaceId)].Aimbot.FOV = Value
+                                        Config:Write()
+                                    end
+                                },
+                                {
+                                    Text = "Show Team...",
+                                    Submenu = function()
+                                        return {
+                                            {
+                                                Type = "CheckBox",
+                                                Text = "All",
+                                                Name = "All",
+                                                IsAChoice = true,
+                                                Value = Config[tostring(game.PlaceId)].Aimbot.TeamType == "all",
+                                                OnChecked = function(Value)
+                                                    Config[tostring(game.PlaceId)].Aimbot.TeamType = "all"
+                                                    Config:Write()
+                                                end
+                                            },
+                                            {
+                                                Type = "CheckBox",
+                                                Text = "Enemies",
+                                                Name = "Enemies",
+                                                IsAChoice = true,
+                                                Value = Config[tostring(game.PlaceId)].Aimbot.TeamType == "enemy",
+                                                OnChecked = function(Value)
+                                                    Config[tostring(game.PlaceId)].Aimbot.TeamType = "enemy"
+                                                    Config:Write()
+                                                end
+                                            },
+                                            {
+                                                Type = "CheckBox",
+                                                Text = "Allies",
+                                                Name = "Allies",
+                                                IsAChoice = true,
+                                                Value = Config[tostring(game.PlaceId)].Aimbot.TeamType == "friendly",
+                                                OnChecked = function(Value)
+                                                    Config[tostring(game.PlaceId)].Aimbot.TeamType = "friendly"
+                                                    Config:Write()
+                                                end
+                                            },
+                                            {
+                                                Type = "CheckBox",
+                                                Text = "Selected...",
+                                                Name = "Selected",
+                                                IsAChoice = true,
+                                                Value = Config[tostring(game.PlaceId)].Aimbot.TeamType == "select",
+                                                OnChecked = function(Value)
+                                                    Config[tostring(game.PlaceId)].Aimbot.TeamType = "select"
+                                                    Config:Write()
+                                                end,
+                                                Submenu = function()
+                                                    local out = {}
+                                                    for _, Team in pairs(game:GetService("Teams"):GetChildren()) do
+                                                        table.insert(out, {
+                                                            Text = `<font color="#{Team.TeamColor.Color:ToHex()}">{Team.Name}</font>`,
+                                                            Name = Team.Name,
+                                                            Type = "CheckBox",
+                                                            Value = AimbotTeams[Team.Name],
+                                                            M1Func = function(Value)
+                                                                AimbotTeams[Team.Name] = Value
+                                                            end
+                                                        })
+                                                    end
+                                                    return out
+                                                end
+                                            }
+                                        }
+                                    end
+                                },
+                                (function()
+                                    if ListsModule then
+                                        return {
+                                            Text = "Ignore Lists...",
+                                            Submenu = function()
+                                                local out = {}
+                                                for _, List in pairs({"Whitelist", "SoftWhitelist", "Blacklist"}) do
+                                                    table.insert(out, {
+                                                        Text = List,
+                                                        Name = List,
+                                                        Type = "CheckBox",
+                                                        Value = Config[tostring(game.PlaceId)].Aimbot.IgnoreLists[List],
+                                                        M1Func = function(Value)
+                                                            Config[tostring(game.PlaceId)].Aimbot.IgnoreLists[List] = Value
+                                                            Config:Write()
+                                                        end
+                                                    })
+                                                end
+                                                return out
+                                            end
+                                        }
+                                    else
+                                        return nil
+                                    end
+                                end)(),
+                                {
+                                    Type = "Keybind",
+                                    Keybind = Config[tostring(game.PlaceId)].Aimbot.Keybind,
+                                    Text = "Toggle Keybind",
+                                    OnKeybindChange = function(input)
+                                        Config[tostring(game.PlaceId)].Aimbot.Keybind = input.KeyCode
+                                        Config:Write()
+                                    end
+                                },
+                                {
+                                    Type = "Keybind",
+                                    Keybind = Config[tostring(game.PlaceId)].Aimbot.AimKey,
+                                    Text = "Aim Keybind",
+                                    OnKeybindChange = function(input)
+                                        Config[tostring(game.PlaceId)].Aimbot.AimKey = input.KeyCode
+                                        Config:Write()
+                                    end
+                                },
+                                {
+                                    Type = "CheckBox",
+                                    Text = "Drop Compensation",
+                                    Name = "Drop",
+                                    Value = Config[tostring(game.PlaceId)].Aimbot.Drop,
+                                    OnChecked = function(Value)
+                                        Config[tostring(game.PlaceId)].Aimbot.Drop = Value
+                                        Config:Write()
+                                    end,
+                                    Submenu = function()
+                                        return {
+                                            {
+                                                Text = "Type",
+                                                Submenu = function()
+                                                    return {
+                                                        {
+                                                            Type = "CheckBox",
+                                                            Text = "Linear",
+                                                            Name = "Linear",
+                                                            IsAChoice = true,
+                                                            Value = Config[tostring(game.PlaceId)].Aimbot.DropType == "Linear",
+                                                            OnChecked = function(Value)
+                                                                Config[tostring(game.PlaceId)].Aimbot.DropType = "Linear"
+                                                                Config:Write()
+                                                            end
+                                                        },
+                                                        {
+                                                            Type = "CheckBox",
+                                                            Text = "Linear with Increase",
+                                                            Name = "LinearInc",
+                                                            IsAChoice = true,
+                                                            Value = Config[tostring(game.PlaceId)].Aimbot.DropType == "LinearInc",
+                                                            OnChecked = function(Value)
+                                                                Config[tostring(game.PlaceId)].Aimbot.DropType = "LinearInc"
+                                                                Config:Write()
+                                                            end
+                                                        },
+                                                        {
+                                                            Type = "CheckBox",
+                                                            Text = "Quad",
+                                                            Name = "Quad",
+                                                            IsAChoice = true,
+                                                            Value = Config[tostring(game.PlaceId)].Aimbot.DropType == "Quad",
+                                                            OnChecked = function(Value)
+                                                                Config[tostring(game.PlaceId)].Aimbot.DropType = "Quad"
+                                                                Config:Write()
+                                                            end
+                                                        }
+                                                    }
+                                                end
+                                            },
+                                            {
+                                                Type = "Slider",
+                                                Text = "Drop Amount",
+                                                Name = "DropAmount",
+                                                ValueDisplay = true,
+                                                MaxValue = 25,
+                                                MinValue = 0,
+                                                MinSliderSize = 200,
+                                                Tooltip = (
+                                                    Config[tostring(game.PlaceId)].Aimbot.DropType == "Linear" and "(Distance/1000)*Amount" or
+                                                    Config[tostring(game.PlaceId)].Aimbot.DropType == "LinearInc" and "((Distance/1000)*Amount)+(Distance/1000)^Increase" or
+                                                    Config[tostring(game.PlaceId)].Aimbot.DropType == "Quad" and "(Distance^2)/(100000/Amount)"
+                                                ),
+                                                StartingValue = Config[tostring(game.PlaceId)].Aimbot.DropAmount,
+                                                Rounding = 1,
+                                                OnRelease = function(Value) 
+                                                    Config[tostring(game.PlaceId)].Aimbot.DropAmount = Value
+                                                    Config:Write()
+                                                end
+                                            },
+                                            (function()
+                                                if Config[tostring(game.PlaceId)].Aimbot.DropType == "LinearInc" then
+                                                    return {
+                                                        Type = "Slider",
+                                                        Text = "Drop Increase",
+                                                        Name = "DropIncrease",
+                                                        ValueDisplay = true,
+                                                        MaxValue = 10,
+                                                        MinValue = -10,
+                                                        MinSliderSize = 200,
+                                                        Tooltip = (
+                                                            Config[tostring(game.PlaceId)].Aimbot.DropType == "Linear" and "(Distance/1000)*Amount" or
+                                                            Config[tostring(game.PlaceId)].Aimbot.DropType == "LinearInc" and "((Distance/1000)*Amount)+(Distance/1000)^Increase" or
+                                                            Config[tostring(game.PlaceId)].Aimbot.DropType == "Quad" and "(Distance^2)/(100000/Amount)"
+                                                        ),
+                                                        StartingValue = Config[tostring(game.PlaceId)].Aimbot.DropIncrease,
+                                                        Rounding = 1,
+                                                        OnRelease = function(Value) 
+                                                            Config[tostring(game.PlaceId)].Aimbot.DropIncrease = Value
+                                                            Config:Write()
+                                                        end
+                                                    }
+                                                end
+                                            end)()
+                                        }
+                                    end
+                                }
+                            }
+                        end,
+                        SubmenuSettings = {
+                            OnlyCloseSelf = true
+                        }
+                    }
                 } 
             end
         }
@@ -2668,7 +3127,7 @@ if ThemeProvider then
     UnviewButton.Background.Position = UDim2.new(0, 0, -1, 0)
     UnviewButton.Size = UDim2.new(0, -12, 1, 0)
     local function CheckView()
-        if workspace.CurrentCamera.CameraSubject == LP.Character or LP.Character:FindFirstChild("Humanoid") and (LP.Character and workspace.CurrentCamera.CameraSubject == LP.Character.Humanoid) then
+        if LP.Character and workspace.CurrentCamera.CameraSubject == LP.Character or (LP.Character:FindFirstChild("Humanoid") and workspace.CurrentCamera.CameraSubject == LP.Character:FindFirstChild("Humanoid")) then
             UnviewButton.Background:TweenPosition(UDim2.new(0, 0, -1, 0),
                 Enum.EasingDirection.In,
                 Enum.EasingStyle.Back, .5, 
@@ -3047,10 +3506,14 @@ local function UpperOutput(text, color, timer)
             Size = UDim2.fromOffset(0,0),
             ZIndex = 2,
         })
-        TextLabel:TweenSize(UDim2.new(0, 400, 0, 16),Enum.EasingDirection.Out,Enum.EasingStyle.Quint,.1)
+        if TextLabel.Parent == UpperOutputFrame then
+            TextLabel:TweenSize(UDim2.new(0, 400, 0, 16),Enum.EasingDirection.Out,Enum.EasingStyle.Quint,.1)
+        end
         wait(timer)
         TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
-        TextLabel:TweenSize(UDim2.new(0, 400, 0, 0),Enum.EasingDirection.Out,Enum.EasingStyle.Quint,.1)
+        if TextLabel.Parent == UpperOutputFrame then
+            TextLabel:TweenSize(UDim2.new(0, 400, 0, 0),Enum.EasingDirection.Out,Enum.EasingStyle.Quint,.1)
+        end
         wait(.1)
         TextLabel:Destroy()
     end)()
@@ -3077,24 +3540,6 @@ Button.MouseEnter:Connect(function()
 end)
 Button.MouseLeave:Connect(function()
     Frame:TweenSize(UDim2.fromOffset(48,48),Enum.EasingDirection.InOut,Enum.EasingStyle.Sine,.1)
-end)
-local Mouse1Held = false
-local Mouse2Held = false
-UserInputService.InputBegan:Connect(function(input)
-    local inputType = input.UserInputType
-    if inputType == Enum.UserInputType.MouseButton1 then
-        Mouse1Held = true
-    elseif inputType == Enum.UserInputType.MouseButton2 then
-        Mouse2Held = true
-    end
-end)    
-UserInputService.InputEnded:Connect(function(input)
-    local inputType = input.UserInputType
-    if inputType == Enum.UserInputType.MouseButton1 then
-        Mouse1Held = false
-    elseif inputType == Enum.UserInputType.MouseButton2 then
-        Mouse2Held = false
-    end
 end)
 local function Drag()
     local DragOffset = Vector2.new(Frame.Position.X.Offset-MouseLocation.X, Frame.Position.Y.Offset-MouseLocation.Y)
@@ -4793,6 +5238,17 @@ local function ExecCommand(Command: string, Invoker)
 end
 
 UserInputService.InputBegan:Connect(function(input)
+    
+    xpcall(function()
+        if input.KeyCode == Config[tostring(game.PlaceId)].ESP.Keybind then
+            ESP = not ESP
+            out("ESP toggled "..(ESP and "On" or "Off"),1)
+        end
+        if input.KeyCode == Config[tostring(game.PlaceId)].Aimbot.Keybind then
+            Aimbot = not Aimbot
+            out("Aimbot toggled "..(Aimbot and "On" or "Off"),1)
+        end
+    end,warn)
     if input.KeyCode == Config.Keybind and not UserInputService:GetFocusedTextBox() then
         --repeat wait() until not UserInputService:IsKeyDown(Config.Keybind)
         task.wait()
