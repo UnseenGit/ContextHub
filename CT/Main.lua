@@ -822,7 +822,7 @@ local function ValidateArguments(Args, RayMethod)
     return Matches >= RayMethod.ArgCountRequired
 end
 local oldNameCall
-oldNameCall = hookmetamethod(game, "__namecall", newcclosure(function(...)
+--[[oldNameCall = hookmetamethod(game, "__namecall", newcclosure(function(...)
     local Method = getnamecallmethod()
     local Args = {...}
     local self = Args[1]
@@ -833,24 +833,21 @@ oldNameCall = hookmetamethod(game, "__namecall", newcclosure(function(...)
                 local oldRay = Args[2]
                 local Origin = oldRay.Origin
                 Args[2] = Ray.new(Origin, (CalculateDropAndPred(AimPart)-Origin).Unit * Set.Distance)
-                print(Args[2])
                 return oldNameCall(table.unpack(Args))
             end
         elseif Method == "Raycast" and Set.SilentMode == "Raycast" then
             if not ValidateArguments(Args, ExpectedArguments.Raycast) then
                 return oldNameCall(...)
             end
+            Util.print(Args, "old")
             local Origin = Args[2]
             Args[3] = (CalculateDropAndPred(AimPart)-Origin).Unit * Set.Distance
-            print(typeof(Args[3]), Args[3])
-            if typeof(Args[3]) ~= "Vector3" or typeof(Args[2]) ~= "Vector3" then
-                return oldNameCall(...)
-            end
-            return oldNameCall(table.unpack(Args))
+            Util.print(Args)
+            return oldNameCall(Args[1],Args[2],Args[3],Args[4],Args[5])
         end
     end
     return oldNameCall(...)
-end))
+end))]]
 
 
 RunService.Stepped:connect(function(deltaTime)
