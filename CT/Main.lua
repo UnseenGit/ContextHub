@@ -102,7 +102,7 @@ local MaterialService = game:GetService("MaterialService")
 local Mouse = game:GetService("Players").LocalPlayer:GetMouse()
 local ESP = false
 local Aimbot = false
-local AimbotTarget
+local AimbotTarget, AimPart
 if not isfile("StaffGroups.json") then writefile("StaffGroups.json", "[]") end
 local StaffGroups = Util.readJSON("StaffGroups.json")[tostring(game.PlaceId)]
 local ZoomMax, ZoomMin = LP.CameraMaxZoomDistance, LP.CameraMinZoomDistance
@@ -175,6 +175,7 @@ local Config = ConfigModule:Create("CTCONFIG.lua",{
         },
         Aimbot = {
             Method = "Lock",
+            SilentMode = "Raycast",
             FOV = 100,
             IgnoreLists = {},
             IgnoreDead = true,
@@ -365,15 +366,16 @@ local function GetAimbotPart(Player)
 end
 
 local function CheckIfPlayerBehindWall(Target)
+    local Set = Config[tostring(game.PlaceId)].Aimbot
     if not Target then return false end
-    local Part = workspace:FindPartOnRayWithIgnoreList(Ray.new(LP.Character.Head.Position, (Target.Position - LP.Character.Head.Position).Unit*500), {LP.Character}, false, true)
+    local Part = workspace:FindPartOnRayWithIgnoreList(Ray.new(LP.Character.Head.Position, (Target.Position - LP.Character.Head.Position).Unit*Set.Distance), {LP.Character}, false, true)
     local Child = Part
     if Child and LP.Character then
         repeat
             Child = Child.Parent
         until Child.Parent == LP.Character.Parent or (not Child.Parent)
     end
-    warn(Child)
+    --warn(Child)
     local Humanoid = Child and Child:FindFirstChild("Humanoid")
     if Humanoid then
         for _, v in pairs(Humanoid.Parent:GetDescendants()) do
@@ -414,7 +416,7 @@ local function GetPlayerClosestToMouse()
         local Pos, Vis = workspace.CurrentCamera:WorldToViewportPoint(GetAimbotPart(Player).Position)
         local Dist = (Vector2.new(Pos.X,Pos.Y)-MouseLocation).Magnitude
         if Vis and Dist < Set.FOV and Dist < ClosestTarget then 
-            print(Player)
+            --print(Player)
             ClosestTarget = Dist
             Target, Part = Player, GetAimbotPart(Player)
         end
@@ -781,6 +783,75 @@ local function CalculateDropAndPred(AimPart)
     end
     return Pos
 end
+local ExpectedArguments = {
+    FindPartOnRayWithIgnoreList = {
+        ArgCountRequired = 3,
+        Args = {
+            "Instance", "Ray", "table", "boolean", "boolean"
+        }
+    },
+    FindPartOnRayWithWhitelist = {
+        ArgCountRequired = 3,
+        Args = {
+            "Instance", "Ray", "table", "boolean"
+        }
+    },
+    FindPartOnRay = {
+        ArgCountRequired = 2,
+        Args = {
+            "Instance", "Ray", "Instance", "boolean", "boolean"
+        }
+    },
+    Raycast = {
+        ArgCountRequired = 3,
+        Args = {
+            "Instance", "Vector3", "Vector3", "RaycastParams"
+        }
+    }
+}
+local function ValidateArguments(Args, RayMethod)
+    local Matches = 0
+    if #Args < RayMethod.ArgCountRequired then
+        return false
+    end
+    for Pos, Argument in next, Args do
+        if typeof(Argument) == RayMethod.Args[Pos] then
+            Matches = Matches + 1
+        end
+    end
+    return Matches >= RayMethod.ArgCountRequired
+end
+local oldNameCall
+oldNameCall = hookmetamethod(game, "__namecall", newcclosure(function(...)
+    local Method = getnamecallmethod()
+    local Args = {...}
+    local self = Args[1]
+    if Aimbot and Config[tostring(game.PlaceId)].Aimbot.Method == "Silent" and Args[1] == workspace and AimbotTarget and AimPart and not checkcaller() then
+        local Set = Config[tostring(game.PlaceId)].Aimbot
+        if Method == "FindPartOnRayWithWhitelist" and Set.SilentMode == "FindPartOnRayWithWhitelist" then
+            if ValidateArguments(Args, ExpectedArguments.FindPartOnRayWithWhitelist) then
+                local oldRay = Args[2]
+                local Origin = oldRay.Origin
+                Args[2] = Ray.new(Origin, (CalculateDropAndPred(AimPart)-Origin).Unit * Set.Distance)
+                print(Args[2])
+                return oldNameCall(table.unpack(Args))
+            end
+        elseif Method == "Raycast" and Set.SilentMode == "Raycast" then
+            if not ValidateArguments(Args, ExpectedArguments.Raycast) then
+                return oldNameCall(...)
+            end
+            local Origin = Args[2]
+            Args[3] = (CalculateDropAndPred(AimPart)-Origin).Unit * Set.Distance
+            print(typeof(Args[3]), Args[3])
+            if typeof(Args[3]) ~= "Vector3" or typeof(Args[2]) ~= "Vector3" then
+                return oldNameCall(...)
+            end
+            return oldNameCall(table.unpack(Args))
+        end
+    end
+    return oldNameCall(...)
+end))
+
 
 RunService.Stepped:connect(function(deltaTime)
     xpcall(function()
@@ -791,14 +862,13 @@ RunService.Stepped:connect(function(deltaTime)
         end
         xpcall(function()
             if Aimbot then
-                    local Set = Config[tostring(game.PlaceId)].Aimbot
-                    if Set.Method == "Lock" then
-                        local AimPart
-                        AimbotTarget, AimPart = GetPlayerClosestToMouse()
-                        if AimPart and GetAimKey() then
-                            workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, CalculateDropAndPred(AimPart))
-                        end
+                local Set = Config[tostring(game.PlaceId)].Aimbot
+                AimbotTarget, AimPart = GetPlayerClosestToMouse()
+                if Set.Method == "Lock" then
+                    if AimPart and GetAimKey() then
+                        workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, CalculateDropAndPred(AimPart))
                     end
+                end
             else
                 AimbotTarget = nil
             end
@@ -2319,6 +2389,26 @@ local function ThemeProviderEntries()
                                                 end,
                                                 OnUnchecked = function(Value)
                                                     Config:Write()
+                                                end,
+                                                Submenu = Type == "Silent" and function()
+                                                    local out = {}
+                                                    for _, Type in pairs({"FindPartOnRayWithWhitelist", "FindPartOnRayWithIgnoreList", "FindPartOnRay", "FindPartOnRay", "Raycast", "Mouse Hit"}) do
+                                                        table.insert(out,{
+                                                            Text = Type,
+                                                            Type = "CheckBox",
+                                                            Name = Type,
+                                                            Value = Config[tostring(game.PlaceId)].Aimbot.SilentMode == Type,
+                                                            IsAChoice = true,
+                                                            OnChecked = function(Value)
+                                                                Config[tostring(game.PlaceId)].Aimbot.SilentMode = Type
+                                                                Config:Write()
+                                                            end,
+                                                            OnUnchecked = function(Value)
+                                                                Config:Write()
+                                                            end
+                                                        })
+                                                    end
+                                                    return out
                                                 end
                                             })
                                         end
@@ -2499,7 +2589,7 @@ local function ThemeProviderEntries()
                                     Text = "Drop Compensation...",
                                     Name = "Drop",
                                     Value = Config[tostring(game.PlaceId)].Aimbot.Drop,
-                                    OnChecked = function(Value)
+                                    M1Func = function(Value)
                                         Config[tostring(game.PlaceId)].Aimbot.Drop = Value
                                         Config:Write()
                                     end,
@@ -2590,7 +2680,7 @@ local function ThemeProviderEntries()
                                     Text = "Prediction...",
                                     Name = "Pred",
                                     Value = Config[tostring(game.PlaceId)].Aimbot.Pred,
-                                    OnChecked = function(Value)
+                                    M1Func = function(Value)
                                         Config[tostring(game.PlaceId)].Aimbot.Pred = Value
                                         Config:Write()
                                     end
@@ -5373,7 +5463,8 @@ end
 Commands.loadplugin = {
     Args = {"Path"},
     Desc = "Loads a plugin from path.",  
-    func = function(Invoker, Path)
+    func = function(Invoker, ...)
+        local Path = table.concat({...}, " ")
         if isfile(Path) then
             local Script, err = loadstring(startstr..readfile(Path))
             if Script then
