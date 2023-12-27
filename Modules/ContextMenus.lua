@@ -586,7 +586,7 @@ function module.CreateSyntaxHighlightTextbox(Locked, ...)
 		CursorLabel.BackgroundTransparency = 1
 	end)
 	if err then
-		print(err)
+		warn(err)
 	end
 	return DisplayBox
 end
