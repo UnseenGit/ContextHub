@@ -133,7 +133,7 @@ UserInputService.InputEnded:Connect(function(input)
     end
 end)
 local ListsModule = LoadModule("Lists")
-local Lists do if ListsModule then Lists = ListsModule.CheckArray(Players:GetChildren()) end end
+local Lists = {} do if ListsModule then Lists = ListsModule.CheckArray(Players:GetChildren()) end end
 local Config = ConfigModule:Create("CTCONFIG.lua",{
     RandomIncludeLP = true,
     RandomizeName = true,
@@ -402,7 +402,7 @@ local function GetPlayerClosestToMouse()
         elseif (not Char:FindFirstChild("HumanoidRootPart")) or (not Char:FindFirstChild("Humanoid")) then return true, Notify and warn("Skipping", Player, "Humanoid/HumanoidRootPart not found")
         elseif Set.IgnoreStaff and CheckStaff(Player) then return true, Notify and warn("Skipping", Player, "is Staff")
         elseif ((LP.Character.HumanoidRootPart.CFrame.Position - Player.Character:FindFirstChild("HumanoidRootPart").Position).Magnitude) > Set.Distance then return true, Notify and warn("Skipping", Player, "Too far")
-        elseif ListsModule and Lists[tostring(Player.UserId)] and Set.IgnoreLists[Lists[tostring(Player.UserId)]] then return true, Notify and warn("Skipping", Player, "is Listed")
+        elseif ListsModule and Lists and Lists[tostring(Player.UserId)] and Set.IgnoreLists[Lists[tostring(Player.UserId)]] then return true, Notify and warn("Skipping", Player, "is Listed")
         elseif Set.WallCheck and not CheckIfPlayerBehindWall(GetAimbotPart(Player)) then return true, Notify and warn("Skipping", Player, "is Behind Wall")
         elseif Set.IgnoreDead and Char.Humanoid.Health <= 0 then return true
         else return false
@@ -878,7 +878,7 @@ RunService.Stepped:connect(function(deltaTime)
                         local Color do 
                             if Config[tostring(game.PlaceId)].ESP.ShowHealth and Config[tostring(game.PlaceId)].ESP.ShowHealthType == "Color" then Color = Color3.new(1-Char.Humanoid.Health/Char.Humanoid.MaxHealth,Char.Humanoid.Health/Char.Humanoid.MaxHealth)
                             elseif Config[tostring(game.PlaceId)].ESP.ListColors and CheckStaff(tostring(v.UserId)) then Color = ListColors.Staff
-                            elseif Config[tostring(game.PlaceId)].ESP.ListColors and ListsModule and Lists[tostring(v.UserId)] then Color = ListColors[Lists[tostring(v.UserId)]]
+                            elseif Config[tostring(game.PlaceId)].ESP.ListColors and ListsModule and Lists and Lists[tostring(v.UserId)] then Color = ListColors[Lists[tostring(v.UserId)]]
                             elseif Config[tostring(game.PlaceId)].ESP.TeamColors then Color = v.TeamColor.Color
                             else Color = Config[tostring(game.PlaceId)].ESP.DefaultColor end
                         end
@@ -1300,13 +1300,14 @@ local function ThemeProviderEntries()
     local Entries = {
         {
             FrameAnchorPoint = Util.CMAnchorPoint(),
-            Position = UDim2.fromOffset(30,40),
+            Position = UDim2.fromOffset(MouseLocation.X,MouseLocation.Y),
+            TitleText = "  Settings   ",
             ContextMenuEntries = {
                 TextSize = ContextMenuSize
             }
         },
         function()
-            if not (workspace.CurrentCamera.CameraSubject == LP.Character or workspace.CurrentCamera.CameraSubject == LP.Character.Humanoid) then
+            if LP.Character and not (workspace.CurrentCamera.CameraSubject == LP.Character or workspace.CurrentCamera.CameraSubject == LP.Character.Humanoid) then
                 return {
                     Text = "Unview",
                     M1Func = function()
@@ -1635,7 +1636,7 @@ local function ThemeProviderEntries()
                     SerializedCharacters = {}
                     local _temp = {}
                     local _times = {}
-                    for i, v in pairs(listfiles("/SerializedCharacters/")) do
+                    for i, v in pairs(listfiles("SerializedCharacters/")) do
                         _temp[i] = string.gsub(Util.formatfile(v), ".json", "")
                         table.insert(_times, string.gsub(Util.formatfile(v), ".json", ""):split(" ")[2])
                     end
@@ -2007,6 +2008,15 @@ local function ThemeProviderEntries()
             Submenu = function()
                 return {
                     {
+                        Type = "Keybind",
+                        Keybind = Config.Keybind,
+                        Text = "Focus Key",
+                        OnKeybindChange = function(input)
+                            Config.Keybind = input.KeyCode
+                            Config:Write()
+                        end
+                    },
+                    {
                         Type = "CheckBox",
                         Text = "Environment ContextMenus",
                         Name = "EnvironmentCMs",
@@ -2015,6 +2025,89 @@ local function ThemeProviderEntries()
                                     Config[tostring(game.PlaceId)].EnvironmentCMs = Value
                                     Config:Write()
                                 end
+                    },
+                    {
+                        Text = "Player Lookup Options",
+                        Submenu = {
+                            {
+                                Type = "CheckBox",
+                                Text = 'Include LP in "random"',
+                                Name = "LPRandom",
+                                Value = Config.RandomIncludeLP,
+                                M1Func = function(Value)
+                                    Config.RandomIncludeLP = Value
+                                    Config:Write()
+                                end
+                            },
+                            {
+                                Type = "CheckBox",
+                                Text = 'Randomize Partial Names',
+                                Name = "RandomizeName",
+                                Value = Config.RandomizeName,
+                                M1Func = function(Value)
+                                    Config.RandomizeName = Value
+                                    Config:Write()
+                                end
+                            },
+                            {
+                                Type = "Slider",
+                                Text = "Old Account Age Minimum (Years)",
+                                Name = "OldAccountAgeMin",
+                                ValueDisplay = true,
+                                MaxValue = 20,
+                                MinValue = 1,
+                                MinSliderSize = 200,
+                                Rounding = 1,
+                                StartingValue = Util.round(Config.OldAccountAgeMin/365,1),
+                                OnRelease = function(Value) 
+                                    Config.OldAccountAgeMin = Value*365
+                                    Config:Write()
+                                end
+                            },
+                            {
+                                Type = "Slider",
+                                Text = "New Account Age Maximum (Days)",
+                                Name = "NewAccountAgeMax",
+                                ValueDisplay = true,
+                                MaxValue = 365,
+                                MinValue = 1,
+                                Rounding = 0,
+                                MinSliderSize = 200,
+                                StartingValue = Config.NewAccountAgeMax,
+                                OnRelease = function(Value) 
+                                    Config.NewAccountAgeMax = Value
+                                    Config:Write()
+                                end
+                            },
+                            {
+                                Type = "Slider",
+                                Text = "Far Distance",
+                                Name = "FarDistance",
+                                ValueDisplay = true,
+                                MaxValue = 20000,
+                                MinValue = 1000,
+                                MinSliderSize = 200,
+                                StartingValue = Config.FarDistance,
+                                OnRelease = function(Value) 
+                                    Config.FarDistance = Value
+                                    Config:Write()
+                                end
+                            },
+                            {
+                                Type = "Slider",
+                                Text = "Near Distance",
+                                Name = "NearDistance",
+                                ValueDisplay = true,
+                                MaxValue = 5000,
+                                MinValue = 0,
+                                MinSliderSize = 200,
+                                StartingValue = Config.NearDistance,
+                                OnRelease = function(Value) 
+                                    Config.NearDistance = Value
+                                    Config:Write()
+                                end
+                            }
+                        }
                     },
                     {
                         Type = "CheckBox",
@@ -2469,7 +2562,43 @@ local function ThemeProviderEntries()
                                     Rounding = 0,
                                     OnRelease = function(Value) 
                                         Config[tostring(game.PlaceId)].Aimbot.FOV = Value
+                                        local CT = CoreGui:FindFirstChild("CT")
+                                        if CT then
+                                            local Circle = CT:FindFirstChild("FOVSphere")
+                                            if Circle then
+                                                Circle.Visible = false
+                                            end
+                                        end
                                         Config:Write()
+                                    end,
+                                    OnValueChange = function(Value)
+                                        local CT = CoreGui:FindFirstChild("CT")
+                                        if CT then
+                                            local Circle = CT:FindFirstChild("FOVSphere")
+                                            if Circle then
+                                                Circle.Visible = true
+                                                Circle.Size = UDim2.fromOffset(Value, Value)
+                                            else
+                                                Circle = CreateObject("Frame",{
+                                                    Name = "FOVSphere",
+                                                    BackgroundTransparency = 1,
+                                                    AnchorPoint = Vector2.new(0.5,0.5),
+                                                    Position = UDim2.fromScale(0.5,0.5),
+                                                    Size = UDim2.fromOffset(Value, Value),
+                                                    Parent = CT
+                                                })
+                                                CreateObject("UICorner",{
+                                                    CornerRadius = UDim.new(1,0),
+                                                    Parent = Circle
+                                                })
+                                                CreateObject("UIStroke",{
+                                                    LineJoinMode = Enum.LineJoinMode.Round,
+                                                    Thickness = 1,
+                                                    Color = Color3.new(1,1,1),
+                                                    Parent = Circle
+                                                })
+                                            end
+                                        end
                                     end
                                 },
                                 {
@@ -3240,7 +3369,7 @@ if ThemeProvider then
     UnviewButton.Background.Position = UDim2.new(0, 0, -1, 0)
     UnviewButton.Size = UDim2.new(0, -12, 1, 0)
     local function CheckView()
-        if LP.Character and workspace.CurrentCamera.CameraSubject == LP.Character or (LP.Character:FindFirstChild("Humanoid") and workspace.CurrentCamera.CameraSubject == LP.Character:FindFirstChild("Humanoid")) then
+        if LP.Character and (workspace.CurrentCamera.CameraSubject == LP.Character or (LP.Character:FindFirstChild("Humanoid") and workspace.CurrentCamera.CameraSubject == LP.Character:FindFirstChild("Humanoid"))) then
             UnviewButton.Background:TweenPosition(UDim2.new(0, 0, -1, 0),
                 Enum.EasingDirection.In,
                 Enum.EasingStyle.Back, .5, 
@@ -3293,8 +3422,7 @@ local function CheckImageIsOriginal(Obj)
 end
 
 local function AorAn(word: string)
-    local vowels = "aeiou"
-    if string.find(vowels, word:sub(1,1):lower()) then
+    if string.find("aeiou", word:sub(1,1):lower()) then
         return "An "..word
     else
         return "A "..word
@@ -3412,14 +3540,38 @@ end)
 
 local NoclipConnect
 local Anti = {}
+local Loop = {}
 coroutine.wrap(function()
     LP.CharacterAdded:Connect(function(Char)
-        local Hum = Char:WaitForChild("Humanoid")
-        Hum.Changed:Connect(function(prop)
-            if Anti[prop] then
-                Hum[prop] = false
+        Char.ChildAdded:Connect(function(Hum)
+            if Hum:IsA("Humanoid") then
+                Hum.Changed:Connect(function(prop)
+                    if Anti[prop] then
+                        Hum[prop] = false
+                    end
+                    if Loop[prop] then
+                        Hum[prop] = Loop[prop]
+                    end
+                end)
+                for i, v in pairs(Loop) do
+                    Hum[i] = v
+                end
             end
         end)
+        local Hum = Char:FindFirstChild("Humanoid")
+        if Hum then
+            Hum.Changed:Connect(function(prop)
+                if Anti[prop] then
+                    Hum[prop] = false
+                end
+                if Loop[prop] then
+                    Hum[prop] = Loop[prop]
+                end
+            end)
+            for i, v in pairs(Loop) do
+                Hum[i] = v
+            end
+        end
     end)
     repeat wait() until LP.Character
     LP.Character:WaitForChild("Humanoid").Changed:Connect(function(prop)
@@ -3679,106 +3831,7 @@ end)
 Button.MouseButton2Down:Connect(function()
     xpcall(function()
         ContextMenus.Create(
-            {
-                FrameAnchorPoint = Util.CMAnchorPoint(),
-                Position = UDim2.fromOffset(MouseLocation.X,MouseLocation.Y),
-                TitleText = "  Settings   ",
-                ContextMenuEntries = {
-                    TextSize = 11
-                }
-            },
-            {
-                Type = "Keybind",
-                Keybind = Config.Keybind,
-                Text = "Focus Key",
-                OnKeybindChange = function(input)
-                    Config.Keybind = input.KeyCode
-                    Config:Write()
-                end
-            },
-            {
-                Text = "Player Lookup Options",
-                Submenu = {
-                    {
-                        Type = "CheckBox",
-                        Text = 'Include LP in "random"',
-                        Name = "LPRandom",
-                        Value = Config.RandomIncludeLP,
-                        M1Func = function(Value)
-                            Config.RandomIncludeLP = Value
-                            Config:Write()
-                        end
-                    },
-                    {
-                        Type = "CheckBox",
-                        Text = 'Randomize Partial Names',
-                        Name = "RandomizeName",
-                        Value = Config.RandomizeName,
-                        M1Func = function(Value)
-                            Config.RandomizeName = Value
-                            Config:Write()
-                        end
-                    },
-                    {
-                        Type = "Slider",
-                        Text = "Old Account Age Minimum (Years)",
-                        Name = "OldAccountAgeMin",
-                        ValueDisplay = true,
-                        MaxValue = 20,
-                        MinValue = 1,
-                        MinSliderSize = 200,
-                        Rounding = 1,
-                        StartingValue = Util.round(Config.OldAccountAgeMin/365,1),
-                        OnRelease = function(Value) 
-                            Config.OldAccountAgeMin = Value*365
-                            Config:Write()
-                        end
-                    },
-                    {
-                        Type = "Slider",
-                        Text = "New Account Age Maximum (Days)",
-                        Name = "NewAccountAgeMax",
-                        ValueDisplay = true,
-                        MaxValue = 365,
-                        MinValue = 1,
-                        Rounding = 0,
-                        MinSliderSize = 200,
-                        StartingValue = Config.NewAccountAgeMax,
-                        OnRelease = function(Value) 
-                            Config.NewAccountAgeMax = Value
-                            Config:Write()
-                        end
-                    },
-                    {
-                        Type = "Slider",
-                        Text = "Far Distance",
-                        Name = "FarDistance",
-                        ValueDisplay = true,
-                        MaxValue = 20000,
-                        MinValue = 1000,
-                        MinSliderSize = 200,
-                        StartingValue = Config.FarDistance,
-                        OnRelease = function(Value) 
-                            Config.FarDistance = Value
-                            Config:Write()
-                        end
-                    },
-                    {
-                        Type = "Slider",
-                        Text = "Near Distance",
-                        Name = "NearDistance",
-                        ValueDisplay = true,
-                        MaxValue = 5000,
-                        MinValue = 0,
-                        MinSliderSize = 200,
-                        StartingValue = Config.NearDistance,
-                        OnRelease = function(Value) 
-                            Config.NearDistance = Value
-                            Config:Write()
-                        end
-                    }
-                }
-            }
+            ThemeProviderEntries()
         )
     end,function(err)
         warn(debug.traceback(err))
@@ -5021,6 +5074,36 @@ Commands = {
             end
         end
     },
+    loopwalkspeed = {
+        Args = {"Speed"},
+        Desc = "Toggle WalkSpeed loop.",  
+        func = function(Invoker, Speed)
+            Speed = tonumber(Speed)
+            LP.Character.Humanoid.WalkSpeed = Speed
+            if Loop.WalkSpeed or not Speed then
+                Loop.WalkSpeed = nil
+                out("WalkSpeed loop off.")
+            else
+                Loop.WalkSpeed = Speed
+                out("WalkSpeed loop on.")
+            end
+        end
+    },
+    loopjumppower = {
+        Args = {"Speed"},
+        Desc = "Toggle JumpPower loop.",  
+        func = function(Invoker, Power)
+            Power = tonumber(Power)
+            LP.Character.Humanoid.JumpPower = Power
+            if Loop.JumpPower or not Power then
+                Loop.JumpPower = nil
+                out("JumpPower loop off.")
+            else
+                Loop.JumpPower = Power
+                out("JumpPower loop on.")
+            end
+        end
+    },
     ["2022materials"] = {
         Args = {},
         Desc = "Toggle 2022 Materials.",  
@@ -5233,6 +5316,8 @@ end
 local Aliases = {
     e = "print",
     ragdoll = "platformstand",
+    wsloop = "loopwalkspeed",
+    jploop = "loopjumppower",
     unragdoll = "unplatformstand",
     antiragdoll = "antiplatformstand",
     echo = "print",
