@@ -212,7 +212,7 @@ local Config = ConfigModule:Create("CTCONFIG.lua",{
             BackgroundColor = Color3.fromHex("#1e2024"),
             BorderColor = Color3.fromHex("#323336"),
             Transparency = 0.5,
-            Rounding = 1,
+            Shape = "Round",
             BorderThickness = 3,
             BorderTransparency = 0,
             Size = UDim2.fromOffset(150,150),
@@ -224,7 +224,7 @@ local Config = ConfigModule:Create("CTCONFIG.lua",{
             AxisColor = true,
             ShowElevation = true,
             ElevationTreshold = 10,
-            Rotation = "Camera", --Fixed, Character, Camera
+            Rotation = "Camera", --Fixed, CameraSubject, Camera
             PositionPart = "CameraSubject", --CameraSubject, Camera, Character 
             FixedDegree = 0,
             LookVector = "None", --None, Line, Cone,
@@ -841,8 +841,14 @@ local function CreateRadar()
         Name = "CTR",
         ClipsDescendants = true
     })
+    local RadarButton = CreateObject("TextButton",{
+        Text = "",
+        Parent = RadarFrame,
+        Transparency = 1,
+        Size = UDim2.fromScale(1,1)
+    })
     local UICorner = CreateObject("UICorner",{
-        CornerRadius = UDim.new(Config[tostring(game.PlaceId)].Radar.Rounding/2,0),
+        CornerRadius = UDim.new(Config[tostring(game.PlaceId)].Radar.Shape == "Round" and 0.5 or 0.03,0),
         Parent = RadarFrame
     })
     local UIStroke = CreateObject("UIStroke",{
@@ -890,7 +896,7 @@ local function CreateRadar()
         Config[tostring(game.PlaceId)].Radar.Position = RadarFrame.Position
         Config:Write()
     end
-    RadarFrame.MouseButton1Down:Connect(function()
+    RadarButton.MouseButton1Down:Connect(function()
         local Connect
         Connect = Mouse.Move:Connect(function()
             Connect:Disconnect()
@@ -902,7 +908,7 @@ local function CreateRadar()
         Connect:Disconnect()
         --Clicked
     end)
-    RadarFrame.MouseButton2Down:Connect(function()
+    RadarButton.MouseButton2Down:Connect(function()
 
     end)
     local TriangleId = "rbxassetid://16977390688"
@@ -921,10 +927,16 @@ local function CreateRadar()
     local function GetPos(Player)
         local Char = Player.Character
         local HRP = Char and (Char:FindFirstChild("HumanoidRootPart") or Char:FindFirstChildWhichIsA("BasePart"))
+        if (not PosPart) or (not HRP) then return UDim2.new() end
         return UDim2.fromOffset(
             PosPart.Position.X-HRP.Position.X,
             PosPart.Position.Z-HRP.Position.Z
         )
+    end
+    local function CFrameToYaw(cframe)
+        -- Extract rotation matrix
+        local _, _, _, _, _, m02, _, _, _, _, _, m22 = cframe:GetComponents()
+        return math.deg(math.atan2(m02, m22))-180
     end
     local function CreatePlayerDisplay(Player)
         local set = Config[tostring(game.PlaceId)].Radar
@@ -951,16 +963,20 @@ local function CreateRadar()
                 PosPart = workspace.CurrentCamera
             elseif set.PositionPart == "CameraSubject" then
                 PosPart = workspace.CurrentCamera.CameraSubject
-                if not PosPart:IsA("BasePart") then
+                if PosPart and not PosPart:IsA("BasePart") then
                     PosPart = PosPart:FindFirstChild("HumanoidRootPart") or PosPart:FindFirstChildWhichIsA("BasePart") or PosPart.Parent:FindFirstChild("HumanoidRootPart")
                 end
             end
             if not PosPart then return end
             local nPosition = GetPos(Player)
             Icon.Position = nPosition
-            Icon.Visible = (PlayerDisplay.AbsolutePosition - Icon.AbsolutePosition).Magnitude < RadarFrame.AbsoluteSize.X/2
+            Icon.Visible = set.Shape == "Round" and ((PlayerDisplay.AbsolutePosition - Icon.AbsolutePosition-Vector2.new(set.PlayerSize/2,set.PlayerSize/2)).Magnitude < RadarFrame.AbsoluteSize.X/2) or (set.Shape == "Square" and true) or false
         end
-        RunService.RenderStepped:Connect(UpdatePos)
+        local conn = RunService.RenderStepped:Connect(UpdatePos)
+        Char.Destroying:Connect(function()
+            conn:Disconnect()
+            Icon:Destroy()
+        end)
     end
     Players.PlayerAdded:Connect(CreatePlayerDisplay)
     for _, Player in pairs(Players:GetPlayers()) do
@@ -969,6 +985,18 @@ local function CreateRadar()
     end
     RunService.RenderStepped:Connect(function()
         local set = Config[tostring(game.PlaceId)].Radar
+        local RotPart
+        if set.Rotation == "Character" then
+            RotPart = LPHRP
+        elseif set.Rotation == "Camera" then
+            RotPart = workspace.CurrentCamera
+        elseif set.Rotation == "CameraSubject" then
+            RotPart = workspace.CurrentCamera.CameraSubject
+            if RotPart and not RotPart:IsA("BasePart") then
+                RotPart = RotPart:FindFirstChild("HumanoidRootPart") or RotPart:FindFirstChildWhichIsA("BasePart") or RotPart.Parent:FindFirstChild("HumanoidRootPart")
+            end
+        end
+        PlayerDisplayFrame.Rotation = RotPart and CFrameToYaw(RotPart.CFrame) or set.FixedDegree
     end)
 end
 
