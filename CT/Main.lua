@@ -90,6 +90,12 @@ local CoreGui = game:GetService("CoreGui")
 local StarterGui = game:GetService("StarterGui")
 local Players = game:GetService("Players")
 local LP = Players.LocalPlayer
+local LPChar = LP.Character
+local LPHRP = LPChar and (LPChar:FindFirstChild("HumanoidRootPart") or LPChar:FindFirstChildWhichIsA("BasePart"))
+LP.CharacterAdded:Connect(function(Char)
+    LPChar = Char
+    LPHRP = LPChar and (LPChar:FindFirstChild("HumanoidRootPart") or LPChar:FindFirstChildWhichIsA("BasePart"))
+end)        
 local _ALLOWEDEXECS = {}
 local _INVIS = "­"
 local TextService = game:GetService("TextService")
@@ -194,6 +200,35 @@ local Config = ConfigModule:Create("CTCONFIG.lua",{
             DropType = "Quad",
             Pred = false,
             PredAmount = 1
+        },
+        Radar = {
+            LPColor = Color3.fromRGB(100, 100, 240),
+            DefaultColor = Color3.fromRGB(255,255,0),
+            FriendlyColor = Color3.fromRGB(100, 220, 100),
+            EnemyColor = Color3.fromRGB(220, 50, 50),
+            ListColors = true,
+            ColorType = "Team", --Ally, Team, None
+            PlayerSize = 6,
+            BackgroundColor = Color3.fromHex("#1e2024"),
+            BorderColor = Color3.fromHex("#323336"),
+            Transparency = 0.5,
+            Rounding = 1,
+            BorderThickness = 3,
+            BorderTransparency = 0,
+            Size = UDim2.fromOffset(150,150),
+            Position = UDim2.new(0,1500,0,0),
+            PositionLocked = false,
+            GridType = "Square", --Square, Circle,
+            GridTransparency = 0.5,
+            Axis = true,
+            AxisColor = true,
+            ShowElevation = true,
+            ElevationTreshold = 10,
+            Rotation = "Camera", --Fixed, Character, Camera
+            PositionPart = "CameraSubject", --CameraSubject, Camera, Character 
+            FixedDegree = 0,
+            LookVector = "None", --None, Line, Cone,
+            ConeDegree = "Camera", --"Camera" for LP camera fov, number for degrees
         },
         LocalChatLogDist = 20,
         TeleportOffset = CFrame.new(0,0,-5)*CFrame.Angles(math.rad(0),math.rad(180),math.rad(0)),
@@ -695,6 +730,17 @@ end
 local function CreateObject(class, props)
     return ApplyProperties(Instance.new(class),props)
 end
+
+pcall(function()
+    CoreGui:FindFirstChild("CT"):Destroy()
+end)
+
+local ScreenGui = CreateObject("ScreenGui", {
+    Name = "CT",
+    DisplayOrder = 2,
+    ResetOnSpawn = false,
+    Parent = CoreGui
+})
 local function WrapError(Name, func)
     return xpcall(func,function(err)
         local Traceback = debug.traceback()
@@ -742,6 +788,190 @@ if BubbleChat then
         end
     end)
 end
+
+local callSigns = {}
+local Chars = "abcdefghijklmnopqrstuvwxyz"
+local function GetCallSign(name)
+    if callSigns[name] then return callSigns[name] end
+    filtered = name:split("")
+    for i, v in pairs(filtered) do
+        if not Chars:find(v:lower()) then
+            table.remove(filtered, i)
+        end
+    end
+    filtered = table.concat(filtered, "")
+    local FirstChar = filtered:sub(1,1)
+    local SecondChar = filtered:sub(2,2)
+    local function CheckName(name)
+        for _, v in pairs(callSigns) do
+            if name:lower() == v:lower() then
+                return false
+            end
+        end
+        return true
+    end
+    local CallSign = FirstChar..SecondChar
+    local i = 1
+    while not CheckName(CallSign) and i<#filtered do
+        i = i+1
+        SecondChar = filtered:sub(i,i)
+        CallSign = FirstChar..SecondChar
+    end
+    if not CheckName(CallSign) then
+        local i = 1
+        SecondChar = i
+        CallSign = FirstChar..SecondChar
+        while not CheckName(CallSign) do
+            i = i+1
+            SecondChar = i
+            CallSign = FirstChar..SecondChar
+        end
+    end
+    callSigns[name] = CallSign:upper()
+    return CallSign:upper()
+end
+
+local function CreateRadar()
+    local RadarFrame = CreateObject("CanvasGroup",{
+        Position = Config[tostring(game.PlaceId)].Radar.Position,
+        Size = Config[tostring(game.PlaceId)].Radar.Size,
+        BackgroundTransparency = Config[tostring(game.PlaceId)].Radar.Transparency,
+        BackgroundColor3 = Config[tostring(game.PlaceId)].Radar.BackgroundColor,
+        Parent = ScreenGui,
+        Name = "CTR",
+        ClipsDescendants = true
+    })
+    local UICorner = CreateObject("UICorner",{
+        CornerRadius = UDim.new(Config[tostring(game.PlaceId)].Radar.Rounding/2,0),
+        Parent = RadarFrame
+    })
+    local UIStroke = CreateObject("UIStroke",{
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+        Color = Config[tostring(game.PlaceId)].Radar.BorderColor,
+        LineJoinMode = Enum.LineJoinMode.Round,
+        Thickness = Config[tostring(game.PlaceId)].Radar.BorderThickness,
+        Transparency = Config[tostring(game.PlaceId)].Radar.BorderTransparency,
+        Parent = RadarFrame
+    })
+    local PlayerDisplayFrame = CreateObject("Frame",{
+        Position = UDim2.fromScale(0.5,0.5),
+        Size = UDim2.fromOffset(1,1),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        Parent = RadarFrame,
+        Name = "PlayerDisplayFrame",
+        AnchorPoint = Vector2.new(0.5,0.5)
+    })
+    local PlayerDisplay = CreateObject("Frame",{
+        Position = UDim2.fromScale(0.5,0.5),
+        Size = UDim2.fromScale(1,1),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        Parent = PlayerDisplayFrame,
+        Name = "PlayerDisplay",
+        AnchorPoint = Vector2.new(0.5,0.5)
+    })
+    local GridLines = CreateObject("Folder",{
+        Name = "GridLines",
+        Parent = PlayerDisplay
+    })
+    local Icons = CreateObject("Folder",{
+        Name = "Players",
+        Parent = PlayerDisplay
+    })
+    local function Drag()
+        if Config[tostring(game.PlaceId)].Radar.PositionLocked then return end
+        local DragOffset = Vector2.new(RadarFrame.Position.X.Offset-MouseLocation.X, RadarFrame.Position.Y.Offset-MouseLocation.Y)
+        local Connect = Mouse.Move:Connect(function()
+            RadarFrame.Position = UDim2.fromOffset(MouseLocation.X+(DragOffset.X),MouseLocation.Y+(DragOffset.Y))
+        end)
+        repeat wait() until not Mouse1Held
+        Connect:Disconnect()
+        Config[tostring(game.PlaceId)].Radar.Position = RadarFrame.Position
+        Config:Write()
+    end
+    RadarFrame.MouseButton1Down:Connect(function()
+        local Connect
+        Connect = Mouse.Move:Connect(function()
+            Connect:Disconnect()
+            Connect = nil
+            Drag()
+        end)
+        repeat wait() until not Mouse1Held
+        if not Connect then return end
+        Connect:Disconnect()
+        --Clicked
+    end)
+    RadarFrame.MouseButton2Down:Connect(function()
+
+    end)
+    local TriangleId = "rbxassetid://16977390688"
+    local function GetColor(Player)
+        local set = Config[tostring(game.PlaceId)].Radar
+        local Color do 
+            if set.ListColors and CheckStaff(tostring(Player.UserId)) then Color = ListColors.Staff
+            elseif set.ListColors and ListsModule and Lists and Lists[tostring(Player.UserId)] then Color = ListColors[Lists[tostring(Player.UserId)]]
+            elseif set.ColorType == "Team" then Color = Player.TeamColor.Color
+            elseif set.ColorType == "Ally" then Color = Player.Team == LP.Team and set.FriendlyColor or set.EnemyColor
+            else Color = set.DefaultColor end
+        end
+        return Color
+    end
+    local PosPart
+    local function GetPos(Player)
+        local Char = Player.Character
+        local HRP = Char and (Char:FindFirstChild("HumanoidRootPart") or Char:FindFirstChildWhichIsA("BasePart"))
+        return UDim2.fromOffset(
+            PosPart.Position.X-HRP.Position.X,
+            PosPart.Position.Z-HRP.Position.Z
+        )
+    end
+    local function CreatePlayerDisplay(Player)
+        local set = Config[tostring(game.PlaceId)].Radar
+        local Char = Player.Character
+        local HRP = Char and (Char:FindFirstChild("HumanoidRootPart") or Char:FindFirstChildWhichIsA("BasePart"))
+        if (not Char) or (not HRP) then return end
+        local Color = GetColor(Player)
+        local Icon = CreateObject("ImageLabel",{
+            Parent = PlayerDisplay,
+            Size = UDim2.fromOffset(set.PlayerSize,set.PlayerSize),
+            BorderSizePixel = 0,
+            BackgroundColor3 = Color,
+            ImageColor3 = Color,
+            AnchorPoint = Vector2.new(0.5,0.5)
+        })
+        local UICorner = CreateObject("UICorner",{
+            CornerRadius = UDim.new(.5,0),
+            Parent = Icon
+        })
+        local function UpdatePos()
+            if set.PositionPart == "Character" then
+                PosPart = LPHRP
+            elseif set.PositionPart == "Camera" then
+                PosPart = workspace.CurrentCamera
+            elseif set.PositionPart == "CameraSubject" then
+                PosPart = workspace.CurrentCamera.CameraSubject
+                if not PosPart:IsA("BasePart") then
+                    PosPart = PosPart:FindFirstChild("HumanoidRootPart") or PosPart:FindFirstChildWhichIsA("BasePart") or PosPart.Parent:FindFirstChild("HumanoidRootPart")
+                end
+            end
+            if not PosPart then return end
+            local nPosition = GetPos(Player)
+            Icon.Position = nPosition
+            Icon.Visible = (PlayerDisplay.AbsolutePosition - Icon.AbsolutePosition).Magnitude < RadarFrame.AbsoluteSize.X/2
+        end
+        RunService.RenderStepped:Connect(UpdatePos)
+    end
+    Players.PlayerAdded:Connect(CreatePlayerDisplay)
+    for _, Player in pairs(Players:GetPlayers()) do
+        if Player == LP then continue end
+        CreatePlayerDisplay(Player)
+    end
+    RunService.RenderStepped:Connect(function()
+        local set = Config[tostring(game.PlaceId)].Radar
+    end)
+end
+
 
 local function CheckESPTeam(v)
     if Config[tostring(game.PlaceId)].ESP.TeamType == "all" then
@@ -3358,6 +3588,15 @@ local function LPEntries(Player)
     return table.unpack(Entries)
 end
 
+if not isfolder("Assets") then makefolder("Assets") end
+task.spawn(function()
+    local Url = "https://github.com/UnseenGit/ContextHub/blob/main/CT/ContextTerminal.png?raw=true"
+    local PNG = request({
+        Url = Url,
+        Method = "GET"
+    }).Body
+    writefile("Assets/ContextTerminal.png",PNG)
+end)
 if ThemeProvider then
     ThemeProvider.MouseButton2Down:Connect(function()
         ContextMenus.Create(ThemeProviderEntries())
@@ -3590,15 +3829,6 @@ local CommandLog = {}
 RunService.RenderStepped:connect(function()
     MouseLocation = UserInputService:GetMouseLocation()
 end)
-if not isfolder("Assets") then makefolder("Assets") end
-task.spawn(function()
-    local Url = "https://github.com/UnseenGit/ContextHub/blob/main/CT/ContextTerminal.png?raw=true"
-    local PNG = request({
-        Url = Url,
-        Method = "GET"
-    }).Body
-    writefile("Assets/ContextTerminal.png",PNG)
-end)
 
 local function FindIndex(tbl, Pattern, CaseSensitive)
     if not tbl then return end
@@ -3631,15 +3861,6 @@ local function FindIndex(tbl, Pattern, CaseSensitive)
         end
     end
 end
-pcall(function()
-    CoreGui:FindFirstChild("CT"):Destroy()
-end)
-local ScreenGui = CreateObject("ScreenGui", {
-    Name = "CT",
-    DisplayOrder = 2,
-    ResetOnSpawn = false,
-    Parent = CoreGui
-})
 local Frame = CreateObject("Frame",{
     Name = "FRM",
     Size = UDim2.fromOffset(0,0),
@@ -5593,3 +5814,5 @@ if ChatDoneFiltering then
 else
     out("OnMessageDoneFiltering not found! Chat Logs and Foreign Execute will not work!", 10, Color3.fromHex("#ffda44"))
 end
+
+CreateRadar()
