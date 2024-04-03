@@ -202,6 +202,7 @@ local Config = ConfigModule:Create("CTCONFIG.lua",{
             PredAmount = 1
         },
         Radar = {
+            AutoOpen = true,
             LPColor = Color3.fromRGB(100, 100, 240),
             DefaultColor = Color3.fromRGB(255,255,0),
             FriendlyColor = Color3.fromRGB(100, 220, 100),
@@ -218,17 +219,17 @@ local Config = ConfigModule:Create("CTCONFIG.lua",{
             Size = UDim2.fromOffset(150,150),
             Position = UDim2.new(0,1500,0,0),
             PositionLocked = false,
-            GridType = "Square", --Square, Circle,
+            GridType = "Square", --Square, Circle, None
             GridTransparency = 0.5,
-            Axis = true,
-            AxisColor = true,
+            Axis = "Dot", --Dot, Line, None
+            AxisDir = 0, 
             ShowElevation = true,
             ElevationTreshold = 10,
             Rotation = "Camera", --Fixed, CameraSubject, Camera
             PositionPart = "CameraSubject", --CameraSubject, Camera, Character 
             FixedDegree = 0,
             LookVector = "None", --None, Line, Cone,
-            ConeDegree = "Camera", --"Camera" for LP camera fov, number for degrees
+            ConeDegree = 0, --0 for LP camera fov, number for degrees
         },
         LocalChatLogDist = 20,
         TeleportOffset = CFrame.new(0,0,-5)*CFrame.Angles(math.rad(0),math.rad(180),math.rad(0)),
@@ -830,7 +831,7 @@ local function GetCallSign(name)
     callSigns[name] = CallSign:upper()
     return CallSign:upper()
 end
-
+local RadarConns = {}
 local function CreateRadar()
     local RadarFrame = CreateObject("CanvasGroup",{
         Position = Config[tostring(game.PlaceId)].Radar.Position,
@@ -885,6 +886,47 @@ local function CreateRadar()
         Name = "Players",
         Parent = PlayerDisplay
     })
+    local CurrentZoom = 1
+    local UIPageLayout = CreateObject("UIPageLayout",{
+        Circular = true,
+        Animated = false,
+        Parent = RadarButton
+    })
+    for i = 1, 3 do
+        CreateObject("Frame",{
+            Size = UDim2.new(0,0,0,0),
+            Transparency = 1,
+            Parent = RadarButton,
+            Name = i
+        })
+    end
+    local LastPage = UIPageLayout.CurrentPage.Name
+    local order = {
+        ["1"] = "2",
+        ["2"] = "3",
+        ["3"] = "1"
+    }
+    local function Zoom()
+        PlayerDisplay:TweenSize(UDim2.fromScale(CurrentZoom,CurrentZoom),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,.2,true)
+    end
+    PlayerDisplay:GetPropertyChangedSignal("Size"):Connect(function()
+    
+    end)
+    UIPageLayout:GetPropertyChangedSignal("CurrentPage"):Connect(function()
+        if order[LastPage] == UIPageLayout.CurrentPage.Name then
+            --ZoomOut
+            if CurrentZoom>0.02 then
+                CurrentZoom = CurrentZoom/1.25
+            end
+        else
+            --ZoomIn
+            if CurrentZoom<20 then
+                CurrentZoom = CurrentZoom*1.25
+            end
+        end
+        LastPage = UIPageLayout.CurrentPage.Name
+        Zoom()
+    end)
     local function Drag()
         if Config[tostring(game.PlaceId)].Radar.PositionLocked then return end
         local DragOffset = Vector2.new(RadarFrame.Position.X.Offset-MouseLocation.X, RadarFrame.Position.Y.Offset-MouseLocation.Y)
@@ -896,7 +938,7 @@ local function CreateRadar()
         Config[tostring(game.PlaceId)].Radar.Position = RadarFrame.Position
         Config:Write()
     end
-    RadarButton.MouseButton1Down:Connect(function()
+    RadarConns.Mouseclick1 = RadarButton.MouseButton1Down:Connect(function()
         local Connect
         Connect = Mouse.Move:Connect(function()
             Connect:Disconnect()
@@ -908,30 +950,540 @@ local function CreateRadar()
         Connect:Disconnect()
         --Clicked
     end)
-    RadarButton.MouseButton2Down:Connect(function()
-
+    RadarConns.Mouseclick2 = RadarButton.MouseButton2Down:Connect(function()
+        ContextMenus.Create(
+            {
+                FrameAnchorPoint = Util.CMAnchorPoint(),
+                Position = UDim2.fromOffset(MouseLocation.X,MouseLocation.Y),
+                TitleIcon = Util.GetDataTypeIcon("function"),
+                TitleText = "  Radar Settings   "
+            },
+            {
+                Text = "Close Radar",
+                M1Func = function()
+                    RadarFrame:Destroy()
+                end
+            },
+            {
+                Type = "CheckBox",
+                Text = "Lock Position",
+                Name = "LockPos",
+                Value = Config[tostring(game.PlaceId)].Radar.PositionLocked,
+                M1Func = function(Value)
+                    Config[tostring(game.PlaceId)].Radar.PositionLocked = Value
+                    Config:Write()
+                end
+            },
+            {
+                Type = "CheckBox",
+                Text = "Open Automatically",
+                Name = "AutoOpen",
+                Value = Config[tostring(game.PlaceId)].Radar.AutoOpen,
+                M1Func = function(Value)
+                    Config[tostring(game.PlaceId)].Radar.AutoOpen = Value
+                    Config:Write()
+                end
+            },
+            {
+                Text = "Shape...",
+                Submenu = function()
+                    return {
+                        {
+                            Type = "CheckBox",
+                            Text = "Round",
+                            Name = "Round",
+                            IsAChoice = true,
+                            Value = Config[tostring(game.PlaceId)].Radar.Shape == "Round",
+                            OnChecked = function(Value)
+                                Config[tostring(game.PlaceId)].Radar.Shape = "Round"
+                                TweenService:Create(UICorner, TweenInfo.new(.2,Enum.EasingStyle.Quad,Enum.EasingDirection.Out), {CornerRadius = UDim.new(0.5,0)}):Play()
+                                Config:Write()
+                            end
+                        },
+                        {
+                            Type = "CheckBox",
+                            Text = "Square",
+                            Name = "Square",
+                            IsAChoice = true,
+                            Value = Config[tostring(game.PlaceId)].Radar.Shape == "Square",
+                            OnChecked = function(Value)
+                                Config[tostring(game.PlaceId)].Radar.Shape = "Square"
+                                TweenService:Create(UICorner, TweenInfo.new(.2,Enum.EasingStyle.Quad,Enum.EasingDirection.Out), {CornerRadius = UDim.new(0.03,0)}):Play()
+                                Config:Write()
+                            end
+                        }
+                    }
+                end
+            },
+            {
+                Type = "CheckBox",
+                Text = "Show Elevation",
+                Name = "ShowElevation",
+                Value = Config[tostring(game.PlaceId)].Radar.ShowElevation,
+                M1Func = function(Value)
+                    Config[tostring(game.PlaceId)].Radar.ShowElevation = Value
+                    Config:Write()
+                end
+            },
+            {
+                Type = "Slider",
+                Text = "Elevation Treshold",
+                Name = "ElevationTreshold",
+                ValueDisplay = true,
+                MaxValue = 100,
+                MinValue = 0,
+                MinSliderSize = 50,
+                StartingValue = Config[tostring(game.PlaceId)].Radar.ElevationTreshold,
+                Rounding = 1,
+                OnRelease = function(Value) 
+                    Config[tostring(game.PlaceId)].Radar.ElevationTreshold = Value
+                    Config:Write()
+                end
+            },
+            {
+                Text = "Team Display Type...",
+                Submenu = function()
+                    return {
+                        {
+                            Type = "CheckBox",
+                            Text = "None",
+                            Name = "None",
+                            IsAChoice = true,
+                            Value = Config[tostring(game.PlaceId)].Radar.ColorType == "None",
+                            OnChecked = function(Value)
+                                Config[tostring(game.PlaceId)].Radar.ColorType = "None"
+                                Config:Write()
+                            end
+                        },
+                        {
+                            Type = "CheckBox",
+                            Text = "Ally",
+                            Name = "Ally",
+                            IsAChoice = true,
+                            Value = Config[tostring(game.PlaceId)].Radar.ColorType == "Ally",
+                            OnChecked = function(Value)
+                                Config[tostring(game.PlaceId)].Radar.ColorType = "Ally"
+                                Config:Write()
+                            end
+                        },{
+                            Type = "CheckBox",
+                            Text = "Team Color",
+                            Name = "TeamColor",
+                            IsAChoice = true,
+                            Value = Config[tostring(game.PlaceId)].Radar.ColorType == "Team",
+                            OnChecked = function(Value)
+                                Config[tostring(game.PlaceId)].Radar.ColorType = "Team"
+                                Config:Write()
+                            end
+                        }
+                    }
+                end
+            },
+            {
+                Text = "Rotation...",
+                Submenu = function()
+                    return {
+                        {
+                            Type = "CheckBox",
+                            Text = "Fixed",
+                            Name = "Fixed",
+                            IsAChoice = true,
+                            Value = Config[tostring(game.PlaceId)].Radar.Rotation == "Fixed",
+                            OnChecked = function(Value)
+                                Config[tostring(game.PlaceId)].Radar.Rotation = "Fixed"
+                                Config:Write()
+                            end,
+                            Submenu = function()
+                                return {
+                                    {
+                                        Type = "CheckBox",
+                                        Text = "X+",
+                                        Name = "X+",
+                                        IsAChoice = true,
+                                        Value = Config[tostring(game.PlaceId)].Radar.FixedDegree == 270,
+                                        OnChecked = function(Value)
+                                            Config[tostring(game.PlaceId)].Radar.FixedDegree = 270
+                                            Config:Write()
+                                        end
+                                    },
+                                    {
+                                        Type = "CheckBox",
+                                        Text = "X-",
+                                        Name = "X-",
+                                        IsAChoice = true,
+                                        Value = Config[tostring(game.PlaceId)].Radar.FixedDegree == 90,
+                                        OnChecked = function(Value)
+                                            Config[tostring(game.PlaceId)].Radar.FixedDegree = 90
+                                            Config:Write()
+                                        end
+                                    },{
+                                        Type = "CheckBox",
+                                        Text = "Z+",
+                                        Name = "Z+",
+                                        IsAChoice = true,
+                                        Value = Config[tostring(game.PlaceId)].Radar.FixedDegree == 0,
+                                        OnChecked = function(Value)
+                                            Config[tostring(game.PlaceId)].Radar.FixedDegree = 0
+                                            Config:Write()
+                                        end
+                                    },{
+                                        Type = "CheckBox",
+                                        Text = "Z-",
+                                        Name = "Z-",
+                                        IsAChoice = true,
+                                        Value = Config[tostring(game.PlaceId)].Radar.FixedDegree == 180,
+                                        OnChecked = function(Value)
+                                            Config[tostring(game.PlaceId)].Radar.FixedDegree = 180
+                                            Config:Write()
+                                        end
+                                    }
+                                }
+                            end
+                        },
+                        {
+                            Type = "CheckBox",
+                            Text = "Camera",
+                            Name = "Camera",
+                            IsAChoice = true,
+                            Value = Config[tostring(game.PlaceId)].Radar.Rotation == "Camera",
+                            OnChecked = function(Value)
+                                Config[tostring(game.PlaceId)].Radar.Rotation = "Camera"
+                                Config:Write()
+                            end
+                        },{
+                            Type = "CheckBox",
+                            Text = "Camera Subject",
+                            Name = "CameraSubject",
+                            IsAChoice = true,
+                            Value = Config[tostring(game.PlaceId)].Radar.Rotation == "CameraSubject",
+                            OnChecked = function(Value)
+                                Config[tostring(game.PlaceId)].Radar.Rotation = "CameraSubject"
+                                Config:Write()
+                            end
+                        },{
+                            Type = "CheckBox",
+                            Text = "Character",
+                            Name = "Character",
+                            IsAChoice = true,
+                            Value = Config[tostring(game.PlaceId)].Radar.Rotation == "Character",
+                            OnChecked = function(Value)
+                                Config[tostring(game.PlaceId)].Radar.Rotation = "Character"
+                                Config:Write()
+                            end
+                        }
+                    }
+                end
+            },
+            {
+                Text = "Grid...",
+                Submenu = function()
+                    return {
+                        {
+                            Type = "CheckBox",
+                            Text = "None",
+                            Name = "None",
+                            IsAChoice = true,
+                            Value = Config[tostring(game.PlaceId)].Radar.GridType == "None",
+                            OnChecked = function(Value)
+                                Config[tostring(game.PlaceId)].Radar.GridType = "None"
+                                Config:Write()
+                            end
+                        },
+                        {
+                            Type = "CheckBox",
+                            Text = "Square",
+                            Name = "Square",
+                            IsAChoice = true,
+                            Value = Config[tostring(game.PlaceId)].Radar.GridType == "Square",
+                            OnChecked = function(Value)
+                                Config[tostring(game.PlaceId)].Radar.GridType = "Square"
+                                Config:Write()
+                            end
+                        },{
+                            Type = "CheckBox",
+                            Text = "Circle",
+                            Name = "Circle",
+                            IsAChoice = true,
+                            Value = Config[tostring(game.PlaceId)].Radar.GridType == "Circle",
+                            OnChecked = function(Value)
+                                Config[tostring(game.PlaceId)].Radar.GridType = "Circle"
+                                Config:Write()
+                            end
+                        },{
+                            Type = "Slider",
+                            Text = "Transparency",
+                            Name = "GridTransparency",
+                            ValueDisplay = true,
+                            MaxValue = 1,
+                            MinValue = 0,
+                            MinSliderSize = 50,
+                            StartingValue = Config[tostring(game.PlaceId)].Radar.GridTransparency,
+                            Rounding = 0,
+                            OnRelease = function(Value) 
+                                Config[tostring(game.PlaceId)].Radar.GridTransparency = Value
+                                Config:Write()
+                            end
+                        }
+                    }
+                end
+            },
+            {
+                Text = "Axis...",
+                Submenu = function()
+                    return {
+                        {
+                            Type = "CheckBox",
+                            Text = "None",
+                            Name = "None",
+                            IsAChoice = true,
+                            Value = Config[tostring(game.PlaceId)].Radar.ColorType == "None",
+                            OnChecked = function(Value)
+                                Config[tostring(game.PlaceId)].Radar.ColorType = "None"
+                                Config:Write()
+                            end
+                        },
+                        {
+                            Type = "CheckBox",
+                            Text = "Dot",
+                            Name = "Dot",
+                            IsAChoice = true,
+                            Value = Config[tostring(game.PlaceId)].Radar.GridType == "Square",
+                            OnChecked = function(Value)
+                                Config[tostring(game.PlaceId)].Radar.GridType = "Square"
+                                Config:Write()
+                            end
+                        },{
+                            Type = "CheckBox",
+                            Text = "Line",
+                            Name = "Line",
+                            IsAChoice = true,
+                            Value = Config[tostring(game.PlaceId)].Radar.GridType == "Circle",
+                            OnChecked = function(Value)
+                                Config[tostring(game.PlaceId)].Radar.GridType = "Circle"
+                                Config:Write()
+                            end
+                        },
+                        {
+                            Type = "Slider",
+                            Text = "Direction",
+                            Name = "Direction",
+                            Tooltip = "0 = Z+",
+                            ValueDisplay = true,
+                            MaxValue = 359,
+                            MinValue = 0,
+                            MinSliderSize = 100,
+                            StartingValue = Config[tostring(game.PlaceId)].Radar.AxisDir,
+                            Rounding = 0,
+                            OnRelease = function(Value) 
+                                Config[tostring(game.PlaceId)].Radar.AxisDir = Value
+                                Config:Write()
+                            end
+                        }
+                    }
+                end
+            },
+            {
+                Text = "Look Vector...",
+                Submenu = function()
+                    return {
+                        {
+                            Type = "CheckBox",
+                            Text = "None",
+                            Name = "None",
+                            IsAChoice = true,
+                            Value = Config[tostring(game.PlaceId)].Radar.LookVector == "None",
+                            OnChecked = function(Value)
+                                Config[tostring(game.PlaceId)].Radar.LookVector = "None"
+                                Config:Write()
+                            end
+                        },
+                        {
+                            Type = "CheckBox",
+                            Text = "Line",
+                            Name = "Line",
+                            IsAChoice = true,
+                            Value = Config[tostring(game.PlaceId)].Radar.LookVector == "Line",
+                            OnChecked = function(Value)
+                                Config[tostring(game.PlaceId)].Radar.LookVector = "Line"
+                                Config:Write()
+                            end
+                        },{
+                            Type = "CheckBox",
+                            Text = "Cone",
+                            Name = "Cone",
+                            IsAChoice = true,
+                            Value = Config[tostring(game.PlaceId)].Radar.LookVector == "Cone",
+                            OnChecked = function(Value)
+                                Config[tostring(game.PlaceId)].Radar.LookVector = "Cone"
+                                Config:Write()
+                            end
+                        },
+                        {
+                            Type = "Slider",
+                            Text = "Cone FOV",
+                            Name = "ConeDegree",
+                            Tooltip = "0 = Camera FOV",
+                            ValueDisplay = true,
+                            MaxValue = 180,
+                            MinValue = 0,
+                            MinSliderSize = 100,
+                            StartingValue = Config[tostring(game.PlaceId)].Radar.ConeDegree,
+                            Rounding = 0,
+                            OnRelease = function(Value) 
+                                Config[tostring(game.PlaceId)].Radar.ConeDegree = Value
+                                Config:Write()
+                            end
+                        }
+                    }
+                end
+            },
+            {
+                Type = "Slider",
+                Text = "Dot Size",
+                Name = "PlayerSize",
+                ValueDisplay = true,
+                MaxValue = 10,
+                MinValue = 0,
+                MinSliderSize = 200,
+                StartingValue = Config[tostring(game.PlaceId)].Radar.PlayerSize,
+                Rounding = 1,
+                OnRelease = function(Value) 
+                    Config[tostring(game.PlaceId)].Radar.PlayerSize = Value
+                    Config:Write()
+                    for _, v in pairs(Icons:GetChildren()) do
+                        v.Size = UDim2.fromOffset(Value,Value)
+                    end
+                end
+            },
+            {
+                Text = "Colors...",
+                Submenu = function()
+                    return {
+                        {
+                            Type = "Color3",
+                            Mode = "RGB",
+                            Text = "LocalPlayer",
+                            Color = Config[tostring(game.PlaceId)].Radar.LPColor,
+                            OnColorChange = function(Color)
+                                Config[tostring(game.PlaceId)].Radar.LPColor = Color
+                                Config:Write()
+                            end
+                        },
+                        {
+                            Type = "Color3",
+                            Mode = "RGB",
+                            Text = "Default",
+                            Color = Config[tostring(game.PlaceId)].Radar.DefaultColor,
+                            OnColorChange = function(Color)
+                                Config[tostring(game.PlaceId)].Radar.DefaultColor = Color
+                                Config:Write()
+                            end
+                        },
+                        {
+                            Type = "Color3",
+                            Mode = "RGB",
+                            Text = "Friendly",
+                            Color = Config[tostring(game.PlaceId)].Radar.FriendlyColor,
+                            OnColorChange = function(Color)
+                                Config[tostring(game.PlaceId)].Radar.FriendlyColor = Color
+                                Config:Write()
+                            end
+                        },
+                        {
+                            Type = "Color3",
+                            Mode = "RGB",
+                            Text = "Enemy",
+                            Color = Config[tostring(game.PlaceId)].Radar.EnemyColor,
+                            OnColorChange = function(Color)
+                                Config[tostring(game.PlaceId)].Radar.EnemyColor = Color
+                                Config:Write()
+                            end
+                        },
+                        {
+                            Type = "Divider"
+                        },
+                        {
+                            Type = "Color3",
+                            Mode = "RGB",
+                            Text = "Background Color",
+                            Color = Config[tostring(game.PlaceId)].Radar.BackgroundColor,
+                            OnColorChange = function(Color)
+                                Config[tostring(game.PlaceId)].Radar.BackgroundColor = Color
+                                Config:Write()
+                            end
+                        },
+                        {
+                            Type = "Slider",
+                            Text = "Transparency",
+                            Name = "Transparency",
+                            ValueDisplay = true,
+                            MaxValue = 1,
+                            MinValue = 0,
+                            MinSliderSize = 50,
+                            StartingValue = Config[tostring(game.PlaceId)].Radar.Transparency,
+                            Rounding = 1,
+                            OnRelease = function(Value) 
+                                Config[tostring(game.PlaceId)].Radar.Transparency = Value
+                                Config:Write()
+                            end
+                        },
+                        {
+                            Type = "Color3",
+                            Mode = "RGB",
+                            Text = "Border Color",
+                            Color = Config[tostring(game.PlaceId)].Radar.BorderColor,
+                            OnColorChange = function(Color)
+                                Config[tostring(game.PlaceId)].Radar.BorderColor = Color
+                                Config:Write()
+                            end
+                        },
+                        {
+                            Type = "Slider",
+                            Text = "Border Thickness",
+                            Name = "BorderThickness",
+                            ValueDisplay = true,
+                            MaxValue = 10,
+                            MinValue = 0,
+                            MinSliderSize = 50,
+                            StartingValue = Config[tostring(game.PlaceId)].Radar.BorderThickness,
+                            Rounding = 1,
+                            OnRelease = function(Value) 
+                                Config[tostring(game.PlaceId)].Radar.BorderThickness = Value
+                                Config:Write()
+                            end
+                        },
+                        {
+                            Type = "Slider",
+                            Text = "Border Transparency",
+                            Name = "BorderTransparency",
+                            ValueDisplay = true,
+                            MaxValue = 1,
+                            MinValue = 0,
+                            MinSliderSize = 50,
+                            StartingValue = Config[tostring(game.PlaceId)].Radar.BorderTransparency,
+                            Rounding = 1,
+                            OnRelease = function(Value) 
+                                Config[tostring(game.PlaceId)].Radar.BorderTransparency = Value
+                                Config:Write()
+                            end
+                        }
+                    }
+                end
+            }
+        )
     end)
     local TriangleId = "rbxassetid://16977390688"
     local function GetColor(Player)
         local set = Config[tostring(game.PlaceId)].Radar
         local Color do 
-            if set.ListColors and CheckStaff(tostring(Player.UserId)) then Color = ListColors.Staff
+            if Player == LP then Color = set.LPColor
+            elseif set.ListColors and CheckStaff(tostring(Player.UserId)) then Color = ListColors.Staff
             elseif set.ListColors and ListsModule and Lists and Lists[tostring(Player.UserId)] then Color = ListColors[Lists[tostring(Player.UserId)]]
             elseif set.ColorType == "Team" then Color = Player.TeamColor.Color
             elseif set.ColorType == "Ally" then Color = Player.Team == LP.Team and set.FriendlyColor or set.EnemyColor
             else Color = set.DefaultColor end
         end
         return Color
-    end
-    local PosPart
-    local function GetPos(Player)
-        local Char = Player.Character
-        local HRP = Char and (Char:FindFirstChild("HumanoidRootPart") or Char:FindFirstChildWhichIsA("BasePart"))
-        if (not PosPart) or (not HRP) then return UDim2.new() end
-        return UDim2.fromOffset(
-            PosPart.Position.X-HRP.Position.X,
-            PosPart.Position.Z-HRP.Position.Z
-        )
     end
     local function CFrameToYaw(cframe)
         -- Extract rotation matrix
@@ -940,12 +1492,56 @@ local function CreateRadar()
     end
     local function CreatePlayerDisplay(Player)
         local set = Config[tostring(game.PlaceId)].Radar
+        local function SetPos(Icon, Player)
+            local Char = Player.Character
+            local HRP = Char and (Char:FindFirstChild("HumanoidRootPart") or Char:FindFirstChildWhichIsA("BasePart"))
+            local PosPart
+            if set.PositionPart == "Character" then
+                PosPart = LPHRP
+            elseif set.PositionPart == "Camera" then
+                PosPart = workspace.CurrentCamera
+            elseif set.PositionPart == "CameraSubject" then
+                PosPart = workspace.CurrentCamera.CameraSubject
+                if PosPart and not PosPart:IsA("BasePart") then
+                    PosPart = PosPart:FindFirstChild("HumanoidRootPart") or PosPart:FindFirstChildWhichIsA("BasePart") or PosPart.Parent:FindFirstChild("HumanoidRootPart")
+                end
+            end
+            if (not PosPart) or (not HRP) then return end
+            Icon.Position = UDim2.fromScale(
+                PosPart.Position.X-HRP.Position.X+0.5,
+                PosPart.Position.Z-HRP.Position.Z+0.5
+            )
+            if set.ShowElevation then
+                local ElevDisc = PosPart.Position.Y-HRP.Position.Y
+                if math.abs(ElevDisc) > set.ElevationTreshold and ElevDisc<0 then
+                    Icon.Image = TriangleId
+                    Icon.BackgroundTransparency = 1
+                    Icon.UICorner.CornerRadius = UDim.new(0,0)
+                    Icon.Rotation = 0 - PlayerDisplay.AbsoluteRotation
+                elseif math.abs(ElevDisc) > set.ElevationTreshold and ElevDisc>0 then
+                    Icon.Image = TriangleId
+                    Icon.BackgroundTransparency = 1
+                    Icon.UICorner.CornerRadius = UDim.new(0,0)
+                    Icon.Rotation = 180 - PlayerDisplay.AbsoluteRotation
+                else
+                    Icon.Image = "rbxassetid://0"
+                    Icon.BackgroundTransparency = 0
+                    Icon.UICorner.CornerRadius = UDim.new(.5,0)
+                    Icon.Rotation = 0 - PlayerDisplay.AbsoluteRotation
+                end
+            else
+                Icon.Image = "rbxassetid://0"
+                Icon.BackgroundTransparency = 0
+                Icon.UICorner.CornerRadius = UDim.new(.5,0)
+                Icon.Rotation = 0 - PlayerDisplay.AbsoluteRotation
+            end
+        end
         local Char = Player.Character
         local HRP = Char and (Char:FindFirstChild("HumanoidRootPart") or Char:FindFirstChildWhichIsA("BasePart"))
         if (not Char) or (not HRP) then return end
         local Color = GetColor(Player)
         local Icon = CreateObject("ImageLabel",{
-            Parent = PlayerDisplay,
+            Parent = Icons,
             Size = UDim2.fromOffset(set.PlayerSize,set.PlayerSize),
             BorderSizePixel = 0,
             BackgroundColor3 = Color,
@@ -957,20 +1553,19 @@ local function CreateRadar()
             Parent = Icon
         })
         local function UpdatePos()
-            if set.PositionPart == "Character" then
-                PosPart = LPHRP
-            elseif set.PositionPart == "Camera" then
-                PosPart = workspace.CurrentCamera
-            elseif set.PositionPart == "CameraSubject" then
-                PosPart = workspace.CurrentCamera.CameraSubject
-                if PosPart and not PosPart:IsA("BasePart") then
-                    PosPart = PosPart:FindFirstChild("HumanoidRootPart") or PosPart:FindFirstChildWhichIsA("BasePart") or PosPart.Parent:FindFirstChild("HumanoidRootPart")
-                end
+            SetPos(Icon, Player)
+            if set.Shape == "Round" then
+                Icon.Visible = (PlayerDisplay.AbsolutePosition - Icon.AbsolutePosition-Vector2.new(set.PlayerSize/2,set.PlayerSize/2)).Magnitude < RadarFrame.AbsoluteSize.X/2
+            elseif set.Shape == "Square" then
+                local tx = RadarFrame.AbsolutePosition.X-set.PlayerSize/2
+                local ty = RadarFrame.AbsolutePosition.Y-set.PlayerSize/2
+                local bx = tx + RadarFrame.AbsoluteSize.X
+                local by = ty + RadarFrame.AbsoluteSize.Y
+                Icon.Visible = Icon.AbsolutePosition.X >= tx and Icon.AbsolutePosition.Y >= ty and Icon.AbsolutePosition.X <= bx and Icon.AbsolutePosition.Y <= by
+                Color = GetColor(Player)
+                Icon.BackgroundColor3 = Color
+                Icon.ImageColor3 = Color
             end
-            if not PosPart then return end
-            local nPosition = GetPos(Player)
-            Icon.Position = nPosition
-            Icon.Visible = set.Shape == "Round" and ((PlayerDisplay.AbsolutePosition - Icon.AbsolutePosition-Vector2.new(set.PlayerSize/2,set.PlayerSize/2)).Magnitude < RadarFrame.AbsoluteSize.X/2) or (set.Shape == "Square" and true) or false
         end
         local conn = RunService.RenderStepped:Connect(UpdatePos)
         Char.Destroying:Connect(function()
@@ -978,12 +1573,11 @@ local function CreateRadar()
             Icon:Destroy()
         end)
     end
-    Players.PlayerAdded:Connect(CreatePlayerDisplay)
+    RadarConns.PlayerAdded = Players.PlayerAdded:Connect(CreatePlayerDisplay)
     for _, Player in pairs(Players:GetPlayers()) do
-        if Player == LP then continue end
         CreatePlayerDisplay(Player)
     end
-    RunService.RenderStepped:Connect(function()
+    RadarConns.RenderStepped = RunService.RenderStepped:Connect(function()
         local set = Config[tostring(game.PlaceId)].Radar
         local RotPart
         if set.Rotation == "Character" then
@@ -997,6 +1591,9 @@ local function CreateRadar()
             end
         end
         PlayerDisplayFrame.Rotation = RotPart and CFrameToYaw(RotPart.CFrame) or set.FixedDegree
+    end)
+    RadarFrame.Destroying:Once(function()
+        for _, v in pairs(RadarConns) do v:Disconnect() end
     end)
 end
 
