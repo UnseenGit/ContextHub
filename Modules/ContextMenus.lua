@@ -3209,7 +3209,11 @@ function module.Create(argSettings, ...)
 					UDim2.fromScale((math.clamp(SliderValue, MinValue, MaxValue) - MinValue) / (MaxValue - MinValue), 0)
 				ValueDisplay.FocusLost:Connect(function()
 					if tonumber(ValueDisplay.Text) then
-						OnChangedEvent:Fire(tonumber(ValueDisplay.Text), SliderValue)
+						if v.OnValueChange then
+							OnChangedEvent:Fire(tonumber(ValueDisplay.Text), SliderValue)
+						elseif v.OnRelease then
+							v.OnRelease(tonumber(ValueDisplay.Text))
+						end
 						SliderValue = tonumber(ValueDisplay.Text)
 						Handle.Position =
 							UDim2.fromScale(math.clamp((SliderValue - MinValue) / (MaxValue - MinValue), 0, 1), 0)

@@ -219,12 +219,11 @@ local Config = ConfigModule:Create("CTCONFIG.lua",{
             Size = UDim2.fromOffset(150,150),
             Position = UDim2.new(0,1500,0,0),
             PositionLocked = false,
-            GridType = "Square", --Square, Circle, None
-            GridTransparency = 0.5,
             Axis = "Dot", --Dot, Line, None
             AxisDir = 0, 
             ShowElevation = true,
             ElevationTreshold = 10,
+            ElevationFade = 100,
             Rotation = "Camera", --Fixed, CameraSubject, Camera
             PositionPart = "CameraSubject", --CameraSubject, Camera, Character 
             FixedDegree = 0,
@@ -432,7 +431,6 @@ local function GetPlayerClosestToMouse()
     local function CheckSkip(Player)
         local Notify = false
         local Char = Player.Character
-        local LPChar = LP.Character
         if (not Char) or (not LPChar) then return true, Notify and warn("Skipping", Player, "No Character") 
         elseif Player == LP then return true, Notify and warn("Skipping", Player, "is Local")
         elseif (not Char:FindFirstChild("HumanoidRootPart")) or (not Char:FindFirstChild("Humanoid")) then return true, Notify and warn("Skipping", Player, "Humanoid/HumanoidRootPart not found")
@@ -833,7 +831,7 @@ local function GetCallSign(name)
 end
 local RadarConns = {}
 local function CreateRadar()
-    local RadarFrame = CreateObject("CanvasGroup",{
+    local RadarFrame = CreateObject("ImageLabel",{
         Position = Config[tostring(game.PlaceId)].Radar.Position,
         Size = Config[tostring(game.PlaceId)].Radar.Size,
         BackgroundTransparency = Config[tostring(game.PlaceId)].Radar.Transparency,
@@ -878,10 +876,6 @@ local function CreateRadar()
         Name = "PlayerDisplay",
         AnchorPoint = Vector2.new(0.5,0.5)
     })
-    local GridLines = CreateObject("Folder",{
-        Name = "GridLines",
-        Parent = PlayerDisplay
-    })
     local Icons = CreateObject("Folder",{
         Name = "Players",
         Parent = PlayerDisplay
@@ -909,8 +903,79 @@ local function CreateRadar()
     local function Zoom()
         PlayerDisplay:TweenSize(UDim2.fromScale(CurrentZoom,CurrentZoom),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,.2,true)
     end
+    local Scale = CreateObject("Frame",{
+        Size = UDim2.new(0,10,0,2),
+        Parent = RadarFrame,
+        Name = "Scale",
+        AnchorPoint = Vector2.new(1,0),
+        Position = Config[tostring(game.PlaceId)].Radar.Shape == "Round" and UDim2.new(0.85,0,0.83,0) or UDim2.new(0.9,0,0.9,0),
+        BackgroundColor3 = Color3.new(1,1,1),
+        BorderSizePixel = 0
+    })
+    local ScaleLabel = CreateObject("TextLabel",{
+        Size = UDim2.new(0,0,0,14),
+        Parent = Scale,
+        BackgroundTransparency = 1,
+        Name = "Scale",
+        AnchorPoint = Vector2.new(1,1),
+        Position = UDim2.new(1,-2,0,-6),
+        TextXAlignment = Enum.TextXAlignment.Right,
+        Font = Enum.Font.Arial,
+        TextSize = 12,
+        TextColor3 = Color3.new(1,1,1),      
+        Text = ""
+    })
+    CreateObject("Frame",{
+        Size = UDim2.new(0,2,0,6),
+        Parent = Scale,
+        Name = "ScaleEnd",
+        AnchorPoint = Vector2.new(1,1),
+        Position = UDim2.new(1,0,0,0),
+        BackgroundColor3 = Color3.new(1,1,1),
+        BorderSizePixel = 0
+    })
+    CreateObject("Frame",{
+        Size = UDim2.new(0,2,0,6),
+        Parent = Scale,
+        Name = "ScaleEnd",
+        AnchorPoint = Vector2.new(0,1),
+        Position = UDim2.new(0,0,0,0),
+        BackgroundColor3 = Color3.new(1,1,1),
+        BorderSizePixel = 0
+    })
+    local Dividers = {}
+    for i = 1, 9 do     
+        table.insert(Dividers,CreateObject("Frame",{
+            Size = UDim2.new(0,1,0,3),
+            Parent = Scale,
+            Name = "ScaleEnd",
+            AnchorPoint = Vector2.new(0,1),
+            Position = UDim2.new(i/10,0,0,0),
+            BackgroundColor3 = Color3.new(1,1,1),
+            BorderSizePixel = 0,
+            Visible = false
+        }))
+    end
+    do
+        local Unit = PlayerDisplay.Size.X.Scale
+        local Mul = 1
+        if Mul*Unit < RadarFrame.AbsoluteSize.X/15 then
+            repeat Mul = Mul*10 until Mul*Unit > RadarFrame.AbsoluteSize.X/15
+        end
+        Scale.Size = UDim2.new(0,Mul*Unit,0,2)
+        ScaleLabel.Text = Mul
+    end
     PlayerDisplay:GetPropertyChangedSignal("Size"):Connect(function()
-    
+        local Unit = PlayerDisplay.Size.X.Scale
+        local Mul = 1
+        if Mul*Unit < RadarFrame.AbsoluteSize.X/15 then
+            repeat Mul = Mul*10 until Mul*Unit > RadarFrame.AbsoluteSize.X/15
+        end
+        Scale.Size = UDim2.new(0,Mul*Unit,0,2)
+        ScaleLabel.Text = Mul
+        for _, v in pairs(Dividers) do
+            v.Visible = Mul*Unit > RadarFrame.AbsoluteSize.X/4
+        end
     end)
     UIPageLayout:GetPropertyChangedSignal("CurrentPage"):Connect(function()
         if order[LastPage] == UIPageLayout.CurrentPage.Name then
@@ -997,6 +1062,7 @@ local function CreateRadar()
                             OnChecked = function(Value)
                                 Config[tostring(game.PlaceId)].Radar.Shape = "Round"
                                 TweenService:Create(UICorner, TweenInfo.new(.2,Enum.EasingStyle.Quad,Enum.EasingDirection.Out), {CornerRadius = UDim.new(0.5,0)}):Play()
+                                Scale:TweenPosition(UDim2.new(0.75,0,0.83,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,.2,true)
                                 Config:Write()
                             end
                         },
@@ -1009,6 +1075,7 @@ local function CreateRadar()
                             OnChecked = function(Value)
                                 Config[tostring(game.PlaceId)].Radar.Shape = "Square"
                                 TweenService:Create(UICorner, TweenInfo.new(.2,Enum.EasingStyle.Quad,Enum.EasingDirection.Out), {CornerRadius = UDim.new(0.03,0)}):Play()
+                                Scale:TweenPosition(UDim2.new(0.9,0,0.9,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,.2,true)
                                 Config:Write()
                             end
                         }
@@ -1032,11 +1099,27 @@ local function CreateRadar()
                 ValueDisplay = true,
                 MaxValue = 100,
                 MinValue = 0,
-                MinSliderSize = 50,
+                MinSliderSize = 200,
                 StartingValue = Config[tostring(game.PlaceId)].Radar.ElevationTreshold,
-                Rounding = 1,
+                Rounding = 0,
                 OnRelease = function(Value) 
                     Config[tostring(game.PlaceId)].Radar.ElevationTreshold = Value
+                    Config:Write()
+                end
+            },
+            {
+                Type = "Slider",
+                Text = "Elevation Fade",
+                Name = "ElevationFade",
+                Tooltip = "0 = Off",
+                ValueDisplay = true,
+                MaxValue = 500,
+                MinValue = 0,
+                MinSliderSize = 200,
+                StartingValue = Config[tostring(game.PlaceId)].Radar.ElevationFade,
+                Rounding = -1,
+                OnRelease = function(Value) 
+                    Config[tostring(game.PlaceId)].Radar.ElevationFade = Value
                     Config:Write()
                 end
             },
@@ -1175,59 +1258,6 @@ local function CreateRadar()
                 end
             },
             {
-                Text = "Grid...",
-                Submenu = function()
-                    return {
-                        {
-                            Type = "CheckBox",
-                            Text = "None",
-                            Name = "None",
-                            IsAChoice = true,
-                            Value = Config[tostring(game.PlaceId)].Radar.GridType == "None",
-                            OnChecked = function(Value)
-                                Config[tostring(game.PlaceId)].Radar.GridType = "None"
-                                Config:Write()
-                            end
-                        },
-                        {
-                            Type = "CheckBox",
-                            Text = "Square",
-                            Name = "Square",
-                            IsAChoice = true,
-                            Value = Config[tostring(game.PlaceId)].Radar.GridType == "Square",
-                            OnChecked = function(Value)
-                                Config[tostring(game.PlaceId)].Radar.GridType = "Square"
-                                Config:Write()
-                            end
-                        },{
-                            Type = "CheckBox",
-                            Text = "Circle",
-                            Name = "Circle",
-                            IsAChoice = true,
-                            Value = Config[tostring(game.PlaceId)].Radar.GridType == "Circle",
-                            OnChecked = function(Value)
-                                Config[tostring(game.PlaceId)].Radar.GridType = "Circle"
-                                Config:Write()
-                            end
-                        },{
-                            Type = "Slider",
-                            Text = "Transparency",
-                            Name = "GridTransparency",
-                            ValueDisplay = true,
-                            MaxValue = 1,
-                            MinValue = 0,
-                            MinSliderSize = 50,
-                            StartingValue = Config[tostring(game.PlaceId)].Radar.GridTransparency,
-                            Rounding = 0,
-                            OnRelease = function(Value) 
-                                Config[tostring(game.PlaceId)].Radar.GridTransparency = Value
-                                Config:Write()
-                            end
-                        }
-                    }
-                end
-            },
-            {
                 Text = "Axis...",
                 Submenu = function()
                     return {
@@ -1236,9 +1266,9 @@ local function CreateRadar()
                             Text = "None",
                             Name = "None",
                             IsAChoice = true,
-                            Value = Config[tostring(game.PlaceId)].Radar.ColorType == "None",
+                            Value = Config[tostring(game.PlaceId)].Radar.Axis == "None",
                             OnChecked = function(Value)
-                                Config[tostring(game.PlaceId)].Radar.ColorType = "None"
+                                Config[tostring(game.PlaceId)].Radar.Axis = "None"
                                 Config:Write()
                             end
                         },
@@ -1247,9 +1277,9 @@ local function CreateRadar()
                             Text = "Dot",
                             Name = "Dot",
                             IsAChoice = true,
-                            Value = Config[tostring(game.PlaceId)].Radar.GridType == "Square",
+                            Value = Config[tostring(game.PlaceId)].Radar.Axis == "Dot",
                             OnChecked = function(Value)
-                                Config[tostring(game.PlaceId)].Radar.GridType = "Square"
+                                Config[tostring(game.PlaceId)].Radar.Axis = "Dot"
                                 Config:Write()
                             end
                         },{
@@ -1257,9 +1287,9 @@ local function CreateRadar()
                             Text = "Line",
                             Name = "Line",
                             IsAChoice = true,
-                            Value = Config[tostring(game.PlaceId)].Radar.GridType == "Circle",
+                            Value = Config[tostring(game.PlaceId)].Radar.Axis == "Line",
                             OnChecked = function(Value)
-                                Config[tostring(game.PlaceId)].Radar.GridType = "Circle"
+                                Config[tostring(game.PlaceId)].Radar.Axis = "Line"
                                 Config:Write()
                             end
                         },
@@ -1419,7 +1449,7 @@ local function CreateRadar()
                             ValueDisplay = true,
                             MaxValue = 1,
                             MinValue = 0,
-                            MinSliderSize = 50,
+                            MinSliderSize = 100,
                             StartingValue = Config[tostring(game.PlaceId)].Radar.Transparency,
                             Rounding = 1,
                             OnRelease = function(Value) 
@@ -1444,7 +1474,7 @@ local function CreateRadar()
                             ValueDisplay = true,
                             MaxValue = 10,
                             MinValue = 0,
-                            MinSliderSize = 50,
+                            MinSliderSize = 100,
                             StartingValue = Config[tostring(game.PlaceId)].Radar.BorderThickness,
                             Rounding = 1,
                             OnRelease = function(Value) 
@@ -1459,7 +1489,7 @@ local function CreateRadar()
                             ValueDisplay = true,
                             MaxValue = 1,
                             MinValue = 0,
-                            MinSliderSize = 50,
+                            MinSliderSize = 100,
                             StartingValue = Config[tostring(game.PlaceId)].Radar.BorderTransparency,
                             Rounding = 1,
                             OnRelease = function(Value) 
@@ -1491,9 +1521,8 @@ local function CreateRadar()
         return math.deg(math.atan2(m02, m22))-180
     end
     local function CreatePlayerDisplay(Player)
-        local set = Config[tostring(game.PlaceId)].Radar
-        local function SetPos(Icon, Player)
-            local Char = Player.Character
+        local function SetPos(Icon, Char)
+            local set = Config[tostring(game.PlaceId)].Radar
             local HRP = Char and (Char:FindFirstChild("HumanoidRootPart") or Char:FindFirstChildWhichIsA("BasePart"))
             local PosPart
             if set.PositionPart == "Character" then
@@ -1506,24 +1535,33 @@ local function CreateRadar()
                     PosPart = PosPart:FindFirstChild("HumanoidRootPart") or PosPart:FindFirstChildWhichIsA("BasePart") or PosPart.Parent:FindFirstChild("HumanoidRootPart")
                 end
             end
-            if (not PosPart) or (not HRP) then return end
+            if (not PosPart) or (not HRP) then return print(Icon, "NO HPR OR CHAR") end
             Icon.Position = UDim2.fromScale(
                 PosPart.Position.X-HRP.Position.X+0.5,
                 PosPart.Position.Z-HRP.Position.Z+0.5
             )
+            if not Icon:FindFirstChild("UICorner") then return end
             if set.ShowElevation then
                 local ElevDisc = PosPart.Position.Y-HRP.Position.Y
-                if math.abs(ElevDisc) > set.ElevationTreshold and ElevDisc<0 then
-                    Icon.Image = TriangleId
-                    Icon.BackgroundTransparency = 1
-                    Icon.UICorner.CornerRadius = UDim.new(0,0)
-                    Icon.Rotation = 0 - PlayerDisplay.AbsoluteRotation
-                elseif math.abs(ElevDisc) > set.ElevationTreshold and ElevDisc>0 then
-                    Icon.Image = TriangleId
-                    Icon.BackgroundTransparency = 1
-                    Icon.UICorner.CornerRadius = UDim.new(0,0)
-                    Icon.Rotation = 180 - PlayerDisplay.AbsoluteRotation
+                if math.abs(ElevDisc) > set.ElevationTreshold then
+                    if ElevDisc<0 then
+                        Icon.Image = TriangleId
+                        Icon.BackgroundTransparency = 1
+                        Icon.UICorner.CornerRadius = UDim.new(0,0)
+                        Icon.Rotation = 0 - PlayerDisplay.AbsoluteRotation
+                    else
+                        Icon.Image = TriangleId
+                        Icon.BackgroundTransparency = 1
+                        Icon.UICorner.CornerRadius = UDim.new(0,0)
+                        Icon.Rotation = 180 - PlayerDisplay.AbsoluteRotation
+                    end
+                    if math.abs(ElevDisc) > set.ElevationFade then
+                        Icon.ImageTransparency = ((math.abs(ElevDisc)-set.ElevationFade)/set.ElevationFade)
+                    else
+                        Icon.ImageTransparency = 0
+                    end
                 else
+                    Icon.ImageTransparency = 0
                     Icon.Image = "rbxassetid://0"
                     Icon.BackgroundTransparency = 0
                     Icon.UICorner.CornerRadius = UDim.new(.5,0)
@@ -1536,45 +1574,57 @@ local function CreateRadar()
                 Icon.Rotation = 0 - PlayerDisplay.AbsoluteRotation
             end
         end
-        local Char = Player.Character
-        local HRP = Char and (Char:FindFirstChild("HumanoidRootPart") or Char:FindFirstChildWhichIsA("BasePart"))
-        if (not Char) or (not HRP) then return end
-        local Color = GetColor(Player)
-        local Icon = CreateObject("ImageLabel",{
-            Parent = Icons,
-            Size = UDim2.fromOffset(set.PlayerSize,set.PlayerSize),
-            BorderSizePixel = 0,
-            BackgroundColor3 = Color,
-            ImageColor3 = Color,
-            AnchorPoint = Vector2.new(0.5,0.5)
-        })
-        local UICorner = CreateObject("UICorner",{
-            CornerRadius = UDim.new(.5,0),
-            Parent = Icon
-        })
-        local function UpdatePos()
-            SetPos(Icon, Player)
-            if set.Shape == "Round" then
-                Icon.Visible = (PlayerDisplay.AbsolutePosition - Icon.AbsolutePosition-Vector2.new(set.PlayerSize/2,set.PlayerSize/2)).Magnitude < RadarFrame.AbsoluteSize.X/2
-            elseif set.Shape == "Square" then
-                local tx = RadarFrame.AbsolutePosition.X-set.PlayerSize/2
-                local ty = RadarFrame.AbsolutePosition.Y-set.PlayerSize/2
-                local bx = tx + RadarFrame.AbsoluteSize.X
-                local by = ty + RadarFrame.AbsoluteSize.Y
-                Icon.Visible = Icon.AbsolutePosition.X >= tx and Icon.AbsolutePosition.Y >= ty and Icon.AbsolutePosition.X <= bx and Icon.AbsolutePosition.Y <= by
+        local function ConnChar(Player, Char)
+            local set = Config[tostring(game.PlaceId)].Radar
+            print(Player, "ADDED")
+            local HRP = Char and (Char:FindFirstChild("HumanoidRootPart") or Char:FindFirstChildWhichIsA("BasePart") or Char:WaitForChild("HumanoidRootPart",2))
+            if (not Char) or (not HRP) then return print(Player,"NO HRP OR CHAR") end
+            local Color = GetColor(Player)
+            local Icon = CreateObject("ImageLabel",{
+                Parent = Icons,
+                Size = UDim2.fromOffset(set.PlayerSize,set.PlayerSize),
+                BorderSizePixel = 0,
+                BackgroundColor3 = Color,
+                ImageColor3 = Color,
+                AnchorPoint = Vector2.new(0.5,0.5),
+                Name = Player.Name
+            })
+            local UICorner = CreateObject("UICorner",{
+                CornerRadius = UDim.new(.5,0),
+                Parent = Icon
+            })
+            local function UpdatePos()
+                local set = Config[tostring(game.PlaceId)].Radar
+                SetPos(Icon, Char)
+                if set.Shape == "Round" then
+                    Icon.Visible = (PlayerDisplay.AbsolutePosition - Icon.AbsolutePosition-Vector2.new(set.PlayerSize/2,set.PlayerSize/2)).Magnitude < RadarFrame.AbsoluteSize.X/2
+                elseif set.Shape == "Square" then
+                    local tx = RadarFrame.AbsolutePosition.X-set.PlayerSize/2
+                    local ty = RadarFrame.AbsolutePosition.Y-set.PlayerSize/2
+                    local bx = tx + RadarFrame.AbsoluteSize.X
+                    local by = ty + RadarFrame.AbsoluteSize.Y
+                    Icon.Visible = Icon.AbsolutePosition.X >= tx and Icon.AbsolutePosition.Y >= ty and Icon.AbsolutePosition.X <= bx and Icon.AbsolutePosition.Y <= by
+                end
                 Color = GetColor(Player)
                 Icon.BackgroundColor3 = Color
                 Icon.ImageColor3 = Color
             end
+            local conn = RunService.RenderStepped:Connect(UpdatePos)
+            Player.CharacterRemoving:Connect(function()
+                print(Player, "REMOVED")
+                conn:Disconnect()
+                Icon:Destroy()
+            end)
         end
-        local conn = RunService.RenderStepped:Connect(UpdatePos)
-        Char.Destroying:Connect(function()
-            conn:Disconnect()
-            Icon:Destroy()
+        Player.CharacterAdded:Connect(function(Char)
+            ConnChar(Player, Char)
         end)
+        if Player.Character then
+            ConnChar(Player, Player.Character)
+        end
     end
     RadarConns.PlayerAdded = Players.PlayerAdded:Connect(CreatePlayerDisplay)
-    for _, Player in pairs(Players:GetPlayers()) do
+    for _, Player in pairs(Players:GetChildren()) do
         CreatePlayerDisplay(Player)
     end
     RadarConns.RenderStepped = RunService.RenderStepped:Connect(function()
@@ -1792,9 +1842,9 @@ RunService.Stepped:connect(function(deltaTime)
                             BackgroundTransparency = 1,
                             Size = UDim2.new(1,0,1,0),
                             BorderSizePixel = 0,
-                            TextSize = 12,
-                            Font = Enum.Font.Arial,
                             Parent = NameGui,
+                            Font = Enum.Font.Arial,
+                            TextSize = 12,
                             TextColor3 = Color3.new(0.9,0.9,0.9),
                             TextStrokeColor3 = Color3.new(0,0,0),
                             TextStrokeTransparency = 0.2,
