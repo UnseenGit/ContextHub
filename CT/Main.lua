@@ -1535,7 +1535,7 @@ local function CreateRadar()
                     PosPart = PosPart:FindFirstChild("HumanoidRootPart") or PosPart:FindFirstChildWhichIsA("BasePart") or PosPart.Parent:FindFirstChild("HumanoidRootPart")
                 end
             end
-            if (not PosPart) or (not HRP) then return print(Icon, "NO HPR OR CHAR") end
+            if (not PosPart) or (not HRP) then return end
             Icon.Position = UDim2.fromScale(
                 PosPart.Position.X-HRP.Position.X+0.5,
                 PosPart.Position.Z-HRP.Position.Z+0.5
@@ -1576,9 +1576,8 @@ local function CreateRadar()
         end
         local function ConnChar(Player, Char)
             local set = Config[tostring(game.PlaceId)].Radar
-            print(Player, "ADDED")
             local HRP = Char and (Char:FindFirstChild("HumanoidRootPart") or Char:FindFirstChildWhichIsA("BasePart") or Char:WaitForChild("HumanoidRootPart",2))
-            if (not Char) or (not HRP) then return print(Player,"NO HRP OR CHAR") end
+            if (not Char) or (not HRP) then return end
             local Color = GetColor(Player)
             local Icon = CreateObject("ImageLabel",{
                 Parent = Icons,
@@ -1611,7 +1610,6 @@ local function CreateRadar()
             end
             local conn = RunService.RenderStepped:Connect(UpdatePos)
             Player.CharacterRemoving:Connect(function()
-                print(Player, "REMOVED")
                 conn:Disconnect()
                 Icon:Destroy()
             end)
