@@ -229,6 +229,7 @@ local Config = ConfigModule:Create("CTCONFIG.lua",{
             PositionPart = "CameraSubject", --CameraSubject, Camera, Character 
             FixedDegree = 0,
             LookVector = "None", --None, Line, Cone,
+            LookVectorLength = 25,
             ConeDegree = 0, --0 for LP camera fov, number for degrees
         },
         LocalChatLogDist = 20,
@@ -436,7 +437,7 @@ local function GetPlayerClosestToMouse()
         elseif Player == LP then return true, Notify and warn("Skipping", Player, "is Local")
         elseif (not Char:FindFirstChild("HumanoidRootPart")) or (not Char:FindFirstChild("Humanoid")) then return true, Notify and warn("Skipping", Player, "Humanoid/HumanoidRootPart not found")
         elseif Set.IgnoreStaff and CheckStaff(Player) then return true, Notify and warn("Skipping", Player, "is Staff")
-        elseif ((LP.Character.HumanoidRootPart.CFrame.Position - Player.Character:FindFirstChild("HumanoidRootPart").Position).Magnitude) > Set.Distance then return true, Notify and warn("Skipping", Player, "Too far")
+        elseif (((LP.Character and LP.Character:FindFirstChild("HumanoidRootPart") and LP.Character.HumanoidRootPart.CFrame.Position or Vector3.new(math.huge,math.huge,math.huge)) - Player.Character:FindFirstChild("HumanoidRootPart").Position).Magnitude) > Set.Distance then return true, Notify and warn("Skipping", Player, "Too far")
         elseif ListsModule and Lists and Lists[tostring(Player.UserId)] and Set.IgnoreLists[Lists[tostring(Player.UserId)]] then return true, Notify and warn("Skipping", Player, "is Listed")
         elseif Set.WallCheck and not CheckIfPlayerBehindWall(GetAimbotPart(Player)) then return true, Notify and warn("Skipping", Player, "is Behind Wall")
         elseif Set.IgnoreDead and Char.Humanoid.Health <= 0 then return true
@@ -831,6 +832,26 @@ local function GetCallSign(name)
     return CallSign:upper()
 end
 local RadarConns = {}
+
+local function calculateEqTriangleStretch(angle)
+    -- Convert angle from degrees to radians
+    local angleRad = math.rad(angle)
+    
+    -- Calculate the original height of the equilateral triangle
+    -- This could be any value since we are just scaling
+    local originalHeight = 1
+    
+    -- Calculate the original width of the equilateral triangle using trigonometry
+    local originalWidth = originalHeight / math.tan(math.pi / 3)
+    
+    -- Calculate the stretched width using trigonometry
+    local stretchedWidth = originalHeight / math.sin(angleRad)
+    
+    -- Calculate the stretching factor
+    local stretch = stretchedWidth / originalWidth
+    
+    return stretch
+end
 local function CreateRadar()
     local RadarFrame = CreateObject("ImageLabel",{
         Position = Config[tostring(game.PlaceId)].Radar.Position,
@@ -1633,6 +1654,7 @@ local function CreateRadar()
                 PosPart.Position.X-HRP.Position.X+0.5,
                 PosPart.Position.Z-HRP.Position.Z+0.5
             )
+            Icon.FovRot.Rotation = PlayerDisplay.AbsoluteRotation-CFrameToYaw(HRP.CFrame)+180
             if not Icon:FindFirstChild("UICorner") then return end
             if set.ShowElevation then
                 local ElevDisc = PosPart.Position.Y-HRP.Position.Y
@@ -1686,9 +1708,33 @@ local function CreateRadar()
                 CornerRadius = UDim.new(.5,0),
                 Parent = Icon
             })
+            local FovRot = CreateObject("Frame",
+                {
+                    Name = "FovRot",
+                    Parent = Icon,
+                    BackgroundTransparency = 1,
+                    Size = UDim2.fromOffset(0,0),
+                    Position = UDim2.fromScale(.5,.5),
+                    BorderSizePixel = 0,
+                    Rotation = -CFrameToYaw(HRP.CFrame)-90
+                }
+            )
+            local FOVDisplay = CreateObject("ImageLabel",{
+                Name = "FOV",
+                Parent = FovRot,
+                BorderSizePixel = 0,
+                ImageTransparency = 0.9,
+                AnchorPoint = Vector2.new(0.5,0),
+                BackgroundTransparency = set.LookVector == "Line" and 0.8 or 1,
+                Image = set.LookVector == "Cone" and TriangleId or "",
+                Size = set.LookVector == "Cone" and UDim2.fromOffset(set.LookVectorLength*calculateEqTriangleStretch(set.ConeDegree > 0 and set.ConeDegree or workspace.CurrentCamera.FieldOfView),set.LookVectorLength) or UDim2.fromOffset(1,set.LookVectorLength)
+            })
             local function UpdatePos()
                 local set = Config[tostring(game.PlaceId)].Radar
                 SetPos(Icon, Char)
+                FOVDisplay.BackgroundTransparency = set.LookVector == "Line" and 0.8 or 1
+                FOVDisplay.Image = set.LookVector == "Cone" and TriangleId or ""
+                FOVDisplay.Size = set.LookVector == "Cone" and UDim2.fromOffset(set.LookVectorLength*calculateEqTriangleStretch(set.ConeDegree > 0 and set.ConeDegree or workspace.CurrentCamera.FieldOfView),set.LookVectorLength) or UDim2.fromOffset(1,set.LookVectorLength)
                 if set.Shape == "Round" then
                     Icon.Visible = (PlayerDisplay.AbsolutePosition - Icon.AbsolutePosition-Vector2.new(set.PlayerSize/2,set.PlayerSize/2)).Magnitude < RadarFrame.AbsoluteSize.X/2
                 elseif set.Shape == "Square" then
@@ -2413,7 +2459,7 @@ local function ThemeProviderEntries()
             }
         },
         function()
-            if LP.Character and not (workspace.CurrentCamera.CameraSubject == LP.Character or workspace.CurrentCamera.CameraSubject == LP.Character.Humanoid) then
+            if LP.Character and not (workspace.CurrentCamera.CameraSubject == LP.Character or workspace.CurrentCamera.CameraSubject == LP.Character:FindFirstChild("Humanoid")) then
                 return {
                     Text = "Unview",
                     M1Func = function()
