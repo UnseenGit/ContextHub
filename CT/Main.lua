@@ -1,5 +1,4 @@
 if not game:IsLoaded() then game.Loaded:Wait() end
-
 -----INFERIOR EXECUTOR FIXES
 
 getcustomasset = getcustomasset or function() return "rbxassetid://15550979444" end
@@ -139,7 +138,7 @@ UserInputService.InputEnded:Connect(function(input)
     end
 end)
 local ListsModule = LoadModule("Lists")
-local Lists = {} do if ListsModule then Lists = ListsModule.CheckArray(Players:GetChildren()) end end
+local Lists = {} do if ListsModule then Lists = ListsModule.CheckArray(Players:GetPlayers()) end end
 local Config = ConfigModule:Create("CTCONFIG.lua",{
     RandomIncludeLP = true,
     RandomizeName = true,
@@ -177,7 +176,8 @@ local Config = ConfigModule:Create("CTCONFIG.lua",{
                 Health = true,
                 Distance = false,
                 Name = false,
-            }
+            },
+            RedrawLoop = 0
         },
         Aimbot = {
             Method = "Lock",
@@ -199,7 +199,8 @@ local Config = ConfigModule:Create("CTCONFIG.lua",{
             DropIncrease = 2,
             DropType = "Quad",
             Pred = false,
-            PredAmount = 1
+            PredAmount = 1,
+            Smoothing = 0.5
         },
         Radar = {
             AutoOpen = true,
@@ -219,7 +220,7 @@ local Config = ConfigModule:Create("CTCONFIG.lua",{
             Size = UDim2.fromOffset(150,150),
             Position = UDim2.new(0,1500,0,0),
             PositionLocked = false,
-            Axis = "Dot", --Dot, Line, None
+            Axis = "Dot", --Dot, Line, Both, None
             AxisDir = 0, 
             ShowElevation = true,
             ElevationTreshold = 10,
@@ -384,7 +385,7 @@ local function GetAimbotTargets()
     local out = {}
     for _, Player in pairs(Players:GetPlayers()) do
         if Player == LP then continue end
-        if Set.TeamType == "all" or (Set.TeamType == "enemy" and Player.Team ~= LP.Team) or (Set.TeamType == "friendly" and Player.Team == LP.Team) or (Set.TeamType == "select" and AimbotTeams[v.Team.Name] ) then
+        if __AimbotCheckTeam and __AimbotCheckTeam(Player) or not __AimbotCheckTeam and (Set.TeamType == "all" or (Set.TeamType == "enemy" and Player.Team ~= LP.Team) or (Set.TeamType == "friendly" and Player.Team == LP.Team) or (Set.TeamType == "select" and AimbotTeams[v.Team.Name] )) then
             table.insert( out, Player )
         end
     end
@@ -487,7 +488,7 @@ local function GetESPText(Player)
             str = str.."\n"
         end
     end
-    if (Config[tostring(game.PlaceId)].ESP.Details.Health and DetailsVisible) or not Config[tostring(game.PlaceId)].ESP.Details.Health then
+    if set.ShowHealth and ((Config[tostring(game.PlaceId)].ESP.Details.Health and DetailsVisible) or not Config[tostring(game.PlaceId)].ESP.Details.Health) then
         if Humanoid and set.ShowHealth and table.find({"Scale", "Number"}, set.ShowHealthType) then
             str = `{str}{Humanoid.Health}`
         end
@@ -495,13 +496,13 @@ local function GetESPText(Player)
             str = str.."/"..Humanoid.MaxHealth
         end
     end
-    if (Config[tostring(game.PlaceId)].ESP.Details.Distance and DetailsVisible) or not Config[tostring(game.PlaceId)].ESP.Details.Distance then
-        if set.ShowDistance and Player ~= LP then
+    if set.ShowDistance and Player ~= LP then
+        if (Config[tostring(game.PlaceId)].ESP.Details.Distance and DetailsVisible) or not Config[tostring(game.PlaceId)].ESP.Details.Distance then
             str = `{str} ↔{Util.round(Distance, set.DistanceDecimalPoints)}`
         end
     end
     if __EspTextModify then
-        str = __EspTextModify(str)
+        str = __EspTextModify(Player, str)
     end
     return str
 end
@@ -633,7 +634,7 @@ if ListsModule then
         while wait(10) do
             xpcall(function() 
                 while wait(120) do
-                    Lists = ListsModule.CheckArray(Players:GetChildren())
+                    Lists = ListsModule.CheckArray(Players:GetPlayers())
                 end
             end,warn)
         end
@@ -910,7 +911,8 @@ local function CreateRadar()
         AnchorPoint = Vector2.new(1,0),
         Position = Config[tostring(game.PlaceId)].Radar.Shape == "Round" and UDim2.new(0.85,0,0.83,0) or UDim2.new(0.9,0,0.9,0),
         BackgroundColor3 = Color3.new(1,1,1),
-        BorderSizePixel = 0
+        BorderSizePixel = 0,
+        ZIndex = 3
     })
     local ScaleLabel = CreateObject("TextLabel",{
         Size = UDim2.new(0,0,0,14),
@@ -923,7 +925,8 @@ local function CreateRadar()
         Font = Enum.Font.Arial,
         TextSize = 12,
         TextColor3 = Color3.new(1,1,1),      
-        Text = ""
+        Text = "",
+        ZIndex = 3
     })
     CreateObject("Frame",{
         Size = UDim2.new(0,2,0,6),
@@ -932,7 +935,8 @@ local function CreateRadar()
         AnchorPoint = Vector2.new(1,1),
         Position = UDim2.new(1,0,0,0),
         BackgroundColor3 = Color3.new(1,1,1),
-        BorderSizePixel = 0
+        BorderSizePixel = 0,
+        ZIndex = 3
     })
     CreateObject("Frame",{
         Size = UDim2.new(0,2,0,6),
@@ -941,7 +945,8 @@ local function CreateRadar()
         AnchorPoint = Vector2.new(0,1),
         Position = UDim2.new(0,0,0,0),
         BackgroundColor3 = Color3.new(1,1,1),
-        BorderSizePixel = 0
+        BorderSizePixel = 0,
+        ZIndex = 3
     })
     local Dividers = {}
     for i = 1, 9 do     
@@ -952,8 +957,7 @@ local function CreateRadar()
             AnchorPoint = Vector2.new(0,1),
             Position = UDim2.new(i/10,0,0,0),
             BackgroundColor3 = Color3.new(1,1,1),
-            BorderSizePixel = 0,
-            Visible = false
+            BorderSizePixel = 0
         }))
     end
     do
@@ -1002,7 +1006,82 @@ local function CreateRadar()
         Connect:Disconnect()
         Config[tostring(game.PlaceId)].Radar.Position = RadarFrame.Position
         Config:Write()
+    end --calculateLineLength
+    local function calculateLineLength(radarEdgeLength, degree)
+        if Config[tostring(game.PlaceId)].Radar.Shape == "Round" then
+            return radarEdgeLength/2
+        end
+        -- Convert degree to radians
+        local radians = math.rad(90 - degree)
+    
+        -- Calculate the x and y coordinates of the point where the line intersects the radar frame
+        local x = math.cos(radians)
+        local y = math.sin(radians)
+    
+        -- Calculate the length of the line using trigonometry
+        local length
+    
+        -- Special case for 135 degrees to prevent flipping
+        if degree == 135 then
+            length = radarEdgeLength / (2 * math.cos(radians - math.pi / 4))
+        elseif math.abs(x) > math.abs(y) then
+            length = radarEdgeLength / (2 * math.cos(radians))
+        else
+            length = radarEdgeLength / (2 * math.sin(radians))
+        end
+    
+        return math.abs(length)
     end
+    
+    
+    local AxisRot = CreateObject("Frame",
+    {
+        Name = "AxisRot",
+        Parent = PlayerDisplayFrame,
+        BackgroundTransparency = 1,
+        Size = UDim2.fromOffset(0,0),
+        AnchorPoint = Vector2.new(0,0),
+        BorderSizePixel = 0,
+        Rotation = Config[tostring(game.PlaceId)].Radar.AxisDir
+    }
+)
+    local AxisLine = CreateObject("Frame",
+        {
+            Name = "Axis",
+            Parent = AxisRot,
+            BackgroundColor3 = Config[tostring(game.PlaceId)].Radar.BorderColor,
+            BackgroundTransparency = 0.5,
+            Size = UDim2.fromOffset(1,calculateLineLength(RadarFrame.AbsoluteSize.X,AxisRot.AbsoluteRotation,UICorner.CornerRadius.Scale)),
+            AnchorPoint = Vector2.new(0,1),
+            BorderSizePixel = 0,
+            Rotation = Config[tostring(game.PlaceId)].Radar.AxisDir,
+            BackgroundTransparency = table.find({"Line", "Both"},Config[tostring(game.PlaceId)].Radar.Axis) and 0 or 1
+        }
+    )
+    local AxisIcon = CreateObject("Frame",
+        {
+            Name = "AxisIcon",
+            Parent = AxisLine,
+            BackgroundColor3 = Color3.new(0.3,0.3,0.3),
+            Size = UDim2.fromOffset(Config[tostring(game.PlaceId)].Radar.BorderThickness*3,Config[tostring(game.PlaceId)].Radar.BorderThickness*3),
+            AnchorPoint = Vector2.new(0.5,0.5),
+            BorderSizePixel = 0,
+            Position = UDim2.fromOffset(0,-1),
+            Visible = table.find({"Dot", "Both"},Config[tostring(game.PlaceId)].Radar.Axis)
+        }
+    )
+    CreateObject("UICorner",{
+        CornerRadius = UDim.new(0.5,0),
+        Parent = AxisIcon
+    })
+    CreateObject("UIStroke",{
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+        Color = Config[tostring(game.PlaceId)].Radar.BorderColor,
+        LineJoinMode = Enum.LineJoinMode.Round,
+        Thickness = Config[tostring(game.PlaceId)].Radar.BorderThickness/2,
+        Transparency = 0,
+        Parent = AxisIcon
+    })
     RadarConns.Mouseclick1 = RadarButton.MouseButton1Down:Connect(function()
         local Connect
         Connect = Mouse.Move:Connect(function()
@@ -1292,6 +1371,16 @@ local function CreateRadar()
                                 Config[tostring(game.PlaceId)].Radar.Axis = "Line"
                                 Config:Write()
                             end
+                        },{
+                            Type = "CheckBox",
+                            Text = "Both",
+                            Name = "Both",
+                            IsAChoice = true,
+                            Value = Config[tostring(game.PlaceId)].Radar.Axis == "Both",
+                            OnChecked = function(Value)
+                                Config[tostring(game.PlaceId)].Radar.Axis = "Both"
+                                Config:Write()
+                            end
                         },
                         {
                             Type = "Slider",
@@ -1307,6 +1396,9 @@ local function CreateRadar()
                             OnRelease = function(Value) 
                                 Config[tostring(game.PlaceId)].Radar.AxisDir = Value
                                 Config:Write()
+                            end,
+                            OnValueChange = function(Value) 
+                                Config[tostring(game.PlaceId)].Radar.AxisDir = Value
                             end
                         }
                     }
@@ -1504,6 +1596,7 @@ local function CreateRadar()
     end)
     local TriangleId = "rbxassetid://16977390688"
     local function GetColor(Player)
+        if __RadarGetColor then return __RadarGetColor(Player) end
         local set = Config[tostring(game.PlaceId)].Radar
         local Color do 
             if Player == LP then Color = set.LPColor
@@ -1532,7 +1625,7 @@ local function CreateRadar()
             elseif set.PositionPart == "CameraSubject" then
                 PosPart = workspace.CurrentCamera.CameraSubject
                 if PosPart and not PosPart:IsA("BasePart") then
-                    PosPart = PosPart:FindFirstChild("HumanoidRootPart") or PosPart:FindFirstChildWhichIsA("BasePart") or PosPart.Parent:FindFirstChild("HumanoidRootPart")
+                    PosPart = PosPart:FindFirstChild("HumanoidRootPart") or PosPart:FindFirstChildWhichIsA("BasePart") or PosPart.Parent and PosPart.Parent:FindFirstChild("HumanoidRootPart")
                 end
             end
             if (not PosPart) or (not HRP) then return end
@@ -1586,7 +1679,8 @@ local function CreateRadar()
                 BackgroundColor3 = Color,
                 ImageColor3 = Color,
                 AnchorPoint = Vector2.new(0.5,0.5),
-                Name = Player.Name
+                Name = Player.Name,
+                ZIndex = 2
             })
             local UICorner = CreateObject("UICorner",{
                 CornerRadius = UDim.new(.5,0),
@@ -1622,7 +1716,7 @@ local function CreateRadar()
         end
     end
     RadarConns.PlayerAdded = Players.PlayerAdded:Connect(CreatePlayerDisplay)
-    for _, Player in pairs(Players:GetChildren()) do
+    for _, Player in pairs(Players:GetPlayers()) do
         CreatePlayerDisplay(Player)
     end
     RadarConns.RenderStepped = RunService.RenderStepped:Connect(function()
@@ -1639,6 +1733,10 @@ local function CreateRadar()
             end
         end
         PlayerDisplayFrame.Rotation = RotPart and CFrameToYaw(RotPart.CFrame) or set.FixedDegree
+        AxisLine.BackgroundTransparency = table.find({"Line", "Both"},Config[tostring(game.PlaceId)].Radar.Axis) and 0 or 1
+        AxisRot.Rotation = set.AxisDir
+        AxisLine.Size = UDim2.fromOffset(1,calculateLineLength(RadarFrame.AbsoluteSize.X,AxisRot.AbsoluteRotation))
+        AxisIcon.Visible = table.find({"Dot", "Both"},Config[tostring(game.PlaceId)].Radar.Axis)
     end)
     RadarFrame.Destroying:Once(function()
         for _, v in pairs(RadarConns) do v:Disconnect() end
@@ -1646,7 +1744,9 @@ local function CreateRadar()
 end
 
 
+
 local function CheckESPTeam(v)
+    if __EspCheckTeam then return __EspCheckTeam(v) end
     if Config[tostring(game.PlaceId)].ESP.TeamType == "all" then
         return true
     elseif Config[tostring(game.PlaceId)].ESP.TeamType == "enemy" and v.Team ~= LP.Team then
@@ -1666,18 +1766,18 @@ end
 
 local function CalculateDropAndPred(AimPart)
     local Set = Config[tostring(game.PlaceId)].Aimbot
-    local Pos = AimPart.Position
+    local Pos = typeof(AimPart) == "Instance" and AimPart.Position or typeof(AimPart) == "Vector3" and AimPart
     if LP.Character and LP.Character:FindFirstChild("HumanoidRootPart") then
-        local Distance = (LP.Character.HumanoidRootPart.Position - AimPart.Position).Magnitude
+        local Distance = (LP.Character.HumanoidRootPart.Position - Pos).Magnitude
         if Set.Drop then
             if Set.DropType == "Linear" then
-                Pos = AimPart.Position+Vector3.new(0,(Distance/1000)*Set.DropAmount,0)
+                Pos = Pos+Vector3.new(0,(Distance/1000)*Set.DropAmount,0)
             elseif Set.DropType == "LinearInc" then
-                local Distance = (LP.Character.HumanoidRootPart.Position - AimPart.Position).Magnitude
-                Pos = AimPart.Position+Vector3.new(0,((Distance/1000)*Set.DropAmount)+((Distance/1000)^Set.DropIncrease),0)
+                local Distance = (LP.Character.HumanoidRootPart.Position - Pos).Magnitude
+                Pos = Pos+Vector3.new(0,((Distance/1000)*Set.DropAmount)+((Distance/1000)^Set.DropIncrease),0)
             elseif Set.DropType == "Quad" then
-                local Distance = (LP.Character.HumanoidRootPart.Position - AimPart.Position).Magnitude
-                Pos = AimPart.Position+Vector3.new(0,(Distance^2)/(100000/Set.DropAmount),0)
+                local Distance = (LP.Character.HumanoidRootPart.Position - Pos).Magnitude
+                Pos = Pos+Vector3.new(0,(Distance^2)/(100000/Set.DropAmount),0)
             end
         end
         if Set.Pred then
@@ -1724,13 +1824,13 @@ local function ValidateArguments(Args, RayMethod)
     end
     return Matches >= RayMethod.ArgCountRequired
 end
-local oldNameCall
---[[oldNameCall = hookmetamethod(game, "__namecall", newcclosure(function(...)
+--[[local oldNameCall
+oldNameCall = hookmetamethod(game, "__namecall", newcclosure(function(...)
+    local set = Config[tostring(game.PlaceId)].Aimbot
     local Method = getnamecallmethod()
     local Args = {...}
     local self = Args[1]
-    if Aimbot and Config[tostring(game.PlaceId)].Aimbot.Method == "Silent" and Args[1] == workspace and AimbotTarget and AimPart and not checkcaller() then
-        local Set = Config[tostring(game.PlaceId)].Aimbot
+    if Aimbot and Set.Method == "Silent" and Args[1] == workspace and AimbotTarget and AimPart and not checkcaller() then
         if Method == "FindPartOnRayWithWhitelist" and Set.SilentMode == "FindPartOnRayWithWhitelist" then
             if ValidateArguments(Args, ExpectedArguments.FindPartOnRayWithWhitelist) then
                 local oldRay = Args[2]
@@ -1742,17 +1842,274 @@ local oldNameCall
             if not ValidateArguments(Args, ExpectedArguments.Raycast) then
                 return oldNameCall(...)
             end
-            Util.print(Args, "old")
+            --Util.print(Args, "old")
             local Origin = Args[2]
             Args[3] = (CalculateDropAndPred(AimPart)-Origin).Unit * Set.Distance
-            Util.print(Args)
+            --Util.print(Args)
             return oldNameCall(Args[1],Args[2],Args[3],Args[4],Args[5])
+        else
+            return oldNameCall(...)
         end
     end
     return oldNameCall(...)
 end))]]
 
 
+local function getDirection(Origin, Position)
+    return (Position - Origin).Unit * Config[tostring(game.PlaceId)].Aimbot.Distance
+end
+
+local oldNamecall
+oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(...)
+    local Method = getnamecallmethod()
+    local Arguments = {...}
+    local self = Arguments[1]
+    if Aimbot and AimPart and Config[tostring(game.PlaceId)].Aimbot.Method == "Silent" and self == workspace and not checkcaller() then
+        if Method == "FindPartOnRayWithIgnoreList" and Config[tostring(game.PlaceId)].Aimbot.SilentMode == Method then
+            if ValidateArguments(Arguments, ExpectedArguments.FindPartOnRayWithIgnoreList) then
+                local A_Ray = Arguments[2]
+                if AimPart then
+                    local Origin = A_Ray.Origin
+                    local Direction = getDirection(Origin, AimPart.Position)
+                    Arguments[2] = Ray.new(Origin, Direction)
+
+                    return oldNamecall(unpack(Arguments))
+                end
+            end
+        elseif Method == "FindPartOnRayWithWhitelist" and Config[tostring(game.PlaceId)].Aimbot.SilentMode == Method then
+            if ValidateArguments(Arguments, ExpectedArguments.FindPartOnRayWithWhitelist) then
+                local A_Ray = Arguments[2]
+                if AimPart then
+                    local Origin = A_Ray.Origin
+                    local Direction = getDirection(Origin, AimPart.Position)--(CalculateDropAndPred(AimPart)-Origin).Unit * Set.Distance
+                    Arguments[2] = Ray.new(Origin, Direction)
+
+                    return oldNamecall(unpack(Arguments))
+                else
+                    return oldNamecall(...)
+                end
+            else
+                return oldNamecall(...)
+            end
+        elseif (Method == "FindPartOnRay" or Method == "findPartOnRay") and Config[tostring(game.PlaceId)].Aimbot.SilentMode:lower() == Method:lower() then
+            if ValidateArguments(Arguments, ExpectedArguments.FindPartOnRay) then
+                local A_Ray = Arguments[2]
+                if AimPart then
+                    local Origin = A_Ray.Origin
+                    local Direction = getDirection(Origin, AimPart.Position)
+                    Arguments[2] = Ray.new(Origin, Direction)
+
+                    return oldNamecall(unpack(Arguments))
+                end
+            end
+        elseif Method == "Raycast" and Config[tostring(game.PlaceId)].Aimbot.SilentMode == Method then
+            if ValidateArguments(Arguments, ExpectedArguments.Raycast) then
+                local A_Origin = Arguments[2]
+                if AimPart then
+                    Arguments[3] = getDirection(A_Origin, AimPart.Position)
+
+                    return oldNamecall(unpack(Arguments))
+                end
+            end
+        end
+    end
+    return oldNamecall(...)
+end))
+
+local ESPHighlights = {}
+
+local function GetESPColor(Player, Char)
+    if __ESPGetColor then return __ESPGetColor(Player, Char) end
+    if Config[tostring(game.PlaceId)].ESP.ShowHealth and Config[tostring(game.PlaceId)].ESP.ShowHealthType == "Color" then Color = Color3.new(2-(Char.Humanoid.Health/Char.Humanoid.MaxHealth)*2,(Char.Humanoid.Health/Char.Humanoid.MaxHealth)*2)
+    elseif Config[tostring(game.PlaceId)].ESP.ListColors and CheckStaff(tostring(Player.UserId)) then Color = ListColors.Staff
+    elseif Config[tostring(game.PlaceId)].ESP.ListColors and ListsModule and Lists and Lists[tostring(Player.UserId)] then Color = ListColors[Lists[tostring(Player.UserId)]]
+    elseif Config[tostring(game.PlaceId)].ESP.TeamColors then Color = Player.TeamColor.Color
+    else Color = Config[tostring(game.PlaceId)].ESP.DefaultColor end
+    return Color
+end
+
+local function CheckESPVis(Player, Char)
+    local Show = true
+    if Player == LP then
+        Show = Config[tostring(game.PlaceId)].ESP.ShowLP
+    end
+    if Show then
+        Show = GetESPDistance(Player) < Config[tostring(game.PlaceId)].ESP.Distance
+    else return Show
+    end
+    if Show then
+        Show = CheckESPTeam(Player)
+    else return Show
+    end
+    if Show then
+        Show = CheckIfVisible(Char:FindFirstChild("HumanoidRootPart"))
+    else return Show
+    end
+    return Show
+end
+local function AddEspToChar(Char, Player)
+    local HRP = Char and Char:FindFirstChild("HumanoidRootPart")
+    if (not Char) or (not HRP) or ESPHighlights[Char] then return end
+    if Char and HRP and not ESPHighlights[Char] then
+        local Connects = {}
+        local Color = GetESPColor(Player, Char)
+        local Extents = Char:GetExtentsSize()
+        local HL do 
+            if Config[tostring(game.PlaceId)].ESP.Style == "Highlight" then
+            HL = CreateObject("Highlight",{
+                OutlineColor = Color,
+                FillTransparency = 1,
+                DepthMode = "AlwaysOnTop",
+                Name = "ESPHighlight",
+                Parent = Char,
+                Enabled = ESP and CheckESPVis(Player, Char)
+            }) 
+            elseif Config[tostring(game.PlaceId)].ESP.Style == "Box" then
+                HL = CreateObject("BillboardGui",{
+                    Name = "ESPHighlight",
+                    Size = UDim2.fromScale(math.max( Extents.X,Extents.Z ),Extents.Y),
+                    StudsOffset = Vector3.new(0,-0.5,0),
+                    LightInfluence = 0,
+                    MaxDistance = Config[tostring(game.PlaceId)].ESP.Distance,
+                    AlwaysOnTop = true,
+                    ClipsDescendants = false,
+                    Parent = HRP,
+                    Enabled = ESP and CheckESPVis(Player, Char)
+                })
+                CreateObject("UIStroke",{
+                    Name = "Stroke",
+                    Thickness = 2,
+                    ApplyStrokeMode = 1,
+                    Color = Color,
+                    Parent = CreateObject("Frame",{
+                        BackgroundTransparency = 1,
+                        Size = UDim2.fromScale(1,1),
+                        Name = "Frame",
+                        Parent = HL
+                    })
+                })
+            end
+        end
+        local function ChangeColor(Color)
+            if HL:IsA("Highlight") then
+                HL.OutlineColor = Color
+            elseif HL:IsA("BillboardGui") then
+                HL.Frame.Stroke.Color = Color
+            end
+        end
+        local NameGui = CreateObject("BillboardGui",{
+            Name = "ESPName",
+            Size = UDim2.fromOffset(240,24),
+            SizeOffset = Vector2.new(0.5,1),
+            LightInfluence = 0,
+            MaxDistance = Config[tostring(game.PlaceId)].ESP.Distance,
+            AlwaysOnTop = true,
+            ClipsDescendants = false,
+            Parent = Char:WaitForChild("Head",1),
+            Enabled = ESP and CheckESPVis(Player, Char)
+        })
+        local NameText = CreateObject("TextLabel", {
+            Text = GetESPText(Player),
+            BackgroundTransparency = 1,
+            Size = UDim2.new(1,0,1,0),
+            BorderSizePixel = 0,
+            Parent = NameGui,
+            Font = Enum.Font.Arial,
+            TextSize = 12,
+            TextColor3 = Color3.new(0.9,0.9,0.9),
+            TextStrokeColor3 = Color3.new(0,0,0),
+            TextStrokeTransparency = 0.2,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            Position = Config[tostring(game.PlaceId)].ESP.ShowHealthType == "Bar" and UDim2.fromOffset(0,4) or UDim2.fromOffset(0,0)
+        })
+        local HealthBarFrame = CreateObject("Frame", {
+            BackgroundTransparency = 0.1,
+            Size = UDim2.fromOffset(100,2),
+            BorderSizePixel = 0,
+            Parent = NameText,
+            BackgroundColor3 = Color3.fromHex("#262626"),
+            Position = UDim2.fromOffset(0,-4),
+            Visible = Config[tostring(game.PlaceId)].ESP.ShowHealth and Config[tostring(game.PlaceId)].ESP.ShowHealthType == "Bar"
+        })
+        local HealthBarDelay = CreateObject("Frame", {
+            BackgroundTransparency = 0.1,
+            Size = UDim2.fromScale(Char.Humanoid.Health/Char.Humanoid.MaxHealth,1),
+            BorderSizePixel = 0,
+            Parent = HealthBarFrame,
+            BackgroundColor3 = Color3.fromHex("#ff0000")
+        })
+        local HealthBarDisplay = CreateObject("Frame", {
+            Size = UDim2.fromScale(Char.Humanoid.Health/Char.Humanoid.MaxHealth,1),
+            BorderSizePixel = 0,
+            Parent = HealthBarFrame,
+            BackgroundColor3 = Color3.new(2-(Char.Humanoid.Health/Char.Humanoid.MaxHealth)*2,(Char.Humanoid.Health/Char.Humanoid.MaxHealth)*2)
+        })
+        local timeout = 0
+        Connects.Health = Char.Humanoid:GetPropertyChangedSignal("Health"):Connect(function()
+            if Config[tostring(game.PlaceId)].ESP.ShowHealth then
+                if Config[tostring(game.PlaceId)].ESP.ShowHealthType == "Color" then
+                    HealthBarFrame.Visible = false
+                    NameText.Position = UDim2.fromOffset(0,0)
+                elseif Config[tostring(game.PlaceId)].ESP.ShowHealthType == "Bar" then
+                    HealthBarFrame.Visible = true
+                    NameText.Position = UDim2.fromOffset(0,4)
+                    HealthBarDisplay.BackgroundColor3 = Color3.new(2-(Char.Humanoid.Health/Char.Humanoid.MaxHealth)*2,(Char.Humanoid.Health/Char.Humanoid.MaxHealth)*2)
+                    if HealthBarDisplay.Parent == HealthBarFrame then
+                        HealthBarDisplay:TweenSize(UDim2.fromScale(Char.Humanoid.Health/Char.Humanoid.MaxHealth,1),
+                            Enum.EasingDirection.Out, Enum.EasingStyle.Quint, 0.5, true)
+                    end
+                    if timeout == 0 then
+                        timeout = 2
+                        while timeout > 0 do
+                            wait(.1)
+                            timeout = timeout-0.1
+                        end
+                        timeout = 0
+                        if HealthBarDelay.Parent == HealthBarFrame then
+                            HealthBarDelay:TweenSize(UDim2.fromScale(Char.Humanoid.Health/Char.Humanoid.MaxHealth,1),
+                            Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
+                        end
+                    else
+                        timeout = .7
+                    end
+                end
+            end
+        end)
+        Connects.RS = RunService.RenderStepped:Connect(function()
+            ChangeColor(GetESPColor(Player, Char))
+            HL.Enabled = ESP and CheckESPVis(Player, Char)
+            NameGui.Enabled = ESP and CheckESPVis(Player, Char)
+            NameGui.MaxDistance = Config[tostring(game.PlaceId)].ESP.Distance
+            NameText.Text = GetESPText(Player)
+            if HL:IsA("BillboardGui") then
+                local Extents = Char:GetExtentsSize()
+                HL.Size = UDim2.fromScale(math.max( Extents.X,Extents.Z ),Extents.Y)
+                HL.MaxDistance = Config[tostring(game.PlaceId)].ESP.Distance
+            end
+        end)
+        HL.Destroying:Connect(function()
+            NameGui:Destroy()
+            for _, v in pairs(Connects) do
+                v:Disconnect()
+            end
+        end)
+        if ESPHighlights[Player] then ESPHighlights[Player]:Destroy() end
+        ESPHighlights[Player] = HL
+    end
+end
+
+local function ForceRedrawESP()
+    for i, v in pairs(ESPHighlights) do
+        pcall(v.Destroy,v)
+        ESPHighlights[i]=nil
+    end
+    for _, Player in pairs(Players:GetPlayers()) do
+        pcall(function()
+            AddEspToChar(Player.Character, Player)
+        end)
+    end
+end
+ForceRedrawESP()
 RunService.Stepped:connect(function(deltaTime)
     xpcall(function()
         if UserInputService:IsKeyDown(Enum.KeyCode.V) then
@@ -1768,169 +2125,15 @@ RunService.Stepped:connect(function(deltaTime)
                     if AimPart and GetAimKey() then
                         workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, CalculateDropAndPred(AimPart))
                     end
+                elseif Set.Method == "Smooth" then
+                    if AimPart and GetAimKey() then
+                        workspace.CurrentCamera.CFrame = workspace.CurrentCamera.CFrame:Lerp(CFrame.new(workspace.CurrentCamera.CFrame.Position, CalculateDropAndPred(AimPart)),Set.Smoothing)
+                    end
                 end
             else
                 AimbotTarget = nil
             end
         end,warn)
-        if ESP then
-            for i, v in pairs(Players:GetPlayers()) do
-                xpcall(function()
-                    local Char = v.Character
-                    if Char and Char:FindFirstChild("HumanoidRootPart") and not (Char:FindFirstChild("ESPHighlight") or Char.HumanoidRootPart:FindFirstChild("ESPHighlight")) and CheckIfVisible(Char:FindFirstChild("HumanoidRootPart")) and GetESPDistance(v) < Config[tostring(game.PlaceId)].ESP.Distance and CheckESPTeam(v) then
-                        local Color do 
-                            if Config[tostring(game.PlaceId)].ESP.ShowHealth and Config[tostring(game.PlaceId)].ESP.ShowHealthType == "Color" then Color = Color3.new(1-Char.Humanoid.Health/Char.Humanoid.MaxHealth,Char.Humanoid.Health/Char.Humanoid.MaxHealth)
-                            elseif Config[tostring(game.PlaceId)].ESP.ListColors and CheckStaff(tostring(v.UserId)) then Color = ListColors.Staff
-                            elseif Config[tostring(game.PlaceId)].ESP.ListColors and ListsModule and Lists and Lists[tostring(v.UserId)] then Color = ListColors[Lists[tostring(v.UserId)]]
-                            elseif Config[tostring(game.PlaceId)].ESP.TeamColors then Color = v.TeamColor.Color
-                            else Color = Config[tostring(game.PlaceId)].ESP.DefaultColor end
-                        end
-                        local Extents = Char:GetExtentsSize()
-                        local HL = Config[tostring(game.PlaceId)].ESP.Style == "Highlight" and CreateObject("Highlight",{
-                            OutlineColor = Color,
-                            FillTransparency = 1,
-                            DepthMode = "AlwaysOnTop",
-                            Name = "ESPHighlight",
-                            Parent = Char
-                        }) or Config[tostring(game.PlaceId)].ESP.Style == "Box" and CreateObject("BillboardGui",{
-                            Name = "ESPHighlight",
-                            Size = UDim2.fromScale(Extents.X,Extents.Y),
-                            StudsOffset = Vector3.new(0,-0.5,0),
-                            LightInfluence = 0,
-                            MaxDistance = Config[tostring(game.PlaceId)].ESP.Distance,
-                            AlwaysOnTop = true,
-                            ClipsDescendants = false,
-                            Parent = Char.HumanoidRootPart,
-                            Enabled = (not Config[tostring(game.PlaceId)].ESP.ShowLP and v ~= LP or Config[tostring(game.PlaceId)].ESP.ShowLP)
-                        })
-                        if Config[tostring(game.PlaceId)].ESP.Style == "Box" then
-                            CreateObject("UIStroke",{
-                                Name = "Stroke",
-                                Thickness = 2,
-                                ApplyStrokeMode = 1,
-                                Color = Color,
-                                Parent = CreateObject("Frame",{
-                                    BackgroundTransparency = 1,
-                                    Size = UDim2.fromScale(1,1),
-                                    Name = "Frame",
-                                    Parent = HL
-                                })
-                            })
-                        end
-                        local function ChangeColor(Color)
-                            if HL:IsA("Highlight") then
-                                HL.OutlineColor = Color
-                            elseif HL:IsA("BillboardGui") then
-                                HL.Frame.Stroke.Color = Color
-                            end
-                        end
-                        local NameGui = CreateObject("BillboardGui",{
-                            Name = "ESPName",
-                            Size = UDim2.fromOffset(240,24),
-                            SizeOffset = Vector2.new(0.5,1),
-                            LightInfluence = 0,
-                            MaxDistance = Config[tostring(game.PlaceId)].ESP.Distance,
-                            AlwaysOnTop = true,
-                            ClipsDescendants = false,
-                            Parent = Char.Head,
-                            Enabled = (not Config[tostring(game.PlaceId)].ESP.ShowLP and v ~= LP or Config[tostring(game.PlaceId)].ESP.ShowLP)
-                        })
-                        local NameText = CreateObject("TextLabel", {
-                            Text = GetESPText(v),
-                            BackgroundTransparency = 1,
-                            Size = UDim2.new(1,0,1,0),
-                            BorderSizePixel = 0,
-                            Parent = NameGui,
-                            Font = Enum.Font.Arial,
-                            TextSize = 12,
-                            TextColor3 = Color3.new(0.9,0.9,0.9),
-                            TextStrokeColor3 = Color3.new(0,0,0),
-                            TextStrokeTransparency = 0.2,
-                            TextXAlignment = Enum.TextXAlignment.Left
-                        })
-                        if Config[tostring(game.PlaceId)].ESP.ShowHealth and Config[tostring(game.PlaceId)].ESP.ShowHealthType == "Color" then
-                            local RS do 
-                                RS = Char.Humanoid:GetPropertyChangedSignal("Health"):Connect(function()
-                                    ChangeColor(Color3.new(2-(Char.Humanoid.Health/Char.Humanoid.MaxHealth)*2,(Char.Humanoid.Health/Char.Humanoid.MaxHealth)*2))
-                                end)
-                                HL.Destroying:Once(function()
-                                    RS:Disconnect()
-                                end)
-                            end
-                        elseif Config[tostring(game.PlaceId)].ESP.ShowHealth and Config[tostring(game.PlaceId)].ESP.ShowHealthType == "Bar" then
-                            NameText.Position = UDim2.fromOffset(0,4)
-                            local HealthBarFrame = CreateObject("Frame", {
-                                BackgroundTransparency = 0.1,
-                                Size = UDim2.fromOffset(100,2),
-                                BorderSizePixel = 0,
-                                Parent = NameText,
-                                BackgroundColor3 = Color3.fromHex("#262626"),
-                                Position = UDim2.fromOffset(0,-4)
-                            })
-                            local HealthBarDelay = CreateObject("Frame", {
-                                BackgroundTransparency = 0.1,
-                                Size = UDim2.fromScale(Char.Humanoid.Health/Char.Humanoid.MaxHealth,1),
-                                BorderSizePixel = 0,
-                                Parent = HealthBarFrame,
-                                BackgroundColor3 = Color3.fromHex("#ff0000")
-                            })
-                            local HealthBarDisplay = CreateObject("Frame", {
-                                Size = UDim2.fromScale(Char.Humanoid.Health/Char.Humanoid.MaxHealth,1),
-                                BorderSizePixel = 0,
-                                Parent = HealthBarFrame,
-                                BackgroundColor3 = Color3.new(2-(Char.Humanoid.Health/Char.Humanoid.MaxHealth)*2,(Char.Humanoid.Health/Char.Humanoid.MaxHealth)*2)
-                            })
-                            local timeout = 0
-                            local RS do
-                                RS = Char.Humanoid:GetPropertyChangedSignal("Health"):Connect(function()
-                                    HealthBarDisplay.BackgroundColor3 = Color3.new(2-(Char.Humanoid.Health/Char.Humanoid.MaxHealth)*2,(Char.Humanoid.Health/Char.Humanoid.MaxHealth)*2)
-                                    if HealthBarDisplay.Parent == HealthBarFrame then
-                                        HealthBarDisplay:TweenSize(UDim2.fromScale(Char.Humanoid.Health/Char.Humanoid.MaxHealth,1),
-                                            Enum.EasingDirection.Out, Enum.EasingStyle.Quint, 0.5, true)
-                                    end
-                                    if timeout == 0 then
-                                        timeout = 2
-                                        while timeout > 0 do
-                                            wait(.1)
-                                            timeout = timeout-0.1
-                                        end
-                                        timeout = 0
-                                        if HealthBarDelay.Parent == HealthBarFrame then
-                                            HealthBarDelay:TweenSize(UDim2.fromScale(Char.Humanoid.Health/Char.Humanoid.MaxHealth,1),
-                                            Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
-                                        end
-                                    else
-                                        timeout = .7
-                                    end
-                                end)
-                                HL.Destroying:Once(function()
-                                    RS:Disconnect()
-                                end)
-                            end
-                        end
-                        if Config[tostring(game.PlaceId)].ESP.ShowDistance or table.find({"Scale", "Number"}, Config[tostring(game.PlaceId)].ESP.ShowHealthType) then
-                            local RS do 
-                                RS = RunService.RenderStepped:Connect(function()
-                                    NameText.Text = GetESPText(v)
-                                end)
-                                HL.Destroying:Once(function()
-                                    RS:Disconnect()
-                                end)
-                            end
-                        end
-                        HL.Destroying:Connect(function()
-                            NameGui:Destroy()
-                        end)
-                    end
-                end,warn)
-            end
-        else
-            for i, v in pairs(Players:GetPlayers()) do
-                local Char = v.Character
-                if Char and Char:FindFirstChild("ESPHighlight") then Char:FindFirstChild("ESPHighlight"):Destroy() end
-                if Char and Char:FindFirstChild("HumanoidRootPart") and Char.HumanoidRootPart:FindFirstChild("ESPHighlight") then Char.HumanoidRootPart:FindFirstChild("ESPHighlight"):Destroy() end
-            end
-        end
     end,function(err)
         warn(debug.traceback( err ))
     end)
@@ -2104,7 +2307,7 @@ Mouse.Button1Down:connect(function()
                 )
             end
         end
-    elseif UserInputService:IsKeyDown(Enum.KeyCode.LeftAlt) and (workspace.CurrentCamera.CoordinateFrame.p - LP.Character.Head.Position).magnitude > 2 then
+    elseif Config[tostring(game.PlaceId)].EnvironmentCMs and UserInputService:IsKeyDown(Enum.KeyCode.LeftAlt) and (workspace.CurrentCamera.CoordinateFrame.p - LP.Character.Head.Position).magnitude > 2 then
         local Player = Util.FindWSChild(Util.getMouseHitIncludingChar().Instance)
         local logsToDisplay = {}
         if Player:FindFirstChild("Humanoid") then
@@ -2183,7 +2386,7 @@ end
 
 local function GetGotoList()
     local out = {}
-    for _, v in pairs(Players:GetChildren()) do
+    for _, v in pairs(Players:GetPlayers()) do
         table.insert(
             out,
             {
@@ -3065,9 +3268,11 @@ local function ThemeProviderEntries()
                                                 OnChecked = function(Value)
                                                     Config[tostring(game.PlaceId)].ESP.Style = Type
                                                     Config:Write()
+                                                    ForceRedrawESP()
                                                 end,
                                                 OnUnchecked = function(Value)
                                                     Config:Write()
+                                                    ForceRedrawESP()
                                                 end
                                             })
                                         end
@@ -3129,10 +3334,12 @@ local function ThemeProviderEntries()
                                                     Config[tostring(game.PlaceId)].ESP.ShowHealthType = Type
                                                     Config[tostring(game.PlaceId)].ESP.ShowHealth = true
                                                     Config:Write()
+                                                    ForceRedrawESP()
                                                 end,
                                                 OnUnchecked = function(Value)
                                                     Config[tostring(game.PlaceId)].ESP.ShowHealth = false
                                                     Config:Write()
+                                                    ForceRedrawESP()
                                                 end
                                             })
                                         end
@@ -3354,7 +3561,23 @@ local function ThemeProviderEntries()
                                         Config[tostring(game.PlaceId)].ESP.DefaultColor = Color
                                         Config:Write()
                                     end
-                                } 
+                                },
+                                {
+                                    Type = "Slider",
+                                    Text = "Redraw Loop",
+                                    Name = "Distance",
+                                    Tooltip = "0 = off\nEnable if ESP fails to draw correctly",
+                                    ValueDisplay = true,
+                                    MaxValue = 60,
+                                    MinValue = 0,
+                                    MinSliderSize = 200,
+                                    StartingValue = Config[tostring(game.PlaceId)].ESP.RedrawLoop,
+                                    Rounding = 0,
+                                    OnRelease = function(Value) 
+                                        Config[tostring(game.PlaceId)].ESP.RedrawLoop = Value
+                                        Config:Write()
+                                    end
+                                },
                             }
                         end,
                         SubmenuSettings = {
@@ -3385,7 +3608,7 @@ local function ThemeProviderEntries()
                                                 end,
                                                 Submenu = Type == "Silent" and function()
                                                     local out = {}
-                                                    for _, Type in pairs({"FindPartOnRayWithWhitelist", "FindPartOnRayWithIgnoreList", "FindPartOnRay", "FindPartOnRay", "Raycast", "Mouse Hit"}) do
+                                                    for _, Type in pairs({"FindPartOnRayWithWhitelist", "FindPartOnRayWithIgnoreList", "FindPartOnRay", "Raycast", "Mouse Hit"}) do
                                                         table.insert(out,{
                                                             Text = Type,
                                                             Type = "CheckBox",
@@ -3505,7 +3728,7 @@ local function ThemeProviderEntries()
                                     end
                                 },
                                 {
-                                    Text = "Show Team...",
+                                    Text = "Teams...",
                                     Submenu = function()
                                         return {
                                             {
@@ -3613,6 +3836,25 @@ local function ThemeProviderEntries()
                                         Config:Write()
                                     end
                                 },
+                                (function()
+                                    if Config[tostring(game.PlaceId)].Aimbot.Method == "Smooth" then
+                                        return {
+                                            Type = "Slider",
+                                            Text = "Smoothing",
+                                            Name = "Smoothing",
+                                            ValueDisplay = true,
+                                            MaxValue = 1,
+                                            MinValue = 0,
+                                            MinSliderSize = 200,
+                                            StartingValue = Config[tostring(game.PlaceId)].Aimbot.Smoothing,
+                                            Rounding = 2,
+                                            OnRelease = function(Value) 
+                                                Config[tostring(game.PlaceId)].Aimbot.Smoothing = Value
+                                                Config:Write()
+                                            end
+                                        }
+                                    end
+                                end)(),
                                 {
                                     Type = "CheckBox",
                                     Text = "Drop Compensation...",
@@ -3681,7 +3923,7 @@ local function ThemeProviderEntries()
                                     end
                                 },
                                 (function()
-                                    if Config[tostring(game.PlaceId)].Aimbot.DropType == "LinearInc" or true then
+                                    if Config[tostring(game.PlaceId)].Aimbot.DropType == "LinearInc" then
                                         return {
                                             Type = "Slider",
                                             Text = "Drop Increase",
@@ -3831,7 +4073,7 @@ local function PlayerEntries(Player)
                     M1Func = function()
                         local _Filter = {}
                         local PlayerPos = Player.Character.HumanoidRootPart.Position
-                        for _, v in pairs(Players:GetChildren()) do
+                        for _, v in pairs(Players:GetPlayers()) do
                             if v.Character:FindFirstChild("HumanoidRootPart") and (v.Character.HumanoidRootPart.Position-PlayerPos).Magnitude < Config[tostring(game.PlaceId)].LocalChatLogDist then
                                 table.insert(_Filter, v.Name)
                             end
@@ -4235,7 +4477,7 @@ local function LPEntries(Player)
                     M1Func = function()
                         local _Filter = {}
                         local PlayerPos = Player.Character.HumanoidRootPart.Position
-                        for _, v in pairs(Players:GetChildren()) do
+                        for _, v in pairs(Players:GetPlayers()) do
                             pcall(function()
                                 if (v.Character.HumanoidRootPart.Position-PlayerPos).Magnitude < Config[tostring(game.PlaceId)].LocalChatLogDist then
                                     table.insert(_Filter, v.Name)
@@ -4270,6 +4512,84 @@ task.spawn(function()
     }).Body
     writefile("Assets/ContextTerminal.png",PNG)
 end)
+
+local Frame = CreateObject("Frame",{
+    Name = "FRM",
+    Size = UDim2.fromOffset(0,0),
+    Parent = ScreenGui,
+    AnchorPoint = Vector2.new(0.5,0.5),
+    BackgroundTransparency = 1,
+    Position = Config[tostring(game.PlaceId)].GuiPosition
+})
+local Button = CreateObject("ImageButton",{
+    Name = "BTN",
+    Size = UDim2.fromScale(1,1),
+    Parent = Frame,
+    AnchorPoint = Vector2.new(0,0),
+    BackgroundTransparency = 1,
+    Image = getcustomasset("Assets/ContextTerminal.png"),
+    ZIndex = 3
+})
+local TextFrame = CreateObject("Frame",{
+    Name = "TFRM",
+    Size = UDim2.fromOffset(10,22),
+    Parent = Frame,
+    AnchorPoint = Vector2.new(0,0.5),
+    BackgroundColor3 = Color3.fromHex("232323"),
+    Position = UDim2.fromScale(0.5,0.5)
+})
+local UpperOutputFrame = CreateObject("Frame",{
+    Name = "UOFRM",
+    Size = UDim2.new(1,0,0,0),
+    Position = UDim2.new(0,26,0,0),
+    AutomaticSize = "Y",
+    Parent = TextFrame,
+    AnchorPoint = Vector2.new(0,1),
+    BackgroundColor3 = Color3.fromHex("232323"),
+    Transparency = 1
+})
+local OutputLog = {}
+local function UpperOutput(text, color, timer)
+    if not text then text = "Invalid Text!" end
+    if not timer then timer = 10 end
+    table.insert(OutputLog, {Text = text, Color = color, Timer = timer, Type = "Upper"})
+    if AddLogEntry then
+        local str = text
+        if color then
+            str = '<font color="#'..color:ToHex()..'">'..str.."</font>"
+        end
+        pcall(AddLogEntry, str)
+    end
+    coroutine.wrap(function() 
+        local TextLabel = CreateObject("TextLabel",{
+            Size = UDim2.new(1,0,0,0),
+            Text = " "..text,
+            TextColor3 = color,
+            BackgroundTransparency = 1,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            TextYAlignment = Enum.TextYAlignment.Center,
+            ClipsDescendants = true,
+            Parent = UpperOutputFrame,
+            AnchorPoint = Vector2.new(0,1),
+            TextStrokeTransparency = 0.6,
+            Size = UDim2.fromOffset(0,0),
+            ZIndex = 2,
+        })
+        if TextLabel.Parent == UpperOutputFrame then
+            TextLabel:TweenSize(UDim2.new(0, 400, 0, 16),Enum.EasingDirection.Out,Enum.EasingStyle.Quint,.1)
+        end
+        wait(timer)
+        TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
+        if TextLabel.Parent == UpperOutputFrame then
+            TextLabel:TweenSize(UDim2.new(0, 400, 0, 0),Enum.EasingDirection.Out,Enum.EasingStyle.Quint,.1)
+        end
+        wait(.1)
+        TextLabel:Destroy()
+    end)()
+end
+local function out(text, timer, Color)
+    UpperOutput(text, Color or Color3.fromHex("#e8e8e8"), timer) 
+end
 if ThemeProvider then
     ThemeProvider.MouseButton2Down:Connect(function()
         ContextMenus.Create(ThemeProviderEntries())
@@ -4345,6 +4665,11 @@ Players.PlayerAdded:Connect(function(Player)
     if StaffStatus then
         Util.Notify(AorAn(StaffStatus).." has joined the game!", Player.Name, 30)
     end
+    Player.CharacterAdded:Connect(function(Character)
+        Character:WaitForChild("HumanoidRootPart",1)
+        AddEspToChar(Character, Player)
+    end)
+    AddEspToChar(Player.CharacterAdded:wait(), Player)
 end)
 local function GetPlayerListGUI()
     wait(.5)
@@ -4497,7 +4822,6 @@ UserInputService.JumpRequest:Connect(function()
         LP.Character.Humanoid:ChangeState("Jumping")
     end
 end)
-local OutputLog = {}
 local CommandLog = {}
 RunService.RenderStepped:connect(function()
     MouseLocation = UserInputService:GetMouseLocation()
@@ -4534,31 +4858,6 @@ local function FindIndex(tbl, Pattern, CaseSensitive)
         end
     end
 end
-local Frame = CreateObject("Frame",{
-    Name = "FRM",
-    Size = UDim2.fromOffset(0,0),
-    Parent = ScreenGui,
-    AnchorPoint = Vector2.new(0.5,0.5),
-    BackgroundTransparency = 1,
-    Position = Config[tostring(game.PlaceId)].GuiPosition
-})
-local Button = CreateObject("ImageButton",{
-    Name = "BTN",
-    Size = UDim2.fromScale(1,1),
-    Parent = Frame,
-    AnchorPoint = Vector2.new(0,0),
-    BackgroundTransparency = 1,
-    Image = getcustomasset("Assets/ContextTerminal.png"),
-    ZIndex = 3
-})
-local TextFrame = CreateObject("Frame",{
-    Name = "TFRM",
-    Size = UDim2.fromOffset(10,22),
-    Parent = Frame,
-    AnchorPoint = Vector2.new(0,0.5),
-    BackgroundColor3 = Color3.fromHex("232323"),
-    Position = UDim2.fromScale(0.5,0.5)
-})
 local InputBox = CreateObject("TextBox",{
     ClearTextOnFocus = false,
     PlaceholderText = "Input...",
@@ -4587,16 +4886,6 @@ local SuggestionLabel = CreateObject("TextLabel",{
     TextTransparency = 0.7,
     ClipsDescendants = true,
     Parent = InputBox
-})
-local UpperOutputFrame = CreateObject("Frame",{
-    Name = "UOFRM",
-    Size = UDim2.new(1,0,0,0),
-    Position = UDim2.new(0,26,0,0),
-    AutomaticSize = "Y",
-    Parent = TextFrame,
-    AnchorPoint = Vector2.new(0,1),
-    BackgroundColor3 = Color3.fromHex("232323"),
-    Transparency = 1
 })
 local LowerOutputFrame = CreateObject("Frame",{
     Name = "LOFRM",
@@ -4638,44 +4927,6 @@ local function SetTextFrameSize()
         InputBox.Visible = false
         SuggestionLabel.Visible = false
     end
-end
-local function UpperOutput(text, color, timer)
-    if not text then text = "Invalid Text!" end
-    if not timer then timer = 10 end
-    table.insert(OutputLog, {Text = text, Color = color, Timer = timer, Type = "Upper"})
-    if AddLogEntry then
-        local str = text
-        if color then
-            str = '<font color="#'..color:ToHex()..'">'..str.."</font>"
-        end
-        pcall(AddLogEntry, str)
-    end
-    coroutine.wrap(function() 
-        local TextLabel = CreateObject("TextLabel",{
-            Size = UDim2.new(1,0,0,0),
-            Text = " "..text,
-            TextColor3 = color,
-            BackgroundTransparency = 1,
-            TextXAlignment = Enum.TextXAlignment.Left,
-            TextYAlignment = Enum.TextYAlignment.Center,
-            ClipsDescendants = true,
-            Parent = UpperOutputFrame,
-            AnchorPoint = Vector2.new(0,1),
-            TextStrokeTransparency = 0.6,
-            Size = UDim2.fromOffset(0,0),
-            ZIndex = 2,
-        })
-        if TextLabel.Parent == UpperOutputFrame then
-            TextLabel:TweenSize(UDim2.new(0, 400, 0, 16),Enum.EasingDirection.Out,Enum.EasingStyle.Quint,.1)
-        end
-        wait(timer)
-        TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
-        if TextLabel.Parent == UpperOutputFrame then
-            TextLabel:TweenSize(UDim2.new(0, 400, 0, 0),Enum.EasingDirection.Out,Enum.EasingStyle.Quint,.1)
-        end
-        wait(.1)
-        TextLabel:Destroy()
-    end)()
 end
 local CommandHistoryIndex = 0
 local InputBoxTextChanged = InputBox:GetPropertyChangedSignal("Text")
@@ -4735,6 +4986,10 @@ local function RandomFromTable(tbl, startindex, endindex)
     return tbl[math.random(startindex or 1, endindex or #tbl)]
 end
 
+if Config[tostring(game.PlaceId)].Radar.AutoOpen then
+    CreateRadar()
+end
+
 local FindPlrRules = {
     {
         Match = {"me", "lp", "local", "localplayer"},
@@ -4774,7 +5029,7 @@ local FindPlrRules = {
 		Match = {"oldest"},
 		f = function(str)
             local Ret
-            for _, Plr in pairs(Players:GetChildren()) do
+            for _, Plr in pairs(Players:GetPlayers()) do
                 if not Ret then 
                     Ret = Plr
                     continue
@@ -4790,7 +5045,7 @@ local FindPlrRules = {
 		Match = {"old"},
 		f = function(str)
 			local ReturnList = {}
-            for _, Plr in pairs(Players:GetChildren()) do
+            for _, Plr in pairs(Players:GetPlayers()) do
                 if Plr.AccountAge > Config.OldAccountAgeMin then
                     table.insert(ReturnList, Plr)
                 end
@@ -4802,7 +5057,7 @@ local FindPlrRules = {
 		Match = {"newest"},
 		f = function(str)
             local Ret
-            for _, Plr in pairs(Players:GetChildren()) do
+            for _, Plr in pairs(Players:GetPlayers()) do
                 if not Ret then 
                     Ret = Plr
                     continue
@@ -4818,7 +5073,7 @@ local FindPlrRules = {
 		Match = {"new"},
 		f = function(str)
 			local ReturnList = {}
-            for _, Plr in pairs(Players:GetChildren()) do
+            for _, Plr in pairs(Players:GetPlayers()) do
                 if Plr.AccountAge < Config.NewAccountAgeMax then
                     table.insert(ReturnList, Plr)
                 end
@@ -4830,7 +5085,7 @@ local FindPlrRules = {
 		Match = {"friends","friended"},
 		f = function(str, Invoker)
 			local ReturnList = {}
-            for _, Plr in pairs(Players:GetChildren()) do
+            for _, Plr in pairs(Players:GetPlayers()) do
                 if Plr:IsFriendsWith(Invoker.UserId) and Plr ~= LP then
                     table.insert(ReturnList, Plr)
                 end
@@ -4842,7 +5097,7 @@ local FindPlrRules = {
 		Match = {"friend"},
 		f = function(str, Invoker)
 			local ReturnList = {}
-            for _, Plr in pairs(Players:GetChildren()) do
+            for _, Plr in pairs(Players:GetPlayers()) do
                 if Plr:IsFriendsWith(Invoker.UserId) and Plr ~= LP then
                     table.insert(ReturnList, Plr)
                 end
@@ -4854,7 +5109,7 @@ local FindPlrRules = {
 		Match = {"team","teamed","allied","allies"},
 		f = function(str, Invoker)
 			local ReturnList = {}
-            for _, Plr in pairs(Players:GetChildren()) do
+            for _, Plr in pairs(Players:GetPlayers()) do
                 if Plr.Team == Invoker.Team then
                     table.insert(ReturnList, Plr)
                 end
@@ -4866,7 +5121,7 @@ local FindPlrRules = {
 		Match = {"teammate","ally"},
 		f = function(str, Invoker)
 			local ReturnList = {}
-            for _, Plr in pairs(Players:GetChildren()) do
+            for _, Plr in pairs(Players:GetPlayers()) do
                 if Plr.Team == Invoker.Team then
                     table.insert(ReturnList, Plr)
                 end
@@ -4878,7 +5133,7 @@ local FindPlrRules = {
 		Match = {"notteam","enemied","enemies"},
 		f = function(str, Invoker)
 			local ReturnList = {}
-            for _, Plr in pairs(Players:GetChildren()) do
+            for _, Plr in pairs(Players:GetPlayers()) do
                 if Plr.Team ~= Invoker.Team then
                     table.insert(ReturnList, Plr)
                 end
@@ -4890,7 +5145,7 @@ local FindPlrRules = {
 		Match = {"enemy"},
 		f = function(str, Invoker)
 			local ReturnList = {}
-            for _, Plr in pairs(Players:GetChildren()) do
+            for _, Plr in pairs(Players:GetPlayers()) do
                 if Plr.Team ~= Invoker.Team then
                     table.insert(ReturnList, Plr)
                 end
@@ -4902,7 +5157,7 @@ local FindPlrRules = {
 		Match = {"near","close"},
 		f = function(str, Invoker)
 			local ReturnList = {}
-            for _, Plr in pairs(Players:GetChildren()) do
+            for _, Plr in pairs(Players:GetPlayers()) do
                 local Magnitude do pcall(function() Magnitude = (Plr.Character:FindFirstChild("HumanoidRootPart").Position - Invoker.Character.HumanoidRootPart.Position).Magnitude end) end
                 if Plr ~= Invoker and Magnitude and Magnitude < Config.NearDistance then
                     table.insert(ReturnList, Plr)
@@ -4916,7 +5171,7 @@ local FindPlrRules = {
 		f = function(str, Invoker)
             local Ret
             local RetMagnitude = math.huge
-            for _, Plr in pairs(Players:GetChildren()) do
+            for _, Plr in pairs(Players:GetPlayers()) do
                 local Magnitude do pcall(function() Magnitude = (Plr.Character:FindFirstChild("HumanoidRootPart").Position - Invoker.Character.HumanoidRootPart.Position).Magnitude end) end
                 if Plr ~= Invoker and Magnitude and Magnitude < RetMagnitude then
                     Ret = Plr
@@ -4930,7 +5185,7 @@ local FindPlrRules = {
 		Match = {"far"},
 		f = function(str, Invoker)
 			local ReturnList = {}
-            for _, Plr in pairs(Players:GetChildren()) do
+            for _, Plr in pairs(Players:GetPlayers()) do
                 local Magnitude do pcall(function() Magnitude = (Plr.Character:FindFirstChild("HumanoidRootPart").Position - Invoker.Character.HumanoidRootPart.Position).Magnitude end) end
                 if Magnitude and Magnitude > Config.FarDistance then
                     table.insert(ReturnList, Plr)
@@ -4944,7 +5199,7 @@ local FindPlrRules = {
 		f = function(str, Invoker)
             local Ret
             local RetMagnitude = 0
-            for _, Plr in pairs(Players:GetChildren()) do
+            for _, Plr in pairs(Players:GetPlayers()) do
                 local Magnitude do pcall(function() Magnitude = (Plr.Character:FindFirstChild("HumanoidRootPart").Position - Invoker.Character.HumanoidRootPart.Position).Magnitude end) end
                 if Magnitude and Magnitude > RetMagnitude then
                     Ret = Plr
@@ -4958,7 +5213,7 @@ local FindPlrRules = {
 		Match = {"notfriends","strangers"},
 		f = function(str, Invoker)
 			local ReturnList = {}
-            for _, Plr in pairs(Players:GetChildren()) do
+            for _, Plr in pairs(Players:GetPlayers()) do
                 if not Plr:IsFriendsWith(Invoker.UserId) and Plr ~= Invoker then
                     table.insert(ReturnList, Plr)
                 end
@@ -4970,7 +5225,7 @@ local FindPlrRules = {
 		Match = {"notfriend","unfriended"},
 		f = function(str, Invoker)
 			local ReturnList = {}
-            for _, Plr in pairs(Players:GetChildren()) do
+            for _, Plr in pairs(Players:GetPlayers()) do
                 if not Plr:IsFriendsWith(Invoker.UserId) and Plr ~= Invoker then
                     table.insert(ReturnList, Plr)
                 end
@@ -4985,7 +5240,7 @@ if StaffGroups then
 		Match = {"admins","staff"},
 		f = function(str)
 			local ReturnList = {}
-            for _, Plr in pairs(Players:GetChildren()) do
+            for _, Plr in pairs(Players:GetPlayers()) do
                 if CheckStaff(Plr) then
                     table.insert(ReturnList, Plr)
                 end
@@ -4997,7 +5252,7 @@ if StaffGroups then
 		Match = {"admin"},
 		f = function(str)
 			local ReturnList = {}
-            for _, Plr in pairs(Players:GetChildren()) do
+            for _, Plr in pairs(Players:GetPlayers()) do
                 if CheckStaff(Plr) then
                     table.insert(ReturnList, Plr)
                 end
@@ -5009,7 +5264,7 @@ if StaffGroups then
 		Match = {"nonadmins"},
 		f = function(str)
 			local ReturnList = {}
-            for _, Plr in pairs(Players:GetChildren()) do
+            for _, Plr in pairs(Players:GetPlayers()) do
                 if not CheckStaff(Plr) then
                     table.insert(ReturnList, Plr)
                 end
@@ -5021,7 +5276,7 @@ if StaffGroups then
 		Match = {"nonadmin"},
 		f = function(str)
 			local ReturnList = {}
-            for _, Plr in pairs(Players:GetChildren()) do
+            for _, Plr in pairs(Players:GetPlayers()) do
                 if not CheckStaff(Plr) then
                     table.insert(ReturnList, Plr)
                 end
@@ -5044,13 +5299,13 @@ local function FindPlayers(str, Invoker)
         end
     end
     if tonumber(str) then
-        for _, Plr in pairs(Players:GetChildren()) do
+        for _, Plr in pairs(Players:GetPlayers()) do
             if Plr.UserId == tonumber(str) then
                 return {Plr}
             end
         end
     end
-    for _, Plr in pairs(Players:GetChildren()) do
+    for _, Plr in pairs(Players:GetPlayers()) do
         if string.match(Plr.Name:lower(), str:lower()) or string.match(Plr.DisplayName:lower(), str:lower()) then
             if Config.RandomizeName then
                 table.insert(RandomList, Plr)
@@ -5071,9 +5326,6 @@ local ChatRemote do
     pcall(function()
         ChatRemote = ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest
     end)
-end
-local function out(text, timer, Color)
-    UpperOutput(text, Color or Color3.fromHex("#e8e8e8"), timer) 
 end
 local function say(str, channel)
     if ChatRemote then
@@ -5389,6 +5641,11 @@ Commands = {
         end,
         AllowForeignExec = true
     },
+    openradar = {
+        Args = {},
+        Desc = "Opens the radar.",  
+        func = CreateRadar
+    },
     discord = {
         Args = {},
         Desc = "Joins our Discord server.",  
@@ -5428,6 +5685,13 @@ Commands = {
         Desc = "Leaves the game.",  
         func = function(Invoker)
             game:Shutdown()
+        end
+    },
+    unlockcam = {
+        Args = {},
+        Desc = "Unlocks the camera.",  
+        func = function(Invoker)
+            UnlockCamera()
         end
     },
     noclip = {
@@ -6208,6 +6472,7 @@ if isfile("ContextDex/ContextDex.lua") then
     }
 end
 local Aliases = {
+    camunlock = "unlockcam",
     e = "print",
     ragdoll = "platformstand",
     wsloop = "loopwalkspeed",
@@ -6329,12 +6594,23 @@ local function ExecCommand(Command: string, Invoker)
     end
 end
 
+local RedrawLoop = false
+
 UserInputService.InputBegan:Connect(function(input)
     
     xpcall(function()
         if input.KeyCode == Config[tostring(game.PlaceId)].ESP.Keybind then
             ESP = not ESP
             out("ESP toggled "..(ESP and "On" or "Off"),1)
+            if ESP then ForceRedrawESP() end
+            if not RedrawLoop then
+                RedrawLoop = true
+                task.spawn(function()
+                    while wait(Config[tostring(game.PlaceId)].ESP.RedrawLoop) or Config[tostring(game.PlaceId)].ESP.RedrawLoop > 0 do
+                        ForceRedrawESP()
+                    end
+                end)
+            end
         end
         if input.KeyCode == Config[tostring(game.PlaceId)].Aimbot.Keybind then
             Aimbot = not Aimbot
@@ -6487,5 +6763,3 @@ if ChatDoneFiltering then
 else
     out("OnMessageDoneFiltering not found! Chat Logs and Foreign Execute will not work!", 10, Color3.fromHex("#ffda44"))
 end
-
-CreateRadar()
