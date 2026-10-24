@@ -138,7 +138,7 @@ UserInputService.InputEnded:Connect(function(input)
     end
 end)
 local ListsModule = LoadModule("Lists")
-local Lists = {} do if ListsModule then Lists = ListsModule.CheckArray(Players:GetPlayers()) end end
+local Lists = {} --do if ListsModule then Lists = ListsModule.CheckArray(Players:GetPlayers()) end end
 local Config = ConfigModule:Create("CTCONFIG.lua",{
     RandomIncludeLP = true,
     RandomizeName = true,
