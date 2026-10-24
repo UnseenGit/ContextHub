@@ -54,5 +54,9 @@
     "Properties": {
         "Source": "https://github.com/UnseenGit/ContextHub/raw/main/Modules/Properties.json",
         "Type": "web/json"
+    },
+    "APIDump": {
+        "Source": "https://raw.githubusercontent.com/MaximumADHD/Roblox-Client-Tracker/roblox/API-Dump.json",
+        "Type": "web/json"
     }
 }

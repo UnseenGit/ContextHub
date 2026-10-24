@@ -119,8 +119,115 @@ if isfile("UserCache.json") then
 end
 local ClassImages = LoadModule("ClassImages")
 
-
-local RobloxClasses = LoadModule("RobloxClasses")
+-- Build a per-class member schema (matching the RobloxClasses.json layout that the
+-- GetProperties/GetMethods/GetEvents/CheckPropertyLocked consumers expect) from the
+-- LIVE Roblox API-Dump, so properties/events/methods stay current with the engine.
+-- Falls back to the cached RobloxClasses.json if the dump can't be fetched.
+-- Fetch is best-effort: if the dump can't be reached we fall back to the cached
+-- RobloxClasses.json, so a network failure never blocks the rest of Util from loading.
+local APIDumpClasses
+do
+	local ok, dump = pcall(LoadModule, "APIDump")
+	if ok and type(dump) == "table" and dump.Classes then
+		APIDumpClasses = dump
+	end
+end
+-- API-Dump tags are PascalCase (ReadOnly, Deprecated, NotBrowsable); the existing
+-- consumers expect SCREAMING_SNAKE_CASE (READ_ONLY, DEPRECATED, NOT_BROWSABLE).
+local function normalizeTags(tags)
+	if not tags then return {} end
+	local out = {}
+	for _, tag in ipairs(tags) do
+		local converted = tag:gsub("(%l)(%u)", "%1_%2"):upper()
+		-- collapse any accidental double-underscores
+		converted = converted:gsub("__+", "_")
+		table.insert(out, converted)
+	end
+	return out
+end
+-- Safely read .Name from a ValueType/ReturnType/Parameter.Type entry. These are
+-- always objects in the dump, but guard against malformed/edge entries anyway.
+local function typeName(t)
+	if type(t) == "table" and type(t.Name) == "string" then
+		return t.Name
+	end
+	return "void"
+end
+local function buildRobloxClassesFromDump(dump)
+	local classes = {}
+	for _, class in ipairs(dump.Classes) do
+		local entry = {
+			Name = class.Name,
+			Type = "CLASS",
+			Category = class.MemoryCategory or class.Category,
+			Inherits = {},
+			Tags = normalizeTags(class.Tags),
+			Properties = {},
+			Methods = {},
+			Events = {},
+			Superclass = class.Superclass,
+		}
+		classes[class.Name] = entry
+	end
+	for _, class in ipairs(dump.Classes) do
+		local entry = classes[class.Name]
+		local super = class.Superclass
+		while super and super ~= "<<<ROOT>>>" and classes[super] do
+			table.insert(entry.Inherits, super)
+			super = classes[super].Superclass
+		end
+		for _, m in ipairs(class.Members) do
+			if m.MemberType == "Property" then
+				entry.Properties[m.Name] = {
+					Name = m.Name,
+					Type = typeName(m.ValueType),
+					FullName = class.Name.."."..m.Name,
+					Tags = normalizeTags(m.Tags),
+					ThreadSafety = (m.ThreadSafety or "UNSAFE"):upper(),
+					Security = m.Security,
+				}
+			elseif m.MemberType == "Function" then
+				local args = {}
+				for _, p in ipairs(m.Parameters or {}) do
+					table.insert(args, { Name = p.Name, Type = typeName(p.Type) })
+				end
+				entry.Methods[m.Name] = {
+					Name = m.Name,
+					Return = typeName(m.ReturnType),
+					FullName = class.Name..":"..m.Name,
+					Args = args,
+					Tags = normalizeTags(m.Tags),
+					ThreadSafety = (m.ThreadSafety or "UNSAFE"):upper(),
+					Security = m.Security,
+				}
+			elseif m.MemberType == "Event" then
+				local args = {}
+				for _, p in ipairs(m.Parameters or {}) do
+					table.insert(args, { Name = p.Name, Type = typeName(p.Type) })
+				end
+				entry.Events[m.Name] = {
+					Name = m.Name,
+					FullName = class.Name.."."..m.Name,
+					Args = args,
+					Tags = normalizeTags(m.Tags),
+					ThreadSafety = (m.ThreadSafety or "UNSAFE"):upper(),
+					Security = m.Security,
+				}
+			end
+		end
+	end
+	return classes
+end
+local function getRobloxClasses()
+	if APIDumpClasses then
+		local ok, built = pcall(buildRobloxClassesFromDump, APIDumpClasses)
+		if ok and built then
+			return built
+		end
+	end
+	return LoadModule("RobloxClasses") or {}
+end
+local RobloxClasses = getRobloxClasses()
 local DataTypeIconData = {
 	Object = { 0, 0 },
 	Axes = { 0, 0 },
