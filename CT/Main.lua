@@ -4677,6 +4677,11 @@ if ThemeProvider then
     end)
     game:GetService('RunService').Stepped:connect(CheckView)
 else
+    Mouse.Button2Down:Connect(function()
+        if UserInputService:IsKeyDown(Enum.KeyCode.LeftAlt) and UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then
+            ContextMenus.Create(ThemeProviderEntries())
+        end
+    end)
     out("ThemeProvider not found! Server menu will not work!", 10, Color3.fromHex("#ffda44"))
 end
 
