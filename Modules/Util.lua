@@ -902,21 +902,26 @@ function module.GetDataTypeIcon(Type, Size)
 		}
 	end
 end
+
 function module.GetClassIcon(ClassName)
-	local data = ClassImages[ClassName]
-	if data then
-		return {
-			Image = "rbxasset://textures/ClassImages.png",
-			ImageRectOffset = module.TableToDatatype(data.ImageRectOffset),
-			ImageRectSize = module.TableToDatatype(data.ImageRectSize),
-		}
-	else
-		return {
-			Image = "rbxasset://textures/ClassImages.png",
-			ImageRectOffset = Vector2.new(0,0),
-			ImageRectSize = Vector2.new(16,16),
-		}
-	end
+    local data = ClassImages[ClassName]
+    if data then
+        local offset = module.TableToDatatype(data.ImageRectOffset)
+        local size = module.TableToDatatype(data.ImageRectSize)
+        offset = Vector2.new(7*(offset.X/16), 7*(offset.Y/16))
+        size = Vector2.new(7*(size.X/16), 7*(size.Y/16))
+        return {
+            Image = "rbxasset://textures/ClassImages.png",
+            ImageRectOffset = offset,
+            ImageRectSize = size,
+        }
+    else
+        return {
+            Image = "rbxasset://textures/ClassImages.png",
+            ImageRectOffset = Vector2.new(0,0),
+            ImageRectSize = Vector2.new(7,7),
+        }
+    end
 end
 function module.DatatypeToTable(v)
     if typeof(v) == "Vector3" then
