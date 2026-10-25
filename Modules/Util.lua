@@ -902,14 +902,14 @@ function module.GetDataTypeIcon(Type, Size)
 		}
 	end
 end
-
+local mul = 6.965--(10/3)*2
 function module.GetClassIcon(ClassName)
     local data = ClassImages[ClassName]
     if data then
         local offset = module.TableToDatatype(data.ImageRectOffset)
         local size = module.TableToDatatype(data.ImageRectSize)
-        offset = Vector2.new(7*(offset.X/16), 7*(offset.Y/16))
-        size = Vector2.new(7*(size.X/16), 7*(size.Y/16))
+        offset = Vector2.new( mul*(offset.X/16), mul*(offset.Y/16))
+        size = Vector2.new(mul*(size.X/16), mul*(size.Y/16))
         return {
             Image = "rbxasset://textures/ClassImages.png",
             ImageRectOffset = offset,
@@ -919,7 +919,7 @@ function module.GetClassIcon(ClassName)
         return {
             Image = "rbxasset://textures/ClassImages.png",
             ImageRectOffset = Vector2.new(0,0),
-            ImageRectSize = Vector2.new(7,7),
+            ImageRectSize = Vector2.new(mul,mul),
         }
     end
 end
